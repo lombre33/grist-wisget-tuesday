@@ -1,5 +1,5 @@
 /* Tuesday : l'interface. Les couleurs et les couches viennent du kit (kit/css/tokens.css) ; ici seulement des variables et de la mise en page. Police du système, un seul bleu, icônes au trait. */
-:root { --z-l1: calc(var(--z-floating-toolbar) + 1); --z-l2: calc(var(--z-floating-toolbar) + 2); --z-l3: calc(var(--z-floating-toolbar) + 3); --z-l4: calc(var(--z-floating-toolbar) + 4); --h-barre: 44px; --bar-g: 0px; --bar-h: 0px; --bar-d: 0px; --bar-b: 0px; }
+:root { --z-l1: calc(var(--z-floating-toolbar) + 1); --z-l2: calc(var(--z-floating-toolbar) + 2); --z-l3: calc(var(--z-floating-toolbar) + 3); --z-l4: calc(var(--z-floating-toolbar) + 4); --z-l5: calc(var(--z-floating-toolbar) + 5); --h-barre: 44px; --bar-g: 0px; --bar-h: 0px; --bar-d: 0px; --bar-b: 0px; }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
@@ -128,7 +128,7 @@ button.tu-pastille.est-grisee { opacity: .75; cursor: not-allowed; }
 .tu-vide-ecran { padding: 36px 16px; text-align: center; color: var(--text-muted); display: grid; gap: 10px; justify-items: center; }
 
 /* ---------- Messages ---------- */
-.tu-etat { position: absolute; left: 50%; bottom: calc(14px + var(--bar-b)); transform: translateX(-50%); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 24px); padding: 6px 8px 6px 14px; background: var(--text); color: var(--bg); border-radius: 10px; box-shadow: var(--shadow-float); z-index: var(--z-tip); }
+.tu-etat { position: absolute; left: 12px; bottom: calc(14px + var(--bar-b)); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 24px); padding: 6px 8px 6px 14px; background: var(--text); color: var(--bg); border-radius: 10px; box-shadow: var(--shadow-float); z-index: var(--z-tip); }
 .tu-etat.est-erreur { background: var(--danger-ink); color: var(--bg); }
 .tu-etat .tu-btn { color: inherit; border-color: currentColor; height: 24px; }
 .tu-etat .tu-btn:hover { background: var(--surface-sunken); color: var(--text); }

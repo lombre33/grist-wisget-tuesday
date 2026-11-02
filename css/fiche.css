@@ -1,6 +1,7 @@
 /* Tuesday : fiche d'une tâche, premier lancement, bandeau. */
 
-.tu-fiche { position: absolute; top: calc(var(--h-barre) + var(--bar-h)); right: var(--bar-d); bottom: var(--bar-b); width: min(340px, 94%); background: var(--surface); border-left: 1px solid var(--border-strong); box-shadow: var(--shadow-float); display: flex; flex-direction: column; z-index: var(--z-floating-toolbar); }
+.tu-fiche { position: absolute; top: calc(var(--h-barre) + var(--bar-h)); right: var(--bar-d); bottom: var(--bar-b); width: min(340px, 94%); background: var(--surface); border-left: 1px solid var(--border-strong); box-shadow: var(--shadow-float); display: flex; flex-direction: column; z-index: var(--z-l5); }
+.tu-app.a-fiche .tu-etat { max-width: calc(100% - 364px); }
 @container (min-width: 900px) { .tu-app.a-fiche .tu-vue { margin-right: 340px; } .tu-fiche { box-shadow: none; } }
 .tu-fiche-tete { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
 .tu-fiche-tete .tu-saisie { font-weight: 700; font-size: 14px; border-color: transparent; }
