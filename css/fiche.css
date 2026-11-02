@@ -1,0 +1,38 @@
+/* Tuesday : fiche d'une tâche, premier lancement, bandeau. */
+
+.tu-fiche { position: absolute; top: calc(var(--h-barre) + var(--bar-h)); right: var(--bar-d); bottom: var(--bar-b); width: min(340px, 94%); background: var(--surface); border-left: 1px solid var(--border-strong); box-shadow: var(--shadow-float); display: flex; flex-direction: column; z-index: var(--z-floating-toolbar); }
+@container (min-width: 900px) { .tu-app.a-fiche .tu-vue { margin-right: 340px; } .tu-fiche { box-shadow: none; } }
+.tu-fiche-tete { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.tu-fiche-tete .tu-saisie { font-weight: 700; font-size: 14px; border-color: transparent; }
+.tu-fiche-corps { flex: 1; min-height: 0; overflow: auto; padding: 8px 12px 16px; display: grid; gap: 6px; align-content: start; }
+.tu-champ { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 8px; min-height: 30px; }
+.tu-champ-libelle { color: var(--text-muted); font-size: 12px; }
+.tu-champ-valeur { min-width: 0; }
+.tu-lecture { color: var(--text); overflow-wrap: anywhere; }
+.tu-fiche-section { display: grid; gap: 6px; margin-top: 8px; }
+.tu-fiche-section h3 { margin: 0; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; display: flex; align-items: center; }
+.tu-fiche-sous { display: flex; align-items: center; gap: 8px; }
+.tu-fiche-pied { flex: none; padding: 8px 12px; border-top: 1px solid var(--border); }
+
+.tu-demarrage { flex: 1; min-height: 0; overflow: auto; display: grid; place-items: start center; padding: 18px 14px; }
+.tu-demarrage-carte { width: min(560px, 100%); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; box-shadow: var(--shadow-card); }
+.tu-demarrage h1 { margin: 0; font-size: 16px; }
+.tu-demarrage-sous { margin: 0; color: var(--text-muted); }
+.tu-demarrage-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.tu-liste-tables { display: grid; gap: 6px; max-height: 190px; overflow: auto; }
+.tu-choix-table { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); padding: 8px 10px; text-align: left; }
+.tu-choix-table.est-actif { border-color: var(--accent); background: var(--accent-soft); }
+.tu-choix-nom { font-weight: 600; }
+.tu-roles, .tu-roles-autres { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
+.tu-roles-autres[hidden] { display: none; }
+.tu-role { display: grid; gap: 3px; align-content: start; }
+.tu-role.est-a-voir .tu-saisie { border-color: var(--accent); }
+.tu-role-nom { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.tu-requis { color: var(--danger-ink); margin-left: 3px; }
+.tu-role-aide { margin: 0; font-size: 12px; color: var(--accent-ink); }
+.tu-rassurance { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--text-muted); font-size: 12px; }
+@container (max-width: 520px) { .tu-roles, .tu-roles-autres { grid-template-columns: 1fr; } }
+
+.tu-bandeau { flex: none; display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--accent-soft); border-bottom: 1px solid var(--accent-soft-border); color: var(--accent-ink); flex-wrap: wrap; }
+.tu-bandeau-texte { flex: 1; min-width: 160px; }
+.tu-bandeau .tu-btn { height: 26px; }

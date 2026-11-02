@@ -1,0 +1,75 @@
+/* Tuesday : Kanban, Chronologie, Calendrier. */
+
+/* ---------- Kanban ---------- */
+.tu-kanban { flex: 1; min-height: 0; display: flex; gap: 10px; padding: 10px; overflow: auto; align-items: flex-start; }
+.tu-colonne { flex: none; width: 228px; max-height: 100%; display: flex; flex-direction: column; background: var(--surface-sunken); border: 1px solid var(--border); border-radius: 10px; }
+.tu-colonne.est-cible { border-color: var(--accent); background: var(--accent-soft); }
+.tu-colonne.est-repliee { width: 140px; }
+.tu-colonne-plus { background: transparent; border-style: dashed; padding: 8px; width: 150px; }
+.tu-colonne-tete { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px 4px; gap: 6px; }
+.tu-colonne-repli { border: 0; background: transparent; padding: 0; min-width: 0; text-align: left; }
+.tu-colonne-corps { overflow: auto; padding: 4px 8px; display: grid; gap: 8px; min-height: 12px; }
+.tu-ajout-colonne { padding: 8px 10px; }
+.tu-carte { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--c-fond, var(--border-strong)); border-radius: 8px; padding: 8px 10px; box-shadow: var(--shadow-card); cursor: pointer; display: grid; gap: 6px; }
+.tu-carte:hover { border-color: var(--border-strong); border-left-color: var(--c-fond, var(--border-strong)); }
+.tu-carte.est-selectionnee { outline: 2px solid var(--accent); }
+.tu-carte.est-glissee { opacity: .45; }
+.tu-carte.est-terminee .tu-carte-titre { color: var(--text-muted); text-decoration: line-through; }
+.tu-carte-titre { font-weight: 600; overflow-wrap: anywhere; }
+.tu-carte-parent { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-muted); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tu-carte-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+.tu-carte-date.est-retard { color: var(--danger-ink); font-weight: 600; }
+.tu-carte-resp { margin-left: auto; }
+
+/* ---------- Chronologie ---------- */
+.tu-chrono, .tu-cal { flex: 1; min-height: 0; display: flex; flex-direction: column; background: var(--surface); }
+.tu-chrono-tete { flex: none; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+.tu-ch-defile { flex: 1; min-height: 0; overflow: auto; position: relative; }
+.tu-ch-grille { --lab: 190px; position: relative; width: calc(var(--lab) + var(--total)); min-height: 100%; }
+.tu-ch-entete { position: sticky; top: 0; z-index: var(--z-l3); display: flex; background: var(--surface); border-bottom: 1px solid var(--border-strong); }
+.tu-ch-label { position: sticky; left: 0; z-index: var(--z-l2); flex: none; width: var(--lab); display: flex; align-items: center; gap: 6px; padding: 0 10px 0 calc(10px + var(--niveau, 0) * 16px); background: var(--surface); border-right: 1px solid var(--border-strong); overflow: hidden; white-space: nowrap; cursor: pointer; }
+.tu-ch-label .tu-titre { overflow: hidden; text-overflow: ellipsis; }
+.tu-ch-label.est-contexte .tu-titre { color: var(--text-muted); }
+.tu-ch-coin { z-index: var(--z-l4); }
+.tu-ch-piste { position: relative; flex: none; width: var(--total); }
+.tu-ch-niveau { position: relative; height: 22px; }
+.tu-ch-cel { position: absolute; left: var(--x); width: var(--l); top: 0; bottom: 0; padding: 0 6px; font-size: 11px; color: var(--text-muted); border-left: 1px solid var(--border); overflow: hidden; white-space: nowrap; line-height: 22px; }
+.tu-ch-cel.est-haut { font-weight: 600; color: var(--text); }
+.tu-ch-cel.est-weekend { background: var(--surface-sunken); }
+.tu-ch-corps { position: relative; }
+.tu-ch-ligne { display: flex; height: 32px; border-bottom: 1px solid var(--border); }
+.tu-ch-ligne.est-selectionnee .tu-ch-label, .tu-ch-ligne:hover .tu-ch-label { background: var(--surface-sunken); }
+.tu-ch-ligne .tu-ch-piste { background-image: linear-gradient(to right, var(--border) 1px, transparent 1px); background-size: calc(var(--px) * 7px) 100%; }
+.tu-ch-groupe { position: sticky; left: 0; padding: 6px 10px; background: var(--bg); border-bottom: 1px solid var(--border); font-weight: 600; width: calc(var(--lab) + var(--total)); }
+.tu-ch-auj { position: absolute; top: 0; bottom: 0; left: calc(var(--lab) + var(--x)); width: 2px; background: var(--accent); z-index: var(--z-l1); pointer-events: none; }
+.tu-barre-tache { position: absolute; top: 6px; height: 20px; left: var(--x); width: var(--l); border-radius: 6px; background: var(--c-fond, var(--accent-soft)); border: 1px solid var(--border-strong); color: color-mix(in srgb, var(--c-fond, var(--accent)) 22%, black); display: flex; align-items: center; padding: 0 6px; font-size: 11px; font-weight: 600; cursor: grab; overflow: hidden; touch-action: none; user-select: none; }
+.tu-barre-tache:active { cursor: grabbing; }
+.tu-barre-tache.est-terminee { opacity: .65; }
+.tu-barre-tache.est-retard { border-color: var(--danger); }
+.tu-barre-tache.est-incoherente { border-style: dashed; }
+.tu-barre-tache.est-jalon { width: 20px; left: calc(var(--x) + (var(--px, 1) * 0px)); transform: rotate(45deg) scale(.7); border-radius: 3px; background: var(--c-fond, var(--accent)); padding: 0; }
+.tu-barre-texte { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: relative; z-index: var(--z-l1); }
+.tu-barre-avance { position: absolute; left: 0; bottom: 0; height: 3px; width: var(--p); background: var(--good); }
+.tu-poignee { position: absolute; top: 0; bottom: 0; width: 7px; cursor: ew-resize; }
+.tu-poignee.est-debut { left: 0; }
+.tu-poignee.est-fin { right: 0; }
+
+/* ---------- Calendrier ---------- */
+.tu-cal-titre { text-transform: capitalize; min-width: 130px; }
+.tu-cal-grille { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; }
+.tu-cal-semaine { flex: 1 0 74px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.tu-cal-noms { flex: none; min-height: 24px; background: var(--surface); position: sticky; top: 0; z-index: var(--z-l1); }
+.tu-cal-nom { padding: 4px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.tu-cal-jour { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 3px 4px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tu-cal-jour.est-hors { background: var(--surface-sunken); color: var(--text-muted); }
+.tu-cal-jour.est-cible { background: var(--accent-soft); }
+.tu-cal-tete { display: flex; align-items: center; justify-content: space-between; }
+.tu-cal-numero { font-size: 12px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; }
+.tu-cal-jour.est-auj .tu-cal-numero { background: var(--accent-solid); color: var(--on-accent); font-weight: 700; }
+.tu-cal-ajout { opacity: 0; border: 0; background: transparent; border-radius: 6px; width: 22px; height: 22px; display: grid; place-items: center; color: var(--text-muted); padding: 0; }
+.tu-cal-jour:hover .tu-cal-ajout, .tu-cal-ajout:focus-visible { opacity: 1; }
+.tu-cal-liste { display: grid; gap: 2px; min-width: 0; }
+.tu-cal-puce { text-align: left; border: 0; border-left: 3px solid var(--c-fond, var(--accent)); background: var(--surface-sunken); border-radius: 4px; padding: 1px 5px; font-size: 11px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tu-cal-puce.est-terminee { text-decoration: line-through; color: var(--text-muted); }
+.tu-cal-puce.est-retard { border-left-color: var(--danger); }
+.tu-cal-reste { font-size: 11px; color: var(--text-muted); padding-left: 4px; }
