@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette seulement : les styles en ligne servent à positionner les barres ; l'app réelle aura la CSP stricte du kit (style-src 'self'), positions posées par le CSSOM. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<title>Tuesday : maquette V1</title>
+<link rel="stylesheet" href="../kit/css/tokens.css">
+<link rel="stylesheet" href="maquette.css?v=1">
+</head>
+<body>
+<header class="mq-top">
+  <h1>Tuesday <small>maquette V1, 02/11/2026 : données fictives, rien n'est écrit</small></h1>
+  <div class="mq-group"><span>Écran</span><div class="seg">
+    <button data-screen="tableau">Tableau</button><button data-screen="kanban">Kanban</button><button data-screen="calendrier">Calendrier</button><button data-screen="chronologie">Chronologie</button><button data-screen="fiche">Fiche</button><button data-screen="correspondance">Correspondance</button><button data-screen="demarrage">Démarrage</button><button data-screen="explorateur">Explorateur GFS</button>
+  </div></div>
+  <div class="mq-group"><span>Cadre</span><div class="seg"><button data-size="700x400">700 × 400</button><button data-size="1000x640">1000 × 640</button><button data-size="1280x760">Large</button></div></div>
+  <div class="mq-group"><span>Barre de GFS</span><div class="seg"><button data-bar="left">Gauche</button><button data-bar="top">Haut</button><button data-bar="right">Droite</button><button data-bar="bottom">Bas</button><button data-bar="none">Aucune</button></div></div>
+  <div class="mq-group"><span>Thème</span><div class="seg"><button data-theme-btn="light">Clair</button><button data-theme-btn="dark">Sombre</button></div></div>
+  <label class="chk"><input type="checkbox" id="ro"> Lecture seule</label>
+  <label class="chk"><input type="checkbox" id="nostart"> Sans colonne Début</label>
+</header>
+<main>
+  <div class="mq-stage"><div class="frame" id="frame" data-bar="left"></div></div>
+  <p class="mq-caption">Le cadre reproduit le panneau de référence de Grist (700 × 400). La barre de Grist Factory Suite est simulée par-dessus ; la zone qu'elle recouvre est libérée par une simple gouttière dans cette maquette (le détail ligne par ligne est à définir avec GFS). Glissez une carte du kanban ou une tâche du calendrier, cliquez une pastille de statut, une ligne, ou le nom du projet.</p>
+</main>
+<script src="maquette.js?v=1"></script>
+</body>
+</html>
