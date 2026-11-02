@@ -305,6 +305,39 @@ async function essai(nom, fn) {
     await p.context().close();
   });
 
+  await essai('entrées en attente de la suite : « Lier un fichier » (fiche) et « Automatiser… » (menu) grisées avec leur raison, jamais masquées', async () => {
+    const p = await page();
+    await p.locator('.tu-ligne[data-id="9"]').click();
+    await p.waitForSelector('.tu-fiche');
+    assert.equal(await p.getAttribute('[data-geste="lier"]', 'aria-disabled'), 'true');
+    assert.ok((await p.getAttribute('[data-geste="lier"]', 'title')).length > 10);
+    await p.click('.tu-barre .tu-projet');
+    const auto = p.locator('.tu-menu-item', { hasText: 'Automatiser' });
+    assert.equal(await auto.getAttribute('aria-disabled'), 'true');
+    assert.ok((await auto.getAttribute('title')).length > 10);
+    await p.context().close();
+  });
+
+  await essai('barre de GFS : l\'interface s\'écarte du bord choisi, aux quatre bords, et la zone se libère quand la barre part', async () => {
+    const p = await page();
+    const marges = bar => p.evaluate(async b => {
+      const { poserBarre } = await import('/js/ui/rendu.js');
+      const r = document.getElementById('tuesday'); poserBarre(r, b);
+      const cs = getComputedStyle(r.querySelector('.tu-app') ?? r);
+      return ['--bar-g', '--bar-h', '--bar-d', '--bar-b'].map(v => r.style.getPropertyValue(v));
+    }, bar);
+    assert.deepEqual(await marges({ bord: 'gauche', epaisseur: 42 }), ['50px', '0px', '0px', '0px']);
+    assert.deepEqual(await marges({ bord: 'bas', epaisseur: 42 }), ['0px', '0px', '0px', '50px']);
+    assert.deepEqual(await marges({ bord: 'droite', epaisseur: 30 }), ['0px', '0px', '38px', '0px']);
+    assert.deepEqual(await marges({ bord: 'haut', epaisseur: 30 }), ['0px', '38px', '0px', '0px']);
+    assert.deepEqual(await marges(null), ['0px', '0px', '0px', '0px']);
+    await p.evaluate(async () => { const { poserBarre } = await import('/js/ui/rendu.js'); poserBarre(document.getElementById('tuesday'), { bord: 'gauche', epaisseur: 42 }); });
+    const x = await p.evaluate(() => document.querySelector('.tu-barre').getBoundingClientRect().left);
+    assert.ok(x >= 42, 'la barre d\'outils de Tuesday est à droite de la zone de GFS');
+    await shot(p, 'barre-gfs-gauche');
+    await p.context().close();
+  });
+
   await essai('thème sombre et anglais : mêmes écrans, textes traduits', async () => {
     const p = await page({ sombre: true, locale: 'en-GB', ouvrir: false });
     assert.match(await p.textContent('h1'), /Confirm the columns/);

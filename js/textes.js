@@ -37,6 +37,11 @@ export const TEXTES = {
   'champ.sousTaches': { fr: '{n} {n|sous-tâche|sous-tâches}', en: '{n} {n|subtask|subtasks}' }, 'champ.sousTachesTitre': { fr: 'Sous-tâches', en: 'Subtasks' },
   'champ.bloquee': { fr: 'Bloquée', en: 'Blocked' }, 'champ.bloqueePar': { fr: 'Bloquée par : {noms}', en: 'Blocked by: {noms}' },
 
+  'fiche.fichiers': { fr: 'Fichiers liés', en: 'Linked files' },
+  'fiche.lier': { fr: 'Lier un fichier', en: 'Link a file' },
+  'fiche.lierRaison': { fr: 'Les liens vers les fichiers des autres apps arrivent avec leur prise en charge par la suite.', en: 'Links to the other apps\' files arrive once the suite supports them.' },
+  'projet.automatiser': { fr: 'Automatiser…', en: 'Automate…' },
+  'projet.automatiserRaison': { fr: 'Prévu dans une prochaine version, avec Automation+.', en: 'Planned for a later version, with Automation+.' },
   'fiche.titre': { fr: 'Fiche de la tâche', en: 'Task details' }, 'fiche.fermer': { fr: 'Fermer', en: 'Close' }, 'fiche.supprimer': { fr: 'Supprimer', en: 'Delete' },
   'fiche.supprimerTitre': { fr: 'Supprimer « {nom} » ?', en: 'Delete "{nom}"?' }, 'fiche.supprimerMessage': { fr: 'La ligne est retirée de la table. Vous pourrez l\'annuler.', en: 'The row is removed from the table. You can undo this.' },
 

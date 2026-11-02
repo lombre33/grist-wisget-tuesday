@@ -210,7 +210,9 @@ La source est la table de la **section** du widget (le choix naturel : « Sélec
 
 ### 5.5 Les tables `Tuesday_Projets` et `Tuesday_Liens`, et le modèle de départ
 
-**Deux tables au plus**, créées avec l'accord de la personne : `Tuesday_Projets` (ci-dessous) et `Tuesday_Liens` (liens d'une tâche vers des fichiers d'autres apps, `integration-suite.md`, 3.1). Proposition de colonnes (additif, versionné par `Schema`) :
+**Deux tables au plus**, créées avec l'accord de la personne : `Tuesday_Projets` (ci-dessous) et `Tuesday_Liens` (liens d'une tâche vers des fichiers d'autres apps, `integration-suite.md`, 3.1).
+
+**Pourquoi `Tuesday_Liens` est une table de plus et non une ligne réservée** (réponse de GFS, consigne 002, défaut pris le 02/11) : le guide préfère une ligne réservée d'une table existante (règle 4), mais une tâche porte **plusieurs liens**, chacun avec sa clé `{ app, id, type }`, son étiquette et sa tâche. Une ligne réservée ne les tiendrait que dans un texte (JSON) que Grist ne sait plus lire, filtrer ni relier, et que la personne ne pourrait pas corriger à la main. Une petite table, créée avec l'accord de la personne, identifiant réel relu après `AddTable`, couverte par le préfixe `Tuesday_` (aucune autre app ne peut l'écrire). Un fichier renommé garde son `id` et s'ouvre sous son nom du jour ; un fichier disparu ou une app non installée ne supprime jamais le lien : il reste affiché grisé avec sa raison (« fichier introuvable », « app à installer »). Proposition de colonnes (additif, versionné par `Schema`) :
 
 | Colonne | Contenu |
 |---|---|

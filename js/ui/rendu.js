@@ -116,7 +116,8 @@ export function monter(racine, app) {
       { label: 'Français', valeur: ['langue', 'fr'], actif: I18n.language === 'fr', grise: hebergee, raison: hebergee ? t('projet.langueGfs') : null },
       { label: 'English', valeur: ['langue', 'en'], actif: I18n.language === 'en', grise: hebergee, raison: hebergee ? t('projet.langueGfs') : null },
       { label: t('projet.clair'), valeur: ['theme', 'light'], actif: Theme.choice === 'light' }, { label: t('projet.sombre'), valeur: ['theme', 'dark'], actif: Theme.choice === 'dark' }, { label: t('projet.systeme'), valeur: ['theme', 'system'], actif: Theme.choice === 'system' },
-      { separateur: true }, { label: t('projet.aPropos'), valeur: ['apropos'] },
+      { separateur: true }, { label: t('projet.automatiser'), valeur: ['automatiser'], grise: true, raison: t('projet.automatiserRaison') },
+      { label: t('projet.aPropos'), valeur: ['apropos'] },
     ];
     ouvrirMenu(ancre, items, async it => {
       const [type, v] = it.valeur;
@@ -162,7 +163,7 @@ export function monter(racine, app) {
 }
 
 // Ce que la barre de GFS recouvre : on écarte l'interface de ce bord, sans réserver de bande ailleurs.
-function poserBarre(racine, bar) {
+export function poserBarre(racine, bar) {
   const bords = { gauche: '--bar-g', haut: '--bar-h', droite: '--bar-d', bas: '--bar-b' };
   for (const v of Object.values(bords)) racine.style.setProperty(v, '0px');
   if (bar && bords[bar.bord]) racine.style.setProperty(bords[bar.bord], `${bar.epaisseur + 8}px`);
