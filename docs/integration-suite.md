@@ -1,6 +1,6 @@
 # Tuesday dans la suite : données partagées et liens entre apps
 
-Ajouté le 02/11/2026, après les retours d'Antoine sur la maquette V1. Ce document précise trois points du cahier des charges : le **Calendrier à part**, les **tables et la donnée référençable partout**, les **liens entre apps** (ouvrir un fichier depuis une carte, insérer une carte dans un document). Il propose des contrats ; ceux de GFS font foi, et chaque point ouvert part en « Demande à GFS » (cahier, 8.5).
+Ajouté le 02/11/2026, après les retours d'Antoine sur la maquette V1. Ce document précise quatre points du cahier des charges : le **Calendrier à part**, les **tables et la donnée référençable partout**, les **liens entre apps** (ouvrir un fichier depuis une carte, insérer une carte dans un document), et **Automation+** (faire évoluer le kanban et l'agenda). Il propose des contrats ; ceux de GFS font foi, et chaque point ouvert part en « Demande à GFS » (cahier, 8.5).
 
 ## 1. Le Calendrier est un widget à part, que Tuesday intègre
 
@@ -92,8 +92,57 @@ Cela suit l'action `insérer` de GFS (contrats 5.2 et 5.4 : rendu portable) :
 | Publipostage+ | Accepter un rendu `carte` ; lire une carte par la variable de sa source ; ouvrir un document à partir d'un identifiant donné par Tuesday (déjà : `ouvrir`) |
 | Projet Calendrier | Contrat du module (1) |
 
-## 4. Effets sur le cahier des charges
+## 4. Automation+ : faire évoluer le kanban et l'agenda sans coder
+
+**Retour du porteur (02/11).** Prévoir dès maintenant qu'Automation+ s'implémente **dans le cadre de GFS** pour faire évoluer le kanban, ajouter des tâches dans l'agenda ou autre.
+
+### 4.1 Le principe : par la donnée, pas par le code
+
+Tuesday et Automation+ ne s'importent pas : ils se parlent **par la table**. Une automatisation lit ou écrit des lignes de la table source ; Tuesday, qui montre cette table en direct, change tout seul à l'écran.
+
+| Ce que l'automatisation fait | Ce que la personne voit dans Tuesday |
+|---|---|
+| Passer le statut d'une tâche (« quand la date d'échéance est dépassée, mettre En retard ») | La carte change de colonne du kanban |
+| Ajouter une tâche (« chaque lundi, créer la tâche Point d'équipe ») | La ligne apparaît dans le tableau, la tâche datée dans le calendrier (l'agenda) et la chronologie |
+| Renseigner une valeur (« en passant à Terminé, dater la fin d'aujourd'hui ») | Le champ se met à jour |
+| Réagir à un changement de Tuesday (« quand un statut passe à Bloqué, prévenir… ») | Rien : Automation+ voit la ligne changer |
+
+### 4.2 Ce que Tuesday garantit
+
+1. **Il écrit des modifications ordinaires** (`UpdateRecord`, `AddRecord`) sur les colonnes reliées : tout déclencheur d'Automation+ ou de Grist les voit comme n'importe quelle modification.
+2. **Il se met à jour en direct** quand une autre source modifie la table (Grist le prévient pour la table de la section ; pour une autre table, relecture, voir `contrats` 5.5), sans perdre ce que la personne était en train d'éditer.
+3. **Il le montre sans bruit** : une carte ou une ligne modifiée ailleurs se signale brièvement (halo discret), pas de fenêtre.
+4. **Annuler ne piétine pas l'automatisation** : l'historique de Tuesday ne rend une valeur que si personne ne l'a changée depuis (cahier, 5.4).
+5. **Des colonnes stables et lisibles** (5.7 du cahier) : c'est ce qui permet à Automation+ de cibler « Statut » ou « Échéance » sans connaître Tuesday.
+6. **Aucune règle d'automatisation dans Tuesday** (pas de workflow, pas de limites de travail en cours) : c'est le métier d'Automation+.
+
+### 4.3 La contrainte à traiter avec GFS : Automation+ ne tourne que vue ouverte
+
+Fait lu dans les documents de GFS : **Automation+ ne s'exécute que lorsque sa vue est ouverte**, et **GFS n'active qu'une app à la fois par section**. Si la personne est dans Tuesday, Automation+ n'est pas actif **dans la même section** : le kanban ne bouge pas tout seul.
+
+| Option | Comment | Effet pour Tuesday |
+|---|---|---|
+| **A. Section à part** (défaut de GFS, question 4 de son cahier) | Automation+ reste ouvert dans une autre section du document, sur une page à lui | Marche, mais il faut une page Automation+ ouverte quelque part |
+| **B. Sous-cadre gardé en fond** | GFS garde Automation+ ouvert et caché pendant que Tuesday est actif | Idéal pour la fluidité, c'est la **demande à faire à GFS** : coût de deux sous-cadres, isolement à vérifier |
+| **C. Sans Automation+, par Grist** | Les cas simples (date de fin quand le statut passe à Terminé, statut par défaut) par des **formules déclenchées** de Grist, qui marchent même sans aucun widget ouvert | Aucune dépendance ; à proposer dans le modèle de départ |
+
+**Recommandation** : C pour les cas simples (aucun widget ouvert, rien à configurer), A tout de suite pour le reste, B demandé à GFS pour le jour où Automation+ sera mûr. Tuesday dit la vérité à la personne : si une automatisation est attendue mais qu'Automation+ n'est pas ouvert, l'interface ne fait **pas semblant**.
+
+### 4.4 Du côté de l'interface (V2, prévu dès la V1)
+
+- **Entrée « Automatiser… »** (menu du projet, grisée sans GFS) : ouvre Automation+ (action `ouvrir`, type automatisme) sur la table du projet. Demande à GFS : pouvoir passer à Automation+ un **point de départ** (la table et la correspondance de colonnes), pour qu'il ne les redemande pas.
+- **Modèles d'automatisation prêts à l'emploi**, écrits côté Automation+ avec les rôles de Tuesday : « Terminé ⇒ date de fin », « Échéance dépassée ⇒ En retard », « Tâche récurrente ⇒ créer la suivante » (réponse à la question 9 du cahier).
+- **Aucun bouton de plus par défaut** : l'entrée vit dans le menu du projet, pas dans la barre (priorité à la fluidité).
+
+### 4.5 Ce qui part en demande
+
+| À qui | Demande |
+|---|---|
+| GFS | Question 4 de son cahier : Automation+ en fond (B) ; point de départ à passer à une app ouverte ; prévenance des changements d'une table autre que celle de la section |
+| Automation+ | Cibler des colonnes par rôle (Statut, Échéance…) ; modèles d'automatisation pour Tuesday ; tolérer des tables dont la structure n'est pas la sienne |
+
+## 5. Effets sur le cahier des charges
 
 - **V1** : Tableau, Kanban, Chronologie en natif ; Calendrier par intégration ; **Fichiers liés** (lier, ouvrir) ; navigation entre tables (changer de projet, suivre une Référence) ; deux tables propres au plus.
-- **V2** : insertion d'une carte dans un document ; dépendances ; charge ; synthèse.
+- **V2** : insertion d'une carte dans un document ; entrée « Automatiser… » et modèles d'automatisation avec Automation+ ; dépendances ; charge ; synthèse. (V1 : Tuesday se met déjà à jour en direct quand une automatisation modifie la table.)
 - **V3** : commentaires (`Tuesday_Activite`), temps passé, portefeuille.

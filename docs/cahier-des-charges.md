@@ -398,7 +398,8 @@ Détail et contrats proposés : `integration-suite.md`, 3.
 
 - **Ouvrir un fichier depuis une carte** (V1) : Publipostage+ (document, grille, **présentation**, les diapositives étant son extension) par `choisir` puis `ouvrir` ; liens gardés dans `Tuesday_Liens`. Slides+ n'est pas une app de GFS : ses diapositives vivent dans Publipostage+.
 - **Insérer une carte dans un document** (V2, contrat posé maintenant) : rendu portable (`inserer`, contrats 5.4) avec la source de la tâche ; la valeur simple d'une tâche s'insère aussi comme une **variable**, parce que la donnée est en colonnes lisibles.
-- **Form+** : un formulaire qui alimente la table source ; Tuesday voit les lignes arriver. **Automation+** : réagit aux changements de statut de la table, sans couplage. **Grist-BI / Dashboard** : lit la même table.
+- **Form+** : un formulaire qui alimente la table source ; Tuesday voit les lignes arriver. **Grist-BI / Dashboard** : lit la même table.
+- **Automation+** (retour du porteur, 02/11) : prévu **dans le cadre de GFS** pour faire évoluer le kanban, ajouter des tâches dans l'agenda ou autre. Couplage **par la table**, sans code partagé : Tuesday écrit des modifications ordinaires et se met à jour en direct. Contrainte : Automation+ ne tourne que vue ouverte et GFS n'active qu'une app par section ; options et recommandation dans `integration-suite.md`, 4.
 - **Calendrier** : widget à part, intégré (6.3).
 
 ### 8.5 Demandes à GFS à poser pendant le développement
@@ -413,6 +414,7 @@ Détail et contrats proposés : `integration-suite.md`, 3.
 6. Calendrier : voie A (module du kit) ou B (app ouverte par GFS) ; contrat du module.
 7. Insertion d'une carte : forme de `inserer.produit`, déroulement (étape 7 de GFS), accord de Publipostage+ pour accepter `carte`.
 8. Liens vers des fichiers : où ranger `Tuesday_Liens` dans `fichiers`/`tables`, et que faire d'un fichier renommé ou disparu.
+9. Automation+ : fond ou section à part (question 4 de GFS), point de départ passé à l'app ouverte, prévenance des changements d'une autre table.
 
 ---
 
@@ -563,9 +565,10 @@ Antoine a répondu à la question 2 en parlant de « une ou deux tables pour le 
 | 6 | **Identité de la personne** (« Mes tâches ») : choix une fois dans le stockage, ou table-sonde comme Grist-BI ? | Choix une fois (aucune table de plus) | Table-sonde : automatique, mais une table de plus (« limiter les tables ») |
 | 7 | **Couleur du type « Projet »** dans l'explorateur | Neutre | Une couleur de plus à la liste de la charte (bleu, vert, orange déjà pris) |
 | 8 | **Commentaires et mises à jour** (V3) : table `Tuesday_Activite` ou rien | Reporté à la V3 | — |
-| 9 | **Récurrence** (V2) : dans Tuesday ou dans Automation+ ? | Automation+ crée la ligne suivante ; Tuesday l'affiche | Dans Tuesday : un calcul de plus dans le widget |
+| 9 | **Récurrence** (V2) : dans Tuesday ou dans Automation+ ? | Automation+ crée la ligne suivante (modèle d'automatisation) ; Tuesday l'affiche | Dans Tuesday : un calcul de plus dans le widget |
 | 10 | **Plusieurs responsables** : dès la V1 ? | Oui, si la colonne est une Liste de références (affichage et édition), sinon un seul | Un seul en V1 : plus simple, mais c'est la demande n° 1 de la communauté |
 | 11 | **Calendrier à part** : voie A (module du kit monté par les deux) ou B (app ouverte par GFS) ? | A : un seul code, la vue reste dans la barre et le filtre de Tuesday | B : aucun code partagé, mais une app à la fois et une vue détachée |
+| 12 | **Automation+ pendant que Tuesday est ouvert** : section à part (A), sous-cadre en fond (B) ou formules Grist pour les cas simples (C) ? | A tout de suite, C pour les cas simples (modèle de départ), B demandé à GFS | Sans B, une automatisation ne tourne que si sa page est ouverte quelque part |
 
 ---
 
