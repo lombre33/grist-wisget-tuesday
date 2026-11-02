@@ -1,0 +1,35 @@
+{
+  "contrat": 0,
+  "id": "tuesday",
+  "nom": { "fr": "Tuesday", "en": "Tuesday" },
+  "version": "0.1.0",
+  "entree": "index.html",
+  "tables": { "prefixe": "Tuesday_" },
+  "fichiers": [{
+    "table": "Tuesday_Projets",
+    "colonnes": { "id": "id", "nom": "Nom", "type": "TypeProjet", "dossier": "Dossier", "date": "DateModif" },
+    "typeParDefaut": "projet",
+    "types": [
+      { "valeur": "projet", "nom": { "fr": "Projet", "en": "Project" } }
+    ]
+  }],
+  "reglages": [],
+  "permissions": {
+    "acces": "full",
+    "lit": ["*"],
+    "ecrit": ["*"],
+    "gristInterne": [
+      {
+        "tables": ["_grist_Tables", "_grist_Tables_column"],
+        "lit": true,
+        "pourquoi": {
+          "fr": "Connaître les tables et les colonnes du document, leurs types, et les choix colorés d'un statut pour les montrer comme dans Grist.",
+          "en": "Know the document's tables and columns, their types, and a status's colored choices to show them as Grist does."
+        }
+      }
+    ]
+  },
+  "extensions": [],
+  "dependances": "package.json",
+  "actions": { "ouvrir": ["projet"], "choisir": ["projet"], "inserer": { "produit": [], "recoit": [] } }
+}

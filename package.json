@@ -1,0 +1,12 @@
+{
+  "name": "tuesday",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tuesday : gestion de projet pour Grist, dans Grist Factory Suite. Modules ES, aucune bibliothèque, aucune étape de construction.",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "test:navigateur": "node test/navigateur/essais.cjs"
+  }
+}
