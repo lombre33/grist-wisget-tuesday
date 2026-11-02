@@ -4,7 +4,7 @@ Ajouté le 02/11/2026, après les retours d'Antoine sur la maquette V1. Ce docum
 
 ## 1. Le Calendrier est un widget à part, que Tuesday intègre
 
-**Décision du porteur (02/11).** Le calendrier est un projet à lui, qui marche **seul** (hors Tuesday, sur n'importe quelle table) et que Tuesday **intègre** comme sa vue Calendrier.
+**Décision du porteur (02/11).** Le calendrier est un projet à lui (dépôt `lombre33/grist-widget-calendar-plus`, nom de travail « Calendrier+ », développé dans un fil dédié du même projet Claude), qui marche **seul** (hors Tuesday, sur n'importe quelle table) et que Tuesday **intègre** comme sa vue Calendrier.
 
 Contrainte de GFS : *une app n'importe jamais le code d'une autre app* ; ce qui sert à deux apps va dans le **kit** (qui n'a aucune bibliothèque). Deux voies :
 
