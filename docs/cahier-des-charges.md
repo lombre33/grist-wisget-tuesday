@@ -568,7 +568,7 @@ Antoine a répondu à la question 2 en parlant de « une ou deux tables pour le 
 | 9 | **Récurrence** (V2) : dans Tuesday ou dans Automation+ ? | Automation+ crée la ligne suivante (modèle d'automatisation) ; Tuesday l'affiche | Dans Tuesday : un calcul de plus dans le widget |
 | 10 | **Plusieurs responsables** : dès la V1 ? | Oui, si la colonne est une Liste de références (affichage et édition), sinon un seul | Un seul en V1 : plus simple, mais c'est la demande n° 1 de la communauté |
 | 11 | **Calendrier à part** : voie A (module du kit monté par les deux) ou B (app ouverte par GFS) ? | A : un seul code, la vue reste dans la barre et le filtre de Tuesday | B : aucun code partagé, mais une app à la fois et une vue détachée |
-| 12 | **Automation+ pendant que Tuesday est ouvert** : section à part (A), sous-cadre en fond (B) ou formules Grist pour les cas simples (C) ? | A tout de suite, C pour les cas simples (modèle de départ), B demandé à GFS | Sans B, une automatisation ne tourne que si sa page est ouverte quelque part |
+| 12 | **Automation+ pendant que Tuesday est ouvert** : **tranchée par le porteur (02/11)** : sous-cadre en fond (B), **seulement dès qu'au moins une automatisation est définie** ; en attendant, section à part (A) ; formules Grist (C) pour les cas simples | B conditionnel, demandé à GFS | Sans B, une automatisation ne tourne que si sa page est ouverte quelque part |
 
 ---
 

@@ -123,10 +123,18 @@ Fait lu dans les documents de GFS : **Automation+ ne s'exécute que lorsque sa v
 | Option | Comment | Effet pour Tuesday |
 |---|---|---|
 | **A. Section à part** (défaut de GFS, question 4 de son cahier) | Automation+ reste ouvert dans une autre section du document, sur une page à lui | Marche, mais il faut une page Automation+ ouverte quelque part |
-| **B. Sous-cadre gardé en fond** | GFS garde Automation+ ouvert et caché pendant que Tuesday est actif | Idéal pour la fluidité, c'est la **demande à faire à GFS** : coût de deux sous-cadres, isolement à vérifier |
+| **B. Sous-cadre gardé en fond** (**retenue**, 02/11) | GFS garde Automation+ ouvert et caché pendant que Tuesday est actif, dès qu'une automatisation existe | Idéal pour la fluidité ; c'est la **demande à faire à GFS** : coût de deux sous-cadres, isolement à vérifier |
 | **C. Sans Automation+, par Grist** | Les cas simples (date de fin quand le statut passe à Terminé, statut par défaut) par des **formules déclenchées** de Grist, qui marchent même sans aucun widget ouvert | Aucune dépendance ; à proposer dans le modèle de départ |
 
-**Recommandation** : C pour les cas simples (aucun widget ouvert, rien à configurer), A tout de suite pour le reste, B demandé à GFS pour le jour où Automation+ sera mûr. Tuesday dit la vérité à la personne : si une automatisation est attendue mais qu'Automation+ n'est pas ouvert, l'interface ne fait **pas semblant**.
+**Décision du porteur (02/11) : option B, mais seulement à partir du moment où au moins une automatisation est définie**, pour ne rien alourdir chez qui n'en utilise pas. Conséquences :
+
+- **Aucun coût sans automatisation** : tant que la table d'Automation+ n'a aucune ligne (ou aucune automatisation active, à préciser avec GFS), GFS ne charge pas Automation+ en fond.
+- **GFS n'a pas besoin d'un signal de plus** : les automatismes sont des *fichiers* d'Automation+ dans l'explorateur de GFS (type « automatisme »). « Au moins un existe » se lit donc dans la table de fichiers déclarée par son manifeste. Reste à décider : un automatisme désactivé compte-t-il ? (proposé : non).
+- **Démarrage au moment où le premier automatisme est créé** (ou à l'ouverture du document s'il y en a déjà), sous-cadre caché, isolé comme les autres ; pas d'interface à l'écran.
+- Tuesday n'a rien à faire de plus : il se met à jour en direct (4.2).
+- Les points à vérifier avec GFS : coût mémoire d'un second sous-cadre, ce qui se passe si la personne ouvre Automation+ au premier plan (le sous-cadre de fond cède la place, pas de double exécution : le verrou d'exécution d'Automation+ entre onglets existe déjà), et la reprise après rechargement de la page.
+
+**Recommandation initiale (avant la décision)** : C pour les cas simples (aucun widget ouvert, rien à configurer), A tout de suite pour le reste, B demandé à GFS pour le jour où Automation+ sera mûr. Tuesday dit la vérité à la personne : si une automatisation est attendue mais qu'Automation+ n'est pas ouvert, l'interface ne fait **pas semblant**.
 
 ### 4.4 Du côté de l'interface (V2, prévu dès la V1)
 
@@ -138,7 +146,7 @@ Fait lu dans les documents de GFS : **Automation+ ne s'exécute que lorsque sa v
 
 | À qui | Demande |
 |---|---|
-| GFS | Question 4 de son cahier : Automation+ en fond (B) ; point de départ à passer à une app ouverte ; prévenance des changements d'une table autre que celle de la section |
+| GFS | Question 4 de son cahier : **Automation+ en fond (B), seulement s'il existe au moins une automatisation** (décision du porteur, 02/11) ; point de départ à passer à une app ouverte ; prévenance des changements d'une table autre que celle de la section |
 | Automation+ | Cibler des colonnes par rôle (Statut, Échéance…) ; modèles d'automatisation pour Tuesday ; tolérer des tables dont la structure n'est pas la sienne |
 
 ## 5. Effets sur le cahier des charges
