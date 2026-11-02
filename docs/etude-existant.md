@@ -127,3 +127,13 @@ Lues pour cette étude :
 - Comparatif monday / ClickUp — https://toolfinder.com/comparisons/clickup-vs-monday-dot-com
 
 Non lues (accès refusé depuis l'environnement) : les aides en ligne de monday.com et de ClickUp. Tout ce qui est marqué « à revérifier » doit l'être avant de s'en servir comme argument.
+
+## Complément du 02/11/2026 : l'analyse croisée de GFS
+
+GFS a lu le forum plus à fond (copie : [`sources/besoins-forum-gfs.md`](sources/besoins-forum-gfs.md), le document d'origine fait foi). Ce qui complète ce document :
+
+- **Sept widgets de projet** existent (TaskFlow, Gestion de Projet, Kanban de Céline/Varamil, **Gristkanban** sorti le 29/10 sous MIT sans table imposée, Simple Gantt, ChromaGantt, Kanban Dycazo). Les deux plus gros créent encore leurs tables ; la plupart ajoutent depuis le printemps 2026 une association de colonnes.
+- **Fenêtre courte** : TaskFlow repris par une société annonçant une version « pro » avant fin 2026 pour la DINUM ; Gestion de Projet livre en quelques jours.
+- **Demandes** classées par nombre de personnes (mise en route plus de 20, sous-tâches 11, filtres qui restent 7, couleurs 7, réglages 7, vues de temps 6, charge 5, dépendances 4, plusieurs responsables 4, tri 4) : leur effet sur le cahier est dans `cahier-des-charges.md`, section 1.4.
+- **Pièges** (dates 1970 et J-1, Références lues comme des numéros, écritures qui reviennent au rechargement, mises à jour qui n'arrivent pas, clé de filtres commune à tous les documents) : devenus cas limites et tests.
+- Réserve : la licence de la plupart de ces widgets n'est pas lue ; rien n'en est repris, et la suite est en GPL 3.0.

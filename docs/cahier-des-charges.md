@@ -1,6 +1,6 @@
 # Cahier des charges : Tuesday
 
-Gestion de projet pour Grist, dans Grist Factory Suite (GFS). Version 0.2 du 02/11/2026, rédigée avec la maquette V1 (`../maquettes/index.html`). **0.2 : retours du porteur intégrés** (Calendrier à part, tables et donnée référençable partout, intégration entre apps dès la V1) ; détail dans `integration-suite.md`. Les raisons de chaque choix viennent de l'étude de l'existant (`etude-existant.md`), des documents de GFS (cahier, guide des apps, contrats) et de la charte Grist Factory (section 1).
+Gestion de projet pour Grist, dans Grist Factory Suite (GFS). Version 0.3 du 02/11/2026, rédigée avec la maquette V1 (`../maquettes/index.html`). **0.2 : retours du porteur intégrés** (Calendrier à part, tables et donnée référençable partout, intégration entre apps dès la V1) ; détail dans `integration-suite.md`. **0.3 : analyse des besoins du forum croisée avec le cahier** (section 1.4, copie de la source dans `sources/besoins-forum-gfs.md`) et **noyau de la V1 proposé** (section 11.1). Les raisons de chaque choix viennent de l'étude de l'existant (`etude-existant.md`), des documents de GFS (cahier, guide des apps, contrats) et de la charte Grist Factory (section 1).
 
 **Nom.** « Tuesday » est le nom de travail, celui du dépôt. Les documents de GFS parlent de « Thusday » (faute de frappe probable). Les identifiants proposés ici : app `tuesday`, tables `Tuesday_…`. À confirmer (section 13, question 1).
 
@@ -40,6 +40,27 @@ Les équipes qui travaillent dans Grist suivent déjà leur activité dans des t
 | Un point d'entrée vers les autres apps de la suite | Une copie de leurs fonctions |
 
 ---
+
+### 1.4 Besoins du forum croisés avec le cahier (0.3)
+
+GFS a lu les trois plus gros fils du forum (237 messages) et cinq petits widgets ; la copie de l'analyse est dans [`sources/besoins-forum-gfs.md`](sources/besoins-forum-gfs.md) (le document d'origine fait foi). Ce que ça change, demande par demande :
+
+| Demande du forum (personnes) | Ce que disait le cahier 0.2 | Décision en 0.3 |
+|---|---|---|
+| Mise en route sans bricolage (plus de 20) | Principe 0, correspondance, démarrage | **Confirmé**, c'est le cœur ; renforcé : rien d'écrit avant un geste, aucune table imposée, liaison refusée si une colonne à formule est choisie pour un rôle qu'on écrit |
+| Sous-tâches (11) | Repliables sous la tâche | **Complété** : case à cocher, responsable et échéance propres, affichées dans la chronologie (6.1, 6.4) |
+| Filtres qui restent (7) | Filtres et regroupement « mémorisés » | **Précisé** : par projet et par document, jamais une clé commune ; changer de vue ne perd rien (7) |
+| Couleurs (7) | Couleurs de Grist pour le statut | **Complété** : « Colorier par » statut, priorité, groupe ou responsable (6.2, 7) |
+| Réglages sans toucher au code (7) | Correspondance dans l'interface | **Confirmé** ; « + Statut » du kanban **grisé en V1** (question 13) |
+| Vues de temps (6) | Semaine, Mois, Trimestre | **Complété** : Année, plage qui suit les données, ouverture sur aujourd'hui (6.4) |
+| Charge et temps passé (5) | V2 | **Inchangé** : V2, une formule de Grist ; indicateur de surcharge jamais par défaut (il fait peur aux équipes) |
+| Dépendances (4) | V2 | **Découpé** : repère « Bloquée par » en V1 (colonne Prédécesseurs, sans trait), flèches et recalcul en V2 |
+| Plusieurs responsables (4) | V2 (défaut de la question 10) | **Avancé en V1** (question 10) |
+| Tri du kanban (4) | « Celui de la vue Grist » | **Changé** : ordre manuel, échéance ou priorité, mémorisé par projet |
+| Droits, validation DINUM et ANCT (3) | Risque R10 | **Ajouté** : risque R12 et note de sécurité dès la V1 |
+
+Les pièges déjà rencontrés ailleurs (dates à 1970, J-1, Référence lue comme un numéro, écritures qui reviennent au rechargement, saisies perdues, mises à jour qui n'arrivent pas, 200 à 400 projets) sont devenus des **cas limites** (5.6), des **règles transverses** (7) et des **tests** (10.3). Ce qu'on ne refait pas, conformément à l'analyse : e-mails entrants et alertes (n8n ou Automation+), tableau blanc. *À vérifier avant de s'en servir* : l'analyse dit que Grist intègre un calendrier depuis la 1.7.14 ; je ne l'ai pas vérifié dans cette version, et la décision de Calendrier+ (widget à part, standalone) tient dans tous les cas.
+
 
 ## 2. Principes directeurs
 
@@ -143,7 +164,8 @@ C'est ce que font Taskflow et « Gestion de Projet » : ils créent leurs tables
 |---|---|---|---|---|
 | **Titre** | Texte | obligatoire | Nommer la tâche | Tuesday n'ouvre pas : bandeau « Reliez une colonne de titre » |
 | **Statut** | Choice | obligatoire | Colonnes du kanban, pastilles, groupes | Kanban grisé ; le tableau ne groupe plus par statut |
-| **Responsable** | Référence ; Liste de références ; Texte | facultatif | Avatar, filtre « Mes tâches », regroupement, charge (V2) | Colonne masquée dans la fiche et les cartes |
+| **Responsable** | Référence ; Liste de références ; Texte | facultatif | Avatar, filtre « Mes tâches », regroupement, charge (V2). **Plusieurs responsables dès la V1** si la colonne est une Liste de références | Colonne masquée dans la fiche et les cartes |
+| **Prédécesseurs** | Liste de références vers la même table | facultatif | Repère « Bloquée par… » (V1, sans trait) ; flèches de la chronologie (V2) | Pas de repère |
 | **Début** | Date, DateTime | facultatif | Chronologie, calendrier | Chronologie grisée |
 | **Échéance** | Date, DateTime | facultatif | Calendrier, retards, chronologie | Calendrier et chronologie grisés |
 | **Priorité** | Choice | facultatif | Repère de priorité | Pas de repère |
@@ -207,7 +229,7 @@ Les identifiants de colonnes sont des colonnes de texte et non un seul JSON : on
 
 ### 5.6 Cas limites à traiter (chacun a ses tests)
 
-Table vide ; ligne sans statut (rangée dans une colonne « Sans statut », jamais perdue) ; statut absent de la liste des choix (affiché tel quel, grisé) ; référence cassée ; dates invalides, fin avant début ; dates avec heure (la date locale suffit) ; milliers de lignes (affichage fenêtré, section 9.4) ; titre très long (tronqué par « … ») ; colonne reliée supprimée ou renommée ; document en lecture seule ; Choice sans couleur ; plusieurs responsables ; sous-tâche dont le parent est filtré.
+Table vide ; ligne sans statut (rangée dans une colonne « Sans statut », jamais perdue) ; statut absent de la liste des choix (affiché tel quel, grisé) ; référence cassée ; dates invalides, fin avant début ; dates avec heure (la date locale suffit) ; milliers de lignes (affichage fenêtré, section 9.4) ; titre très long (tronqué par « … ») ; colonne reliée supprimée ou renommée ; document en lecture seule ; Choice sans couleur ; plusieurs responsables ; sous-tâche dont le parent est filtré. Pièges relevés sur le forum (chacun a son test) : date `0` ou vide qui s'affiche `01/01/1970` ; le 31/12 qui passe en janvier de l'année suivante ; échéance à J-1 par le fuseau horaire (un jour civil se lit en UTC, jamais en heure locale) ; **aucune date fictive** pour ranger une carte sans date ; valeur d'une Référence lue comme un numéro (toujours passer par la colonne affichée) ; colonne à formule reliée à un rôle qu'on écrit (refusée **à la liaison**, pas à l'écriture, avec la raison « Can't save value to formula column » traduite) ; ligne ajoutée puis masquée par le filtre de la vue Grist (« Ajoutée, mais masquée par le filtre de la vue ») ; table devenue illisible par une règle d'accès (message clair, jamais des données périmées) ; colonne renommée par Grist après conflit (`Email2`) ; écriture refusée (l'affichage revient en arrière avec la raison de Grist, jamais une modification qui revient seule au rechargement).
 
 ### 5.7 Naviguer entre les tables, référencer la donnée partout
 
@@ -229,7 +251,7 @@ Toutes les vues partagent la **barre du haut** : sélecteur de projet, onglets d
 
 - Sections **repliables** par groupe (colonne Groupe ou, à défaut, Statut), avec leur nombre de tâches.
 - Colonnes : Tâche, Statut (pastille cliquable), Responsable (avatar et nom), Échéance (en rouge si en retard et non terminée, texte « En retard » pour qu'elle ne soit pas portée par la couleur seule), Priorité. Les autres champs s'ajoutent par « Colonnes visibles » (V1).
-- **Sous-tâches** repliables sous leur tâche.
+- **Sous-tâches** repliables sous leur tâche.  Chaque sous-tâche a sa **case à cocher**, son **responsable** et son **échéance** (onze personnes les demandent sur le forum) ; l'avancement d'une tâche mère vient d'une colonne de Grist (formule), jamais de Tuesday.
 - Ligne « + Ajouter une tâche » en bas de chaque groupe : on tape le titre, Entrée, la ligne existe dans Grist.
 - Édition sur place : clic sur un statut (menu des choix), double-clic sur un titre, clic sur une date.
 - Clic sur une ligne : ouvre la **fiche**.
@@ -241,6 +263,8 @@ Toutes les vues partagent la **barre du haut** : sélecteur de projet, onglets d
 - Une colonne par choix de la colonne Statut, **dans l'ordre et avec les couleurs de Grist** ; une colonne « Sans statut » seulement s'il y a des lignes sans statut.
 - Cartes volontairement **pauvres** : titre, échéance, priorité, responsable, une étiquette. Pas de mise en page de carte à configurer en V1.
 - **Glisser-déposer** : vers une autre colonne = changer le statut ; dans la colonne = réordonner (si une colonne Ordre est reliée, sinon grisé avec sa raison).
+- **Tri** des cartes dans une colonne : ordre manuel (défaut), échéance ou priorité (menu « Affichage »). **« Colorier par »** : statut (défaut), priorité, groupe ou responsable.
+- **« + Statut »** en fin de ligne de colonnes : **grisé avec sa raison** en V1 (les statuts se nomment dans Grist ; question 13).
 - « + Ajouter » en bas de chaque colonne.
 - Colonnes repliables ; nombre de cartes dans l'en-tête. **Pas de limites de travail en cours, pas de règles d'entrée** : c'est le territoire d'Automation+.
 - Option V1 : **couloirs** (regroupement par ligne, par responsable ou groupe), repliés par défaut.
@@ -262,9 +286,10 @@ Toutes les vues partagent la **barre du haut** : sélecteur de projet, onglets d
 **But** : voir l'enchaînement et la durée, sans prétendre remplacer un logiciel de planification.
 
 - Une ligne par tâche, groupée comme le tableau ; une barre du Début à l'Échéance, **colorée selon le statut**, remplie selon l'Avancement s'il est relié.
-- **Ligne du jour**, ouverture sur aujourd'hui, zoom Semaine, Mois, Trimestre.
+- **Ligne du jour**, ouverture sur aujourd'hui, zoom **Semaine, Mois, Trimestre, Année** ; la plage suit les données (un projet sur deux années ne bute sur aucune borne) ; les **sous-tâches** s'affichent sous leur tâche.
 - Déplacer une barre ou tirer ses extrémités change les dates. Une tâche sans date est rangée dans le plateau « Sans date ».
 - **Jalons** : une tâche dont Début = Échéance s'affiche en losange.
+- **Repère « Bloquée par… »** (V1, si la colonne Prédécesseurs est reliée) : pastille dans le tableau, la chronologie et la fiche, sans trait. Les flèches et le recalcul des dates sont V2 (le recalcul est une formule de Grist ou Automation+, jamais Tuesday).
 - **Dépendances** (flèches) : V2. Le bouton existe dès la V1, grisé, avec sa raison.
 
 ### 6.5 La fiche d'une tâche
@@ -312,8 +337,14 @@ Démarrage sans projet ; table vide ; chargement ; colonne manquante ; lecture s
 | **Recherche** | Mots dans n'importe quel ordre, accents, casse et ponctuation ignorés (charte) ; porte sur le titre et les champs de texte reliés |
 | **Filtres rapides** | « Mes tâches », « En retard », par statut, par responsable ; s'ajoutent à ceux de la vue Grist, jamais à leur place. Les filtres sont des étiquettes visibles qu'on retire d'un clic |
 | **Regroupement** | Par Groupe, Statut, Responsable, Priorité ; mémorisé par projet |
-| **Tri** | Celui de la vue Grist ; Tuesday n'invente pas un second tri en V1 |
+| **Mémoire des choix** | Filtres, regroupement, tri, zoom et vue active **restent par projet** (clé `tuesday.<document>.<projet>` dans le stockage de GFS : jamais une clé commune à tous les documents, piège relevé sur le forum). Changer de vue ne perd aucun réglage ; ce qui est partagé par l'équipe va dans `Tuesday_Projets.Reglages`, sur un geste |
+| **Colorier par** | Statut (couleurs de Grist), priorité, groupe ou responsable ; la couleur ne porte jamais seule le sens |
+| **Tri** | Tableau et kanban : **ordre manuel** (défaut), **échéance**, **priorité** ; menu « Affichage », mémorisé par projet (quatre demandes). Il n'écrit rien dans Grist ; l'ordre de la vue Grist reste la base |
 | **Annuler / Rétablir** | 100 % des actions, Ctrl+Z / Ctrl+Y, boutons ; jamais dans un champ de saisie |
+| **Écritures** | **Optimistes avec retour arrière** : l'affichage change tout de suite ; si Grist refuse (droit, formule, règle), il revient en arrière avec la raison de Grist. Rien ne « revient au rechargement » sans avoir prévenu (six personnes ont rencontré ce piège) |
+| **Saisies** | Un champ s'enregistre à sa validation ; rien de ce qu'on tape n'est perdu quand on change de champ ou qu'on ajoute un élément ; la position de défilement est gardée |
+| **Version** | Le numéro de version est visible (Réglages, « À propos ») ; GitHub Pages met tout en cache 10 minutes, donc `?v=` monté à chaque lot : « forcer avec Ctrl+F5 » n'est jamais une réponse |
+| **Beaucoup de projets** | Le sélecteur a une **recherche** et suit les dossiers de GFS ; liste fenêtrée (200 à 400 projets existent déjà sur le forum) |
 | **Clavier** | Tout se fait au clavier : Tab, flèches dans le tableau, Entrée pour éditer, Échap pour quitter, `N` pour une nouvelle tâche, `/` pour chercher |
 | **Accessibilité** | Contraste 4,5:1 au moins, focus visible, `aria-` sur les menus et les fenêtres, **aucune information portée par la seule couleur** (le statut a toujours son nom, le retard son mot) |
 | **Langues** | Français et anglais livrés ensemble, pluriels `{n\|singulier\|pluriel}`, « — Choisir … — » pour le vide, vouvoiement, « tâche » et jamais « task » en français |
@@ -502,7 +533,7 @@ Consigne du porteur : **des tests unitaires exhaustifs dès que le développemen
 - **Tâches** : toutes les formes de valeur de Grist (`['d', v]`, `['D', v, fuseau]`, `['R', table, v]`, listes), lignes sans statut, doublons, ligne sans titre.
 - **Groupes et tri** : ordre des choix de Grist, groupe vide, groupe replié, « Sans statut », couloirs.
 - **Sous-tâches** : parent filtré, cycle (A parente de B parente de A), profondeur, parent supprimé.
-- **Dates** : début de semaine au lundi, numéros ISO 8601 (semaines 52, 53 et 1), années bissextiles, changement d'heure, retard à minuit, dates avec heure et fuseau, début après fin.
+- **Dates** : début de semaine au lundi, numéros ISO 8601 (semaines 52, 53 et 1), années bissextiles, changement d'heure, retard à minuit, dates avec heure et fuseau, début après fin. **Pièges du forum** : `01/01/1970`, 31/12 passé en janvier, J-1 par le fuseau, date fictive pour ranger une carte sans date, Référence lue comme un numéro.
 - **Rangs fractionnaires** : insertion entre, en tête, en queue, rangs identiques, épuisement de la précision et renumérotation, stabilité sous 10 000 insertions aléatoires.
 - **Chronologie** : géométrie pour les trois zooms, barre d'un jour, jalon, tâche sans date, barre hors de la fenêtre.
 - **Couleurs** : correction de contraste à 4,5:1 sur toute couleur de Grist, clair et sombre ; couleur absente.
@@ -525,10 +556,31 @@ Les sept scénarios S1 à S7 (section 3.2) sont écrits comme essais de navigate
 | | **V1 « Suivre »** | **V2 « Piloter »** | **V3 « Connecter »** |
 |---|---|---|---|
 | Vues | Tableau, Kanban, Chronologie, fiche ; **Calendrier par intégration** | Charge de travail, Synthèse | Mon travail, Portefeuille |
-| Données | Correspondance, modèle de départ, sous-tâches, ordre manuel, **navigation entre tables**, **fichiers liés** (`Tuesday_Liens`) | Dépendances, jalons enrichis, plusieurs responsables complets, récurrence | Commentaires, temps passé |
-| Gestes | Glisser, édition sur place, ajout rapide, annuler/rétablir, recherche, filtres, regroupement, suivre une Référence | Sélection multiple et actions groupées, copier-coller depuis un tableur, vues enregistrées | — |
+| Données | Correspondance, modèle de départ, sous-tâches (case, responsable, échéance), **plusieurs responsables**, ordre manuel, **navigation entre tables**, **fichiers liés** (`Tuesday_Liens`, dernier lot) | Dépendances avec flèches et recalcul, jalons enrichis, récurrence, **statuts écrits depuis le kanban** | Commentaires, temps passé |
+| Gestes | Glisser, édition sur place, ajout rapide, annuler/rétablir, recherche, filtres et tri **qui restent par projet**, regroupement, colorier par, suivre une Référence | Sélection multiple et actions groupées, copier-coller depuis un tableur, vues enregistrées partagées | — |
 | GFS | Fichier « Projet », langue, barre, stockage, lecture seule, ouvrir/fermer, `choisir` et `ouvrir` vers Publipostage+ | **Insertion d'une carte** (`inserer`), clé de réglage de la vue, dossiers d'équipe | Responsable d'espace |
 | Qualité | Tests exhaustifs du cœur, hygiène, contrat, essais 700 × 400, labo GFS | Budgets de performance en continu | Essais d'interopérabilité |
+
+
+
+### 11.1 Noyau de la V1 (proposition à valider)
+
+GFS demande « ce qui entre, ce qui attend » avant le code. Le critère : un petit noyau bien installé vaut mieux qu'un rattrapage de fonctions (fenêtre courte, R11).
+
+**Entre dans la V1**
+- La **mise en route** sur sa propre table : démarrage, correspondance confirmée en un écran, aucun modèle imposé, rien d'écrit avant un geste (fil « onboarding », `onboarding.md`).
+- **Tableau**, **Kanban** et **Chronologie simple** (dates, jalons, sous-tâches, zoom jusqu'à l'année, repère « Bloquée par ») + **fiche** ; le **Calendrier** par intégration de Calendrier+.
+- **Sous-tâches** (case, responsable, échéance), **plusieurs responsables**, **statuts de Grist** avec leurs couleurs, **Colorier par**.
+- **Filtres, tri et regroupement qui restent** par projet ; recherche ; annuler/rétablir à 100 % ; lecture seule grisée avec sa raison ; version visible.
+- **Fichiers liés** à Publipostage+ et Form+ (`choisir`, `ouvrir`), en **dernier lot** de la V1 (étape 8 bis du plan).
+- Une **note de sécurité** (ce que l'app lit, ce qu'elle écrit, pourquoi) pour l'audit.
+
+**Attend (V2 « Piloter », V3 « Connecter »)**
+- Dépendances avec flèches et recalcul des dates ; charge de travail et temps passé ; récurrence ; avancement calculé.
+- Écrire les statuts depuis le kanban (question 13) ; insertion d'une carte dans un document (`inserer`) ; vues enregistrées partagées ; sélection multiple ; copier-coller depuis un tableur.
+- Commentaires ; export PDF ou Markdown ; « Mon travail » et portefeuille ; alertes par e-mail (n8n ou Automation+).
+
+**Fonctions qui demandent des formules : aucune n'entre.** En V1 Tuesday ne crée aucune colonne à formule : il **lit** celles que la personne a déjà (avancement, charge, retard). Il n'a donc pas besoin de la capacité `formules` (contrats 3.4). Dès la V2, si Tuesday propose de créer une colonne calculée (prédécesseurs recalculés, charge), il déclarera cette capacité, avec l'accord de la personne et sans jamais modifier une colonne existante.
 
 **Hors périmètre**, sauf décision du porteur : tableaux blancs, chat, assistant d'IA, objectifs, formulaires, automatisations, graphiques riches, documents, notifications par courriel.
 
@@ -548,6 +600,8 @@ Les sept scénarios S1 à S7 (section 3.2) sont écrits comme essais de navigate
 | R8 | Glissement du périmètre vers Monday entier | Retour du « kanban hyper sophistiqué » | Principe 1, section 11 « hors périmètre », une carte de décision pour toute fonction hors cahier |
 | R9 | Grandes tables (milliers de lignes) | Lenteur | Affichage fenêtré, budgets mesurés (9.4, 10.4) |
 | R10 | Instance DINUM : politique sur les widgets personnalisés et les adresses GitHub Pages | Widget bloqué | Déjà traité par GFS ; vérifier avec une première mise en ligne de la page d'entrée |
+| R11 | **Fenêtre courte** : TaskFlow repris par une société (version « pro » annoncée avant fin 2026, proposée à la DINUM) ; Gestion de Projet livre en quelques jours ; Gristkanban (MIT, DSFR) est sorti le 29/10 | Arriver trop tard avec trop de choses | Noyau V1 petit (11.1), onboarding irréprochable, avantage propre : s'adapter à la table et vivre dans la suite | 
+| R12 | **Validation DINUM / ANCT** : leurs instances n'utilisent que des widgets audités ; tous les widgets existants demandent l'accès complet | Widget refusé | Code lisible sans bibliothèque, outil d'audit de GFS, isolement de GFS (ne voit que les tables du manifeste), note de sécurité dès la V1 ; ne rien promettre de plus que ce qui est mesuré |
 
 ---
 
@@ -559,16 +613,17 @@ Antoine a répondu à la question 2 en parlant de « une ou deux tables pour le 
 |---|---|---|---|
 | 1 | **Nom** : Tuesday ou Thusday (graphie de GFS) ? | Tuesday | Renommer le dépôt, le manifeste et le préfixe des tables, avant la première table créée |
 | 2 | **Qu'est-ce qu'un projet dans l'explorateur ?** Une configuration posée sur une table existante, ou un projet qui porte ses propres tables ? | Configuration sur table existante, avec modèle de départ en option | Avec un modèle imposé : des tables `Tuesday_…` à créer, correspondance inutile, mais retour au mur des widgets existants |
-| 3 | **Totaux de groupe** : afficher « 4 tâches » ou un cumul d'une colonne Numérique ? | Nombre de tâches seulement (affichage, pas de calcul métier) ; tout cumul = une formule Grist affichée | Un cumul calculé par Tuesday contredit « pas de calcul dans le widget » (décision de GFS) |
+| 3 | **Totaux de groupe** : afficher « 4 tâches » ou un cumul d'une colonne Numérique ? | Nombre de tâches seulement (affichage, pas de calcul métier) ; tout cumul = une formule Grist affichée | Un cumul calculé par Tuesday contredit « pas de calcul dans le widget » (décision de GFS) | *Note (0.3)* : l'étiquette « En retard » compare l'échéance à aujourd'hui à l'affichage ; c'est une règle de présentation, pas un calcul métier : à confirmer |
 | 4 | **Couleurs de statut de Grist** dans le chrome, alors que la charte limite les couleurs | Oui, corrigées pour le contraste ; gris sinon | Pastilles toutes grises : lecture plus lente |
 | 5 | **Fiche** : panneau à droite (non modal) ou fenêtre de la base commune (largeur 480) ? | Panneau à droite : on garde la vue sous les yeux | Fenêtre : conforme à la charte « une seule base », mais cache la vue |
 | 6 | **Identité de la personne** (« Mes tâches ») : choix une fois dans le stockage, ou table-sonde comme Grist-BI ? | Choix une fois (aucune table de plus) | Table-sonde : automatique, mais une table de plus (« limiter les tables ») |
 | 7 | **Couleur du type « Projet »** dans l'explorateur | Neutre | Une couleur de plus à la liste de la charte (bleu, vert, orange déjà pris) |
 | 8 | **Commentaires et mises à jour** (V3) : table `Tuesday_Activite` ou rien | Reporté à la V3 | — |
 | 9 | **Récurrence** (V2) : dans Tuesday ou dans Automation+ ? | Automation+ crée la ligne suivante (modèle d'automatisation) ; Tuesday l'affiche | Dans Tuesday : un calcul de plus dans le widget |
-| 10 | **Plusieurs responsables** : dès la V1 ? | Oui, si la colonne est une Liste de références (affichage et édition), sinon un seul | Un seul en V1 : plus simple, mais c'est la demande n° 1 de la communauté |
+| 10 | **Plusieurs responsables** : dès la V1 ? | **Oui** (quatre demandes, et attendu par la communauté) : si la colonne est une Liste de références, affichage et édition ; sinon un seul | Un seul en V1 : plus simple, mais une demande n° 1 manquée |
 | 11 | **Calendrier à part** : voie A (module du kit monté par les deux) ou B (app ouverte par GFS) ? | A : un seul code, la vue reste dans la barre et le filtre de Tuesday | B : aucun code partagé, mais une app à la fois et une vue détachée |
 | 12 | **Automation+ pendant que Tuesday est ouvert** : **tranchée par le porteur (02/11)** : sous-cadre en fond (B), **seulement dès qu'au moins une automatisation est définie** ; en attendant, section à part (A) ; formules Grist (C) pour les cas simples | B conditionnel, demandé à GFS | Sans B, une automatisation ne tourne que si sa page est ouverte quelque part |
+| 13 | **Ajouter un statut depuis le kanban** (« des statuts qu'on nomme soi-même », sept personnes) : écrire les choix d'une colonne demande d'écrire `_grist_Tables_column` (`widgetOptions`) | V1 : les statuts se nomment dans Grist ; « + Statut » existe, **grisé avec la raison** ; V2 : l'écrire avec une entrée `gristInterne` déclarée et l'accord de la personne | Dès la V1 : une écriture de structure de plus à déclarer et à mesurer dans un vrai Grist |
 
 ---
 
@@ -585,6 +640,7 @@ Antoine a répondu à la question 2 en parlant de « une ou deux tables pour le 
 | 6 | Calendrier | |
 | 7 | Chronologie | |
 | 8 | Essais 700 × 400, thèmes, langues, lecture seule, performance ; échange avec GFS (`GFS-ETAT.md`) | V1 candidate |
+| 8 bis | **Fichiers liés** (`Tuesday_Liens`, `choisir`, `ouvrir`) et note de sécurité | Dernier lot de la V1 |
 | 9 | Essai par une équipe de l'instance DINUM | Retours, ajustements |
 
 Les étapes 1 à 3 ne montrent presque rien, mais tout le reste repose dessus : ce sont aussi celles où l'on prévient le plus de dette.
