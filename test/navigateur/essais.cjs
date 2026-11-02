@@ -103,6 +103,11 @@ async function essai(nom, fn) {
     assert.equal(await p.evaluate(() => document.activeElement?.className), 'tu-ajout-champ');
     await p.keyboard.type('Seconde ajoutée'); await p.keyboard.press('Enter');
     await p.waitForFunction(() => window.__tuesday.taches.some(t => t.titre === 'Seconde ajoutée'));
+    // frappe immédiate après Entrée, pendant que la vue se redessine : aucun caractère perdu
+    for (let i = 0; i < 8; i++) {
+      await p.keyboard.type(`Rapide ${i}`); await p.keyboard.press('Enter');
+      await p.waitForFunction(n => window.__tuesday.taches.some(t => t.titre === n), `Rapide ${i}`, { timeout: 2500 });
+    }
     await p.context().close();
   });
 
@@ -288,6 +293,15 @@ async function essai(nom, fn) {
     await p.click('#pp-dialog-modal .pp-modal-primary, #pp-dialog-modal button:last-child');
     await p.waitForFunction(() => window.__tuesday.projets.length === 1);
     await p.waitForSelector('[data-geste="garder"]', { state: 'detached' });
+    await p.context().close();
+  });
+
+  await essai('attente d\'accès : l\'écran dit quoi faire dans Grist, et recharger est proposé', async () => {
+    const p = await page({ ouvrir: false });
+    await p.evaluate(() => { const a = window.__tuesday; a.ecran = 'chargement'; a.attenteAcces = true; a.emettre(); });
+    await p.waitForSelector('[data-geste="recharger"]');
+    assert.match(await p.textContent('.tu-demarrage-carte'), /accès complet/i);
+    await shot(p, 'acces-clair');
     await p.context().close();
   });
 

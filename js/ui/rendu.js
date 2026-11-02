@@ -11,7 +11,7 @@ import { vueKanban } from './kanban.js';
 import { vueChronologie } from './chronologie.js';
 import { vueCalendrier } from './calendrier.js';
 import { vueFiche } from './fiche.js';
-import { ecranTables, ecranColonnes, ecranSansTable, bandeauGarder } from './demarrage.js';
+import { ecranTables, ecranColonnes, ecranSansTable, ecranAcces, bandeauGarder } from './demarrage.js';
 import { ouvrirMenu, fermerMenu } from './menu.js';
 import { icone } from './icones.js';
 import { FILTRES_VIDES } from '../core/regroupement.js';
@@ -45,6 +45,7 @@ function corps(app, actions) {
   if (app.ecran === 'tables') return ecranTables(app);
   if (app.ecran === 'colonnes') return ecranColonnes(app);
   if (app.ecran === 'sans-table') return ecranSansTable(app);
+  if (app.ecran === 'chargement' && app.attenteAcces) return ecranAcces();
   if (app.ecran === 'chargement') return h('div', { class: 'tu-demarrage' }, h('p', { class: 'tu-vide' }, t('app.chargement')));
   const vue = VUES[app.reglages.vue] ?? vueTableau;
   return h('main', { class: 'tu-vue', dataset: { vue: app.reglages.vue } }, vue(app, actions));
@@ -58,12 +59,15 @@ function sauverEtat(racine) {
   return { defile, focus };
 }
 
-function rendreEtat(racine, { defile, focus }, pending) {
+function rendreEtat(racine, { defile, focus: focusAvant }, pending) {
+  let focus = focusAvant;
   racine.querySelectorAll('[data-defile]').forEach(el => { const v = defile[el.dataset.defile]; if (v) { el.scrollLeft = v[0]; el.scrollTop = v[1]; } });
   const cible = pending ?? focus?.cle;
   if (!cible) return;
   const el = [...racine.querySelectorAll('[data-ajout],[data-focus]')].find(x => (x.dataset.ajout ?? x.dataset.focus) === cible);
   if (!el) return;
+  // Un rendu peut arriver entre deux frappes : le texte déjà tapé dans le champ d'ajout rapide passe au nouveau champ, il ne se perd pas.
+  if (focus?.valeur && el.dataset.ajout === focus.cle && !el.value) { el.value = focus.valeur; focus = { ...focus, debut: focus.valeur.length, fin: focus.valeur.length }; }
   el.focus({ preventScroll: true });
   if (!pending && focus?.debut !== null && el.setSelectionRange) { try { el.setSelectionRange(focus.debut, focus.fin); } catch (e) { /* type de champ sans sélection */ } }
 }

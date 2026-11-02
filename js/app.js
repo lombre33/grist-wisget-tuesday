@@ -17,12 +17,18 @@ export class App {
     this.abonnes = new Set(); this.historique = new Historique();
     this.modele = { tables: {} }; this.projets = []; this.projet = null; this.source = null; this.mapping = null;
     this.rows = []; this.rowsParId = new Map(); this.refs = {}; this.taches = []; this.arbre = faireArbre([]);
-    this.reglages = lireReglages(''); this.selection = null; this.ecran = 'chargement'; this.proposition = null; this.sectionTable = null;
+    this.reglages = lireReglages(''); this.selection = null; this.ecran = 'chargement'; this.attenteAcces = false; this.proposition = null; this.sectionTable = null;
     this.message = null; this.occupe = 0;
     port.abonner?.(() => this.surChangementExterieur());
   }
 
   abonner(fn) { this.abonnes.add(fn); return () => this.abonnes.delete(fn); }
+  // Après quelques secondes sans réponse de Grist, l'écran d'attente dit quoi faire (l'accès complet n'est peut-être pas encore accordé).
+  attendreAcces(delai = 3000) {
+    if (this.port.mode === 'demo') return null;
+    return setTimeout(() => { if (this.ecran === 'chargement') { this.attenteAcces = true; this.emettre(); } }, delai);
+  }
+
   emettre(quoi = 'etat') { for (const fn of [...this.abonnes]) fn(quoi); }
   get lectureSeule() { return Boolean(this.port.lectureSeule); }
   get colonnes() { return this.modele.tables[this.source]?.colonnes ?? []; }

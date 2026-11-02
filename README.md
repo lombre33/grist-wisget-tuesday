@@ -2,7 +2,7 @@
 
 Un widget de gestion de projet pour [Grist](https://www.getgrist.com), fait pour [Grist Factory Suite (GFS)](https://github.com/lombre33/grist-widget-GFS). Inspiré de monday.com pour sa clarté, volontairement bien plus simple : **on le branche sur une table Grist existante** et on voit son travail comme un projet (tableau, kanban, calendrier, chronologie), sans rien recréer.
 
-> État : **cahier des charges et maquette V1** (02/11/2026). Aucun code de l'app pour l'instant.
+> État : **V1 codée** (02/11/2026, version 0.1.0) : tableau, kanban, chronologie, calendrier provisoire, fiche, premier lancement. 188 essais unitaires et 25 essais navigateur. **Pas encore mesurée dans un vrai Grist** : voir [`docs/etat-v1.md`](docs/etat-v1.md).
 
 ## Lire
 
@@ -11,6 +11,7 @@ Un widget de gestion de projet pour [Grist](https://www.getgrist.com), fait pour
 | Cahier des charges | [`docs/cahier-des-charges.md`](docs/cahier-des-charges.md) |
 | Étude de l'existant (widgets Grist, Monday, ClickUp) | [`docs/etude-existant.md`](docs/etude-existant.md) |
 | Intégration à la suite (calendrier à part, tables, liens entre apps) | [`docs/integration-suite.md`](docs/integration-suite.md) |
+| **État de la V1 (à lire en premier)** | [`docs/etat-v1.md`](docs/etat-v1.md) |
 | Maquette V1 (page à ouvrir, captures) | [`maquettes/`](maquettes/LISEZ-MOI.md) |
 
 ## Principes
@@ -19,6 +20,16 @@ Un widget de gestion de projet pour [Grist](https://www.getgrist.com), fait pour
 - **Avec la donnée, pas à la place** : une correspondance de colonnes choisie dans l'interface ; statuts, couleurs et personnes viennent de Grist.
 - **Dans la suite GFS** : un projet est un fichier de l'explorateur ; kit commun, langue et barre de GFS, grisé jamais masqué.
 - **Pas de calcul dans le widget** ; pas de formulaires, d'automatisations ni de tableaux de bord riches (ils sont dans Form+, Automation+, Grist-BI).
+
+## Essayer
+
+Ouvrir `index.html` servi par n'importe quel serveur statique (`python3 -m http.server`) : hors de Grist, l'app tourne en **démonstration** (données fictives en mémoire, rien d'écrit). Dans Grist : ajouter un widget personnalisé, adresse de la page GitHub Pages, accès complet au document.
+
+```
+node --test "test/*.test.mjs"      # essais unitaires (cœur, app, textes, hygiène)
+node test/navigateur/essais.cjs    # essais dans Chromium à 700 × 400 (Playwright)
+node outils/versionner.mjs         # après tout changement de JS ou de CSS (importmap, ?v=, CSP)
+```
 
 ## Déploiement
 

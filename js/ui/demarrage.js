@@ -60,6 +60,12 @@ export function ecranColonnes(app) {
         on: { click: () => (bloque.length ? app.notifier({ cle: `erreur.${bloque[0].raison}`, vars: { colonne: bloque[0].colId ?? '' }, type: 'info' }) : app.ouvrir(app.source, { ...mapping }, null)) } }, t('demarrage.ouvrir'))));
 }
 
+export function ecranAcces() {
+  return ecran(t('acces.titre'), t('acces.sous'),
+    h('p', { class: 'tu-rassurance' }, icone('info', 14), t('acces.etape')),
+    h('div', { class: 'tu-demarrage-actions' }, h('button', { type: 'button', class: 'tu-btn', dataset: { geste: 'recharger' }, on: { click: () => window.location.reload() } }, t('acces.reessayer'))));
+}
+
 export function ecranSansTable(app) {
   const grise = app.lectureSeule;
   return ecran(t('demarrage.titreSansTable'), t('demarrage.sousSansTable'),

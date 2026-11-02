@@ -221,3 +221,23 @@ test('modèle de départ : table de la personne, colonnes reconnues sans ambigu�
   assert.equal(cree.lignes.Titre.length, 3);
   assert.equal(JSON.parse(cree.colonnes[1].widgetOptions).choices.length, 5);
 });
+
+test('attente d\'accès : après le délai, sans réponse de Grist, l\'écran d\'attente remplace « Ouverture… » ; jamais en démonstration ; plus rien une fois le projet ouvert', async () => {
+  const port = { ...creerDemo(), mode: 'grist' };
+  const app = new App(port, { document: 'doc' });
+  assert.equal(app.ecran, 'chargement');
+  assert.equal(app.attenteAcces, false);
+  let emis = 0; app.abonner(() => { emis++; });
+  await new Promise(r => { app.attendreAcces(5); setTimeout(r, 30); });
+  assert.equal(app.attenteAcces, true);
+  assert.ok(emis >= 1);
+
+  const demo = new App(creerDemo(), { document: 'doc' });
+  assert.equal(demo.attendreAcces(1), null);
+  assert.equal(demo.attenteAcces, false);
+
+  const ouvert = new App({ ...creerDemo(), mode: 'grist' }, { document: 'doc' });
+  await ouvert.init();
+  await new Promise(r => { ouvert.attendreAcces(5); setTimeout(r, 30); });
+  assert.equal(ouvert.attenteAcces, false);
+});

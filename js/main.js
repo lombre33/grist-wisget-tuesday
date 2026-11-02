@@ -30,6 +30,7 @@ async function demarrer() {
   const app = new App(port, { document: String(contexte?.document ?? nom ?? 'seul') });
   window.__tuesday = app;
   monter(racine, app);
+  app.attendreAcces();
   await app.init();
 }
 
