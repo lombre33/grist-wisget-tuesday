@@ -264,3 +264,10 @@ svg.i.big { width: 36px; height: 36px; color: var(--text-muted); }
 
 .frame[data-bar="left"] .tl-corner, .frame[data-bar="left"] .tl-label { padding-left: 46px; }
 .today-flag { top: 23px; }
+
+.lnk { border: 0; background: transparent; padding: 2px 4px; margin-left: -4px; border-radius: 6px; color: var(--accent-ink); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.lnk:hover { background: var(--accent-soft); }
+.subs.files li { gap: 8px; }
+.subs.files .muted { font-size: 12px; }
+.ty-slides { color: #c7600a; }
+:root[data-theme="dark"] .ty-slides { color: #f0933e; }

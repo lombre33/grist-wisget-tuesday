@@ -1,18 +1,21 @@
 # Cahier des charges : Tuesday
 
-Gestion de projet pour Grist, dans Grist Factory Suite (GFS). Version 0.1 du 02/11/2026, rédigée avec la maquette V1 (`../maquettes/index.html`). Les raisons de chaque choix viennent de l'étude de l'existant (`etude-existant.md`), des documents de GFS (cahier, guide des apps, contrats) et de la charte Grist Factory (section 1).
+Gestion de projet pour Grist, dans Grist Factory Suite (GFS). Version 0.2 du 02/11/2026, rédigée avec la maquette V1 (`../maquettes/index.html`). **0.2 : retours du porteur intégrés** (Calendrier à part, tables et donnée référençable partout, intégration entre apps dès la V1) ; détail dans `integration-suite.md`. Les raisons de chaque choix viennent de l'étude de l'existant (`etude-existant.md`), des documents de GFS (cahier, guide des apps, contrats) et de la charte Grist Factory (section 1).
 
 **Nom.** « Tuesday » est le nom de travail, celui du dépôt. Les documents de GFS parlent de « Thusday » (faute de frappe probable). Les identifiants proposés ici : app `tuesday`, tables `Tuesday_…`. À confirmer (section 13, question 1).
 
 ## En bref
 
-- **Ce que c'est.** Un widget Grist qui montre les lignes d'une table comme un projet : un **tableau**, un **kanban**, un **calendrier** et une **chronologie**, avec une **fiche** par tâche. Inspiré de monday.com pour la clarté, volontairement bien plus simple.
+- **Priorité n°1 : l'onboarding et la fluidité** (principe 0, section 2).
+- **Ce que c'est.** Un widget Grist qui montre les lignes d'une table comme un projet : un **tableau**, un **kanban** et une **chronologie**, avec une **fiche** par tâche ; le **calendrier** est un widget à part que Tuesday intègre (`integration-suite.md`, 1). Inspiré de monday.com pour la clarté, volontairement bien plus simple.
 - **Ce qu'il fait de différent.** Il travaille **avec** la donnée de la personne : il se **branche sur une table existante** par une correspondance de colonnes choisie dans l'interface, et n'impose aucune structure. Les statuts, les couleurs, les personnes viennent de Grist.
 - **Ce qu'il ne fait pas.** Pas de calcul (les formules restent dans Grist), pas de formulaires (Form+), pas d'automatisations (Automation+), pas de tableaux de bord riches (Grist-BI), pas de documents (Publipostage+).
 - **Dans GFS.** Un **projet** est un fichier de l'explorateur de GFS (une ligne de la table `Tuesday_Projets`). Tuesday suit les contrats de GFS : manifeste `gfs.json`, kit commun en sous-module, langue et barre de GFS, stockage par le courtier, grisé jamais masqué.
 - **Livraison.** Pages statiques sur GitHub Pages, sans étape de construction, sans bibliothèque tierce en V1. Utilisé surtout sur l'instance Grist de la DINUM.
 - **Tests.** Exhaustifs dès la première ligne de code (section 10).
-- **Trois versions.** V1 « Suivre » (quatre vues, fiche, correspondance), V2 « Piloter » (dépendances, charge, synthèse, récurrence), V3 « Connecter » (liens vers les autres apps de la suite, commentaires, temps).
+- **Données.** Navigation libre entre les tables, **deux tables propres au plus**, tout en colonnes lisibles : une tâche se référence de partout dans le document comme une variable de Publipostage+ (section 5.7).
+- **Intégration entre apps dès la V1.** Ouvrir un fichier de Publipostage+ (document, grille, présentation) depuis une carte ; ensuite, insérer une carte dans un document (V2, contrat posé dès maintenant).
+- **Trois versions.** V1 « Suivre » (tableau, kanban, chronologie, calendrier intégré, fiche, correspondance, fichiers liés), V2 « Piloter » (insertion de carte, dépendances, charge, synthèse, récurrence), V3 « Connecter » (commentaires, temps, portefeuille).
 
 ---
 
@@ -42,6 +45,7 @@ Les équipes qui travaillent dans Grist suivent déjà leur activité dans des t
 
 Dans l'ordre : quand deux principes s'opposent, le premier gagne.
 
+0. **Onboarding et fluidité d'abord** (priorité n°1, porteur, 02/11). Un outil qui ne bloque jamais, utilisable pour un projet simple **sans boutons partout** : la première minute est l'étape la plus importante, et chaque choix de ce cahier se juge d'abord à ce critère. Règles qui en découlent : un projet simple n'a besoin d'aucune configuration au-delà de la correspondance ; la barre du haut garde au plus **sept contrôles visibles** à 700 × 400 (projet, quatre vues, recherche, filtre, groupement, ajout) et une fonction avancée se montre quand on en a besoin (menu, fiche), pas avant ; aucune erreur muette ni écran bloquant, toujours une sortie dite en une phrase. L'onboarding détaillé (premier lancement, première correspondance, modèle de départ, aide) est conçu dans un **fil dédié** (« Concevoir l'onboarding de Tuesday ») ; ce cahier en fixe seulement le critère.
 1. **UX d'abord, simple et efficace.** Chaque écran a une action principale évidente. Quatre vues au premier jour, jamais quinze. Une option nouvelle doit justifier la place qu'elle prend.
 2. **On fait AVEC la donnée, pas à la place d'elle.** Aucune structure imposée. Une table existante, une correspondance de colonnes, et c'est parti. Les couleurs des statuts de Grist sont **celles de Grist**.
 3. **Grist décide.** Les droits sont ceux de Grist (une personne en lecture seule ne modifie rien), les filtres et le tri de la vue Grist sont respectés, la fiche native reste à un clic.
@@ -87,12 +91,11 @@ Chacun sert de **test d'acceptation de l'interface** (section 10.5).
 
 ```
 Document Grist
- ├─ Table des tâches (la leur, existante)  ← « source »
- └─ Tuesday_Projets  (une ligne par projet, créée avec l'accord de la personne)
-        │
-        └─ Projet = source + correspondance de colonnes + réglages des vues
-                          │
-                          └─ Vues : Tableau · Kanban · Calendrier · Chronologie
+ ├─ Table des tâches (la leur, existante)   ← « source », jamais copiée
+ ├─ Tuesday_Projets  un projet par ligne : source + correspondance + réglages des vues
+ └─ Tuesday_Liens    liens d'une tâche vers des fichiers d'autres apps (facultative)
+
+Un projet montre sa source par des vues : Tableau · Kanban · Chronologie · Calendrier (intégré)
 ```
 
 | Objet | Définition | Où il vit |
@@ -183,9 +186,9 @@ La source est la table de la **section** du widget (le choix naturel : « Sélec
 
 **Annuler/Rétablir** garde l'inverse de chaque action (ancienne valeur par colonne), dans l'ordre, et **n'écrase jamais** une valeur qu'une autre personne a changée depuis : le coin d'état le dit (même principe que `ActionHistory` de Publipostage+). Un lot d'écritures (un glisser qui change deux colonnes) est un pas.
 
-### 5.5 La table `Tuesday_Projets` et le modèle de départ
+### 5.5 Les tables `Tuesday_Projets` et `Tuesday_Liens`, et le modèle de départ
 
-Une table, créée avec l'accord de la personne. Proposition de colonnes (additif, versionné par `Schema`) :
+**Deux tables au plus**, créées avec l'accord de la personne : `Tuesday_Projets` (ci-dessous) et `Tuesday_Liens` (liens d'une tâche vers des fichiers d'autres apps, `integration-suite.md`, 3.1). Proposition de colonnes (additif, versionné par `Schema`) :
 
 | Colonne | Contenu |
 |---|---|
@@ -205,6 +208,14 @@ Les identifiants de colonnes sont des colonnes de texte et non un seul JSON : on
 ### 5.6 Cas limites à traiter (chacun a ses tests)
 
 Table vide ; ligne sans statut (rangée dans une colonne « Sans statut », jamais perdue) ; statut absent de la liste des choix (affiché tel quel, grisé) ; référence cassée ; dates invalides, fin avant début ; dates avec heure (la date locale suffit) ; milliers de lignes (affichage fenêtré, section 9.4) ; titre très long (tronqué par « … ») ; colonne reliée supprimée ou renommée ; document en lecture seule ; Choice sans couleur ; plusieurs responsables ; sous-tâche dont le parent est filtré.
+
+### 5.7 Naviguer entre les tables, référencer la donnée partout
+
+Retour du porteur (02/11) : comme dans GFS et Publipostage+, **on navigue entre les tables sans souci**, et la donnée se récupère et se référence **de partout dans le document, aussi efficacement que les variables de Publipostage+**. Trois règles (détail : `integration-suite.md`, 2) :
+
+1. **Colonnes lisibles, rien de caché.** Tout ce que Tuesday sait d'une tâche est une colonne de Grist ; une variable de Publipostage+, une formule, un widget lié ou Automation+ la lisent sans passer par Tuesday.
+2. **Deux tables propres au plus**, à colonnes stables et versionnées (`Schema`), documentées dans `docs/donnees.md` (à écrire avec le modèle).
+3. **Navigation** : changer de projet sans quitter le widget ; un clic sur une valeur Référence ouvre la ligne liée avec son fil d'Ariane ; « Ouvrir dans Grist » place le curseur sur la ligne.
 
 ---
 
@@ -234,7 +245,9 @@ Toutes les vues partagent la **barre du haut** : sélecteur de projet, onglets d
 - Colonnes repliables ; nombre de cartes dans l'en-tête. **Pas de limites de travail en cours, pas de règles d'entrée** : c'est le territoire d'Automation+.
 - Option V1 : **couloirs** (regroupement par ligne, par responsable ou groupe), repliés par défaut.
 
-### 6.3 Calendrier
+### 6.3 Calendrier (widget à part, intégré)
+
+**Décision du porteur (02/11)** : le calendrier est un **widget à part**, qui marche seul, et que Tuesday intègre pour son usage. Voie proposée : un module du kit monté par les deux (`integration-suite.md`, 1). En V1 de Tuesday, l'onglet existe, **grisé avec sa raison** tant que le module n'est pas là. La maquette montre l'écran cible.
 
 **But** : voir ce qui tombe quand.
 
@@ -260,10 +273,12 @@ Toutes les vues partagent la **barre du haut** : sélecteur de projet, onglets d
 
 - Panneau à droite (voir question 5, section 13) : titre modifiable, statut, responsable, dates, priorité, étiquettes, avancement, description.
 - **Sous-tâches** : liste à cases, ajout rapide.
-- **Autres champs** : toutes les colonnes de la table non reliées, par leur type.
+- **Autres champs** : toutes les colonnes de la table non reliées, par leur type ; une valeur Référence est cliquable (ligne liée et fil d'Ariane).
+- **Fichiers liés** (V1) : documents, grilles, présentations d'autres apps de GFS ; « Lier un fichier… » (action `choisir`), « Ouvrir » (action `ouvrir`).
 - « **Ouvrir dans Grist** » : place le curseur de Grist sur la ligne, pour la fiche native et les widgets liés.
 - Menu « … » : dupliquer, supprimer (confirmation).
-- V3 : liens vers des fichiers GFS, commentaires, temps passé.
+- Menu « … » : « Insérer la carte dans un document… » (V2, action `insérer`).
+- V3 : commentaires, temps passé.
 
 ### 6.6 Correspondance des colonnes (la première fenêtre)
 
@@ -363,12 +378,12 @@ Proposition, au format du cahier de GFS (5.1) ; les chiffres et la forme exacte 
   },
   "extensions": [],
   "dependances": "package.json",
-  "actions": { "ouvrir": ["projet"], "choisir": ["projet"], "inserer": [] }
+  "actions": { "ouvrir": ["projet"], "choisir": ["projet"], "inserer": { "produit": [], "recoit": [] } }
 }
 ```
 
 - **Accès complet** : Tuesday doit lire la table de la personne, qu'on ne connaît pas à l'avance. `lit` et `ecrit` à `"*"`, comme Publipostage+, parce que la source est choisie à l'exécution. Mitigation : **rien ne s'écrit hors des colonnes reliées**, et l'étape de correspondance affiche exactement ce que Tuesday pourra modifier (6.6). Voir le risque R2.
-- **Aucune extension en V1** : pas de bibliothèque lourde.
+- **Aucune extension en V1** : pas de bibliothèque lourde. Un second jeu de tables (`Tuesday_Liens`) s'ajoute à `fichiers` ou `tables` selon ce que GFS décide ; `inserer.produit` passera à `["carte"]` en V2.
 - **Aucune clé de réglage de la vue en V1** : la définition d'un projet vit dans une table (guide des apps, 1.1 règle 2). Une clé `tuesday_projet` (identifiant du projet de la vue) pourra s'ajouter pour que « une vue qui porte ton réglage s'ouvre sur ton app ».
 
 ### 8.3 Ouverture et arrivée
@@ -377,12 +392,14 @@ Proposition, au format du cahier de GFS (5.1) ; les chiffres et la forme exacte 
 2. Sans fichier désigné : le dernier projet de la personne (stockage), sinon, la liste des projets du document, sinon l'écran de démarrage.
 3. Seule (hors GFS) : mêmes ordres, la liste des projets étant le sélecteur de projet de la barre du haut.
 
-### 8.4 Interopérabilité avec la suite (V3, par la donnée et les contrats)
+### 8.4 Interopérabilité avec la suite (prévue dès la V1, par la donnée et les contrats)
 
-- **Publipostage+** : lier un document (compte rendu, note) à une tâche par l'action `choisir`. Tuesday garde `{ app, id, nom, type }`, jamais le code de l'autre app.
-- **Form+** : un formulaire qui alimente la table source. Tuesday n'en sait rien, il voit les lignes arriver.
-- **Automation+** : réagit aux changements de statut de la table source. Tuesday ne le sait pas non plus. Aucun couplage.
-- **Grist-BI / Dashboard** : lit la même table. Tuesday peut fournir un **rendu portable** (`insérer`) d'une synthèse, plus tard.
+Détail et contrats proposés : `integration-suite.md`, 3.
+
+- **Ouvrir un fichier depuis une carte** (V1) : Publipostage+ (document, grille, **présentation**, les diapositives étant son extension) par `choisir` puis `ouvrir` ; liens gardés dans `Tuesday_Liens`. Slides+ n'est pas une app de GFS : ses diapositives vivent dans Publipostage+.
+- **Insérer une carte dans un document** (V2, contrat posé maintenant) : rendu portable (`inserer`, contrats 5.4) avec la source de la tâche ; la valeur simple d'une tâche s'insère aussi comme une **variable**, parce que la donnée est en colonnes lisibles.
+- **Form+** : un formulaire qui alimente la table source ; Tuesday voit les lignes arriver. **Automation+** : réagit aux changements de statut de la table, sans couplage. **Grist-BI / Dashboard** : lit la même table.
+- **Calendrier** : widget à part, intégré (6.3).
 
 ### 8.5 Demandes à GFS à poser pendant le développement
 
@@ -393,6 +410,9 @@ Proposition, au format du cahier de GFS (5.1) ; les chiffres et la forme exacte 
 3. Définir comment les personnes d'un document sont connues (pour « Mes tâches »), sans table-sonde si possible.
 4. Couleur du type « Projet » dans l'explorateur (neutre pour l'instant).
 5. Écarter la barre de GFS quand elle recouvre un tableau (zone à gauche au milieu à 700 × 400).
+6. Calendrier : voie A (module du kit) ou B (app ouverte par GFS) ; contrat du module.
+7. Insertion d'une carte : forme de `inserer.produit`, déroulement (étape 7 de GFS), accord de Publipostage+ pour accepter `carte`.
+8. Liens vers des fichiers : où ranger `Tuesday_Liens` dans `fichiers`/`tables`, et que faire d'un fichier renommé ou disparu.
 
 ---
 
@@ -502,10 +522,10 @@ Les sept scénarios S1 à S7 (section 3.2) sont écrits comme essais de navigate
 
 | | **V1 « Suivre »** | **V2 « Piloter »** | **V3 « Connecter »** |
 |---|---|---|---|
-| Vues | Tableau, Kanban, Calendrier, Chronologie, fiche | Charge de travail, Synthèse | Mon travail, Portefeuille |
-| Données | Correspondance, modèle de départ, sous-tâches, ordre manuel | Dépendances, jalons enrichis, plusieurs responsables complets, récurrence | Commentaires, temps passé, liens vers fichiers GFS |
-| Gestes | Glisser, édition sur place, ajout rapide, annuler/rétablir, recherche, filtres, regroupement | Sélection multiple et actions groupées, copier-coller depuis un tableur, vues enregistrées | Actions `choisir` et `insérer` |
-| GFS | Fichier « Projet », langue, barre, stockage, lecture seule, ouvrir/fermer | Clé de réglage de la vue, dossiers d'équipe | Responsable d'espace, rendu portable |
+| Vues | Tableau, Kanban, Chronologie, fiche ; **Calendrier par intégration** | Charge de travail, Synthèse | Mon travail, Portefeuille |
+| Données | Correspondance, modèle de départ, sous-tâches, ordre manuel, **navigation entre tables**, **fichiers liés** (`Tuesday_Liens`) | Dépendances, jalons enrichis, plusieurs responsables complets, récurrence | Commentaires, temps passé |
+| Gestes | Glisser, édition sur place, ajout rapide, annuler/rétablir, recherche, filtres, regroupement, suivre une Référence | Sélection multiple et actions groupées, copier-coller depuis un tableur, vues enregistrées | — |
+| GFS | Fichier « Projet », langue, barre, stockage, lecture seule, ouvrir/fermer, `choisir` et `ouvrir` vers Publipostage+ | **Insertion d'une carte** (`inserer`), clé de réglage de la vue, dossiers d'équipe | Responsable d'espace |
 | Qualité | Tests exhaustifs du cœur, hygiène, contrat, essais 700 × 400, labo GFS | Budgets de performance en continu | Essais d'interopérabilité |
 
 **Hors périmètre**, sauf décision du porteur : tableaux blancs, chat, assistant d'IA, objectifs, formulaires, automatisations, graphiques riches, documents, notifications par courriel.
@@ -531,7 +551,7 @@ Les sept scénarios S1 à S7 (section 3.2) sont écrits comme essais de navigate
 
 ## 13. Décisions à valider
 
-Une seule question à fort enjeu est posée à Antoine en carte de décision (la 2). Pour les autres, **un défaut a été pris**, écrit ici ; rien ne se code avant son accord (règle de GFS).
+Antoine a répondu à la question 2 en parlant de « une ou deux tables pour le widget, la donnée référençable de partout » : tables existantes d'abord, deux tables propres au plus (5.7). Pour les autres, **un défaut a été pris**, écrit ici ; rien ne se code avant son accord (règle de GFS).
 
 | N° | Question | Défaut pris | Effet si l'autre réponse |
 |---|---|---|---|
@@ -545,6 +565,7 @@ Une seule question à fort enjeu est posée à Antoine en carte de décision (la
 | 8 | **Commentaires et mises à jour** (V3) : table `Tuesday_Activite` ou rien | Reporté à la V3 | — |
 | 9 | **Récurrence** (V2) : dans Tuesday ou dans Automation+ ? | Automation+ crée la ligne suivante ; Tuesday l'affiche | Dans Tuesday : un calcul de plus dans le widget |
 | 10 | **Plusieurs responsables** : dès la V1 ? | Oui, si la colonne est une Liste de références (affichage et édition), sinon un seul | Un seul en V1 : plus simple, mais c'est la demande n° 1 de la communauté |
+| 11 | **Calendrier à part** : voie A (module du kit monté par les deux) ou B (app ouverte par GFS) ? | A : un seul code, la vue reste dans la barre et le filtre de Tuesday | B : aucun code partagé, mais une app à la fois et une vue détachée |
 
 ---
 

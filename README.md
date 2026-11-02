@@ -10,6 +10,7 @@ Un widget de gestion de projet pour [Grist](https://www.getgrist.com), fait pour
 |---|---|
 | Cahier des charges | [`docs/cahier-des-charges.md`](docs/cahier-des-charges.md) |
 | Étude de l'existant (widgets Grist, Monday, ClickUp) | [`docs/etude-existant.md`](docs/etude-existant.md) |
+| Intégration à la suite (calendrier à part, tables, liens entre apps) | [`docs/integration-suite.md`](docs/integration-suite.md) |
 | Maquette V1 (page à ouvrir, captures) | [`maquettes/`](maquettes/LISEZ-MOI.md) |
 
 ## Principes

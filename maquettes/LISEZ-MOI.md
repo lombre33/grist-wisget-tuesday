@@ -25,6 +25,7 @@ Ce qui bouge dans la maquette : glisser une carte du kanban vers une autre colon
 | Chronologie | ![](captures/chronologie-light.png) | ![](captures/chronologie-dark.png) |
 | Fiche d'une tâche | ![](captures/fiche-light.png) | ![](captures/fiche-dark.png) |
 | Correspondance des colonnes | ![](captures/correspondance-light.png) | ![](captures/correspondance-dark.png) |
+| Fiche : fichiers liés (Publipostage+) | ![](captures/fiche-fichiers-light.png) | ![](captures/fiche-fichiers-dark.png) |
 | Démarrage, sans projet | ![](captures/demarrage-light.png) | ![](captures/demarrage-dark.png) |
 | Explorateur de GFS | ![](captures/explorateur-light.png) | ![](captures/explorateur-dark.png) |
 
@@ -45,6 +46,8 @@ Choix faits (à valider, cahier section 13) :
 - **Fiche à droite**, non modale, pour garder la vue sous les yeux (alternative : fenêtre de la base commune).
 - **Icônes au trait**, police du système, un seul bleu, rayons de 7 px : la charte Grist Factory.
 
-Hors maquette, volontairement : la vue Semaine du calendrier, les dépendances, la charge de travail, la synthèse (V2), les liens vers les autres apps (V3), les menus d'édition d'une date, la version anglaise.
+Ajouts du 02/11 (retours du porteur) : la fiche montre les **fichiers liés** (lier, ouvrir) et le menu « … » l'**insertion de la carte dans un document** (grisée, V2) ; une valeur de Référence est cliquable ; le calendrier est marqué **widget à part**, intégré (`../docs/integration-suite.md`).
+
+Hors maquette, volontairement : la vue Semaine du calendrier, les dépendances, la charge de travail, la synthèse (V2), les menus d'édition d'une date, la version anglaise.
 
 Écarts assumés avec le code final : la maquette utilise des styles en ligne (CSP assouplie sur `style-src`), alors que l'app aura la CSP stricte du kit et posera ses positions par le CSSOM ; les prénoms n'apparaissent pas (initiales et noms d'exemple), conformément à la règle de GFS.

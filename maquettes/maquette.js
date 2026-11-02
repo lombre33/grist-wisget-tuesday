@@ -57,6 +57,7 @@ const ICONS = {
   open: '<path d="M14 4h6v6M20 4l-9 9M10 6H5v13h13v-5"/>', trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
   more: '<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
   undo: '<path d="M9 7L4 12l5 5"/><path d="M4 12h10a6 6 0 010 8"/>', check: '<path d="M5 12l5 5 9-10"/>', lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+  slides: '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M12 17v4M8 21h8"/>',
   doc: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>', grid: '<rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M4 10h16M4 14.5h16M10 5v14"/>',
   form: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/>', bolt: '<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>', project: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h5M8 16h8"/>',
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>', pin: '<path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7"/>',
@@ -168,7 +169,7 @@ function viewCalendrier(list) {
       cells.push(`<div class="day ${out ? 'out' : ''} ${s === TODAY ? 'today' : ''}" data-date="${s}"><div class="dn"><b>${num}</b>${ev.length > 2 ? `<span class="more">+${ev.length - 2}</span>` : ''}</div>${ev.slice(0, 2).map((t) => `<button class="ev st-${t.s}" data-act="open" data-v="${t.id}" data-id="${t.id}" draggable="${!S.ro}" title="${esc(t.t)}"><span class="ellipsis" style="display:block">${esc(t.t)}</span></button>`).join('')}</div>`);
     }
   }
-  return `<div class="cal-head"><button class="btn icon" data-act="month" data-v="-1" aria-label="Mois précédent">${ic('left')}</button><h2>${label[0].toUpperCase() + label.slice(1)}</h2><button class="btn icon" data-act="month" data-v="1" aria-label="Mois suivant">${ic('right')}</button><button class="btn line" data-act="today">Aujourd'hui</button><span class="spacer"></span><div class="seg"><button aria-pressed="true">Mois</button><button aria-pressed="false" class="is-off" title="Semaine : même vue en V1, détail dans le cahier">Semaine</button></div><button class="btn line" data-act="menu" data-v="sansdate" aria-haspopup="menu">Sans date <span class="badge">${nodate}</span></button></div><div class="zone" style="padding-top:0"><div class="cal">${cells.join('')}</div></div>`;
+  return `<div class="cal-head"><button class="btn icon" data-act="month" data-v="-1" aria-label="Mois précédent">${ic('left')}</button><h2>${label[0].toUpperCase() + label.slice(1)}</h2><button class="btn icon" data-act="month" data-v="1" aria-label="Mois suivant">${ic('right')}</button><button class="btn line" data-act="today">Aujourd'hui</button><span class="tag" title="Le calendrier est un widget à part que Tuesday intègre">Widget Calendrier</span><span class="spacer"></span><div class="seg"><button aria-pressed="true">Mois</button><button aria-pressed="false" class="is-off" title="Semaine : même vue en V1, détail dans le cahier">Semaine</button></div><button class="btn line" data-act="menu" data-v="sansdate" aria-haspopup="menu">Sans date <span class="badge">${nodate}</span></button></div><div class="zone" style="padding-top:0"><div class="cal">${cells.join('')}</div></div>`;
 }
 const ZOOM = { semaine: 20, mois: 8, trimestre: 4 };
 function viewChrono(list) {
@@ -214,7 +215,7 @@ function drawer() {
   return `<aside class="drawer" aria-label="Fiche de la tâche"><div class="dr-head"><input class="ttl" value="${esc(t.t)}" aria-label="Titre" ${ro}><button class="btn icon" data-act="menu" data-v="plus" aria-haspopup="menu" aria-label="Plus d'actions">${ic('more')}</button><button class="btn icon" data-act="closedrawer" aria-label="Fermer la fiche">${ic('close')}</button></div>
   <div class="dr-body">
     <div class="fld"><label>Statut</label><div class="v">${pill(t.s, S.ro ? 'span' : 'button', S.ro ? '' : `data-act="menu" data-v="statut:${t.id}"`)}</div></div>
-    <div class="fld"><label>Responsable</label><div class="v">${who(t.w)}</div></div>
+    <div class="fld"><label>Responsable</label><div class="v"><button class="lnk" data-act="noop" title="Ouvre la ligne liée (table Équipe)">${who(t.w)}</button></div></div>
     <div class="fld"><label>Début</label><div class="v">${S.noStart ? '<span class="badge-lock">' + ic('lock') + 'Colonne non reliée</span>' : fdate(t.b)}</div></div>
     <div class="fld"><label>Échéance</label><div class="v">${due(t)}</div></div>
     <div class="fld"><label>Priorité</label><div class="v">${prio(t.p)}</div></div>
@@ -224,6 +225,11 @@ function drawer() {
     <h4>Sous-tâches (${subs.length})</h4>
     <ul class="subs">${subs.map((x) => `<li><input type="checkbox" ${x.s === 'done' ? 'checked' : ''} ${ro} aria-label="${esc(x.t)}"><span class="${x.s === 'done' ? 'done' : ''} ellipsis">${esc(x.t)}</span></li>`).join('') || '<li class="muted">Aucune sous-tâche</li>'}
     <li><button class="tbl-add" style="padding-left:0;border:0;background:transparent" ${ro}>${ic('plus')}Ajouter une sous-tâche</button></li></ul>
+    <h4>Fichiers liés (2)</h4>
+    <ul class="subs files">
+      <li>${ic('doc', 'ty-doc')}<span class="ellipsis" style="flex:1">Compte rendu de l'atelier<span class="muted"> · Publipostage+</span></span><button class="btn line" ${S.ro ? '' : ''}>Ouvrir</button></li>
+      <li>${ic('slides', 'ty-slides')}<span class="ellipsis" style="flex:1">Présentation de cadrage<span class="muted"> · Publipostage+</span></span><button class="btn line">Ouvrir</button></li>
+      <li><button class="tbl-add" style="padding-left:0;border:0;background:transparent" ${ro} title="Ouvre l'explorateur de GFS pour choisir un fichier">${ic('plus')}Lier un fichier…</button></li></ul>
     <h4>Autres champs de la table</h4>
     ${EXTRA.map(([k, v]) => `<div class="fld"><label>${esc(k)}</label><div class="v">${esc(v)}</div></div>`).join('')}
   </div>
@@ -273,7 +279,7 @@ function menuHtml() {
   if (m === 'filtre') { body = `<h5>Filtres rapides</h5>${it('Mes tâches', 'filter', 'mine', S.filters.mine)}${it('En retard', 'filter', 'late', S.filters.late)}<hr><h5>Ajoutés à ceux de la vue Grist, jamais à leur place</h5>`; pos = 'top:44px;right:90px'; }
   if (m === 'groupe') { body = `<h5>Grouper par</h5>${it('Phase', 'group', 'g', S.groupBy === 'g')}${it('Statut', 'group', 's', S.groupBy === 's')}${it('Responsable', 'group', 'w', S.groupBy === 'w')}`; pos = 'top:44px;right:50px'; }
   if (m === 'sansdate') { body = `<h5>À planifier : glissez sur un jour</h5>${TASKS.filter((t) => !t.e && !t.par).map((t) => it(esc(t.t), 'open', t.id)).join('')}`; pos = 'top:88px;right:12px'; }
-  if (m === 'plus') { body = `${it('Dupliquer', 'noop', '', null, S.ro ? 'disabled' : '')}${it('Ouvrir dans Grist', 'noop', '')}<hr>${it('Supprimer…', 'noop', '', null, S.ro ? 'disabled' : '')}`; pos = 'top:40px;right:40px'; }
+  if (m === 'plus') { body = `${it('Dupliquer', 'noop', '', null, S.ro ? 'disabled' : '')}${it('Ouvrir dans Grist', 'noop', '')}${it('Insérer la carte dans un document… <span class="tag">V2</span>', 'noop', '', null, 'disabled')}<hr>${it('Supprimer…', 'noop', '', null, S.ro ? 'disabled' : '')}`; pos = 'top:40px;right:40px'; }
   return `<div class="menu" role="menu" style="${pos}">${body}</div>`;
 }
 

@@ -22,6 +22,11 @@ const shots = [
       await p.locator('#frame').screenshot({ path: path.join(out, `${name}-${theme}.png`) });
     }
   }
+  for (const theme of ['light', 'dark']) {
+    await p.goto(`http://localhost:${port}/maquettes/index.html?screen=fiche&theme=${theme}&size=700x400&bar=left`);
+    await p.evaluate(() => { const b = document.querySelector('.dr-body'); b.scrollTop = 330; });
+    await p.locator('#frame').screenshot({ path: path.join(out, `fiche-fichiers-${theme}.png`) });
+  }
   const q = new URLSearchParams({ screen: 'tableau', theme: 'light', size: '1000x640', bar: 'left' });
   for (const s of ['tableau', 'kanban', 'calendrier', 'chronologie']) {
     q.set('screen', s); await p.goto(`http://localhost:${port}/maquettes/index.html?${q}`);
