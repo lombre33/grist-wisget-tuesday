@@ -16,7 +16,12 @@ Contrainte de GFS : *une app n'importe jamais le code d'une autre app* ; ce qui 
 **Conséquences pour la V1 de Tuesday.**
 
 - Tuesday V1 contient en natif **Tableau, Kanban, Chronologie** ; la vue **Calendrier arrive par l'intégration** dès que le module existe. Dans la barre, l'onglet est déjà là : grisé avec « Le Calendrier arrive avec le widget Calendrier » tant qu'il manque (grisé, jamais masqué).
-- **Contrat du module** (à écrire avec le projet Calendrier) : entrée = lignes normalisées `{ id, titre, debut, fin, statut, couleur, responsables }` et la correspondance de colonnes ; sortie = événements `ouvrir(id)`, `deplacer(id, debut, fin)`, `ajouter(date)`. Le module ne parle jamais à Grist : l'app hôte écrit.
+- **Contrat du module** (validé avec le fil Calendrier+ le 02/11, plan dans le dépôt `grist-widget-calendar-plus`, `docs/plan.md`, section 3) :
+  - **Entrée** : lignes normalisées `{ id, titre, debut, fin, statut, couleur, responsables, avecHeure, modifiable }` et la correspondance de colonnes. `modifiable` faux grise le glisser, avec sa raison (lecture seule, colonne non écrivable).
+  - **Dates** : `debut` et `fin` sont des **jours civils en texte** `AAAA-MM-JJ` (ou `AAAA-MM-JJTHH:mm` avec heure), **sans fuseau** : l'hôte convertit les secondes de Grist. `fin` est **inclusive** pour un jour sans heure.
+  - **Sortie** : événements `ouvrir(id)`, `ajouter(date)` et `deplacer(id, debut, fin)`, qui **rend une promesse** ; si l'hôte la refuse, l'événement revient à sa place.
+  - Le module ne parle jamais à Grist : l'hôte écrit. **Annuler/Rétablir** reste à l'hôte.
+  - Le dossier `calendrier/` n'importe rien hors de `kit/` : il se déplace tel quel dans le kit (voie A) ou reste dans l'app (voie B) ; le choix de GFS ne change pas le code.
 - Le Calendrier seul a sa propre correspondance de colonnes (la même fenêtre, mêmes rôles : titre, début, fin, couleur, personne), et lit la table de sa section.
 - **Demande à GFS** : choisir A ou B (question 11 du cahier).
 
