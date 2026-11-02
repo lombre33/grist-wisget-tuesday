@@ -17,7 +17,7 @@ Ce document dit **ce qui existe, ce qui est mesuré, ce qui ne l'est pas, et ce 
 ## 2. Ce qui est mesuré, et comment
 
 - **188 essais unitaires** (`node --test "test/*.test.mjs"`) : dates civiles, correspondance de colonnes, écritures, arbre de tâches, filtres, rangs, historique, chronologie, réglages, textes fr/en, hygiène du code (tailles, jetons, CSP, `.nojekyll`, `?v=`).
-- **25 essais dans Chromium** (`node test/navigateur/essais.cjs`) à 700 × 400, clair et sombre, français et anglais, souris et clavier, sans violation de la politique de sécurité. Les captures sortent dans `test/navigateur/captures/`.
+- **27 essais dans Chromium** (`node test/navigateur/essais.cjs`) à 700 × 400, clair et sombre, français et anglais, souris et clavier, sans violation de la politique de sécurité. Les captures sortent dans `test/navigateur/captures/`.
 - Ces essais tournent **contre notre démonstration en mémoire** (`js/data/demo.js`), pas contre Grist.
 
 ## 3. Ce qui n'est PAS mesuré (à faire dans le labo de GFS, un vrai Grist)
