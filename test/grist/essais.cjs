@@ -42,17 +42,22 @@ const taches = {
     const cadre = await ouvrir(labo, doc);
     return { doc, cadre };
   };
-  const confirmer = async cadre => { await cadre.waitForSelector('[data-geste="ouvrir"]'); await cadre.click('[data-geste="ouvrir"]'); await cadre.waitForSelector('.tu-tableau'); };
+  // La mise en place s'ouvre au lancement par-dessus l'outil (onboarding v2) : on la valide, la table reconnue est celle du document.
+  const confirmer = async cadre => { await cadre.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible' }); await cadre.click('[data-geste="mep-principal"]'); await cadre.waitForSelector('#tu-mep .tu-mep-box', { state: 'hidden' }); await cadre.waitForSelector('.tu-tableau'); };
 
-  await essai('premier lancement dans Grist : confirmation déjà remplie, Ouvrir montre les lignes, rien n\'est écrit', async () => {
+  await essai('premier lancement dans Grist : l\'outil lit la table reconnue derrière la mise en place, valider n\'écrit rien, aucune table créée', async () => {
     const { doc, cadre } = await ouvrirTuesday();
-    await cadre.waitForSelector('select[data-role="titre"]');
-    assert.equal(await cadre.inputValue('select[data-role="titre"]'), 'Titre');
-    assert.equal(await cadre.inputValue('select[data-role="statut"]'), 'Statut');
+    await cadre.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible' });
+    await cadre.waitForSelector('.tu-ligne[data-id]');
+    assert.equal(await cadre.locator('.tu-ligne[data-id]').count(), 4, 'les tâches se lisent déjà derrière la mise en place');
+    assert.equal(await cadre.evaluate(() => typeof window.__tuesday), 'undefined', 'aucun point d\'accès global dans l\'app livrée');
     await confirmer(cadre);
     assert.equal(await cadre.locator('.tu-ligne[data-id]').count(), 4);
-    assert.equal(await cadre.evaluate(() => typeof window.__tuesday), 'undefined', 'aucun point d\'accès global dans l\'app livrée');
     assert.ok(!(await doc.api.tables(doc.id)).includes('Tuesday_Projets'), 'aucune table créée sans accord');
+    // dates lues comme des jours civils (mesuré : onRecords rend des objets Date, fetchTable des secondes)
+    await cadre.locator('.tu-ligne[data-id="3"]').click();
+    await cadre.waitForSelector('.tu-fiche');
+    assert.match(await cadre.textContent('.tu-fiche [data-champ="debut"]'), /9 nov/);
     await shot(cadre, 'tableau');
   });
 
@@ -149,7 +154,8 @@ const taches = {
 
   await essai('accès non accordé : l\'écran d\'attente dit quoi faire', async () => {
     const { cadre } = await ouvrirTuesday({ acces: 'none' });
-    await cadre.waitForSelector('[data-geste="recharger"]', { timeout: 15000 });
+    await cadre.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible', timeout: 15000 });
+    assert.match(await cadre.textContent('#tu-mep .tu-mep-box'), /accès/i);
     assert.deepEqual(labo.violations.filter(v => /Access not granted/.test(v)), [], 'le refus d\'accès est rattrapé, pas une exception de page');
     assert.ok(labo.violations.every(v => /Access not granted/.test(v)) === false || labo.violations.length === 0, 'le refus d\'accès est rattrapé, pas une exception de page');
   });
