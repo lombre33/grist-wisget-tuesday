@@ -431,6 +431,29 @@ async function essai(nom, fn) {
     await ctx.close();
   });
 
+  await essai('calendrier : la puce est un élément glissable qui n\'est pas un bouton, et s\'ouvre au clavier (Entrée)', async () => {
+    const p = await page();
+    await p.click('[data-vue="calendrier"]');
+    await p.waitForSelector('.tu-cal-puce');
+    assert.equal(await p.locator('button.tu-cal-puce').count(), 0);
+    assert.equal(await p.locator('.tu-cal-puce').first().getAttribute('role'), 'button');
+    assert.equal(await p.locator('.tu-cal-puce').first().getAttribute('tabindex'), '0');
+    await p.locator('.tu-cal-puce').first().focus();
+    await p.keyboard.press('Enter');
+    await p.waitForSelector('.tu-fiche');
+    await p.context().close();
+  });
+
+  await essai('fichiers liés : seule, la fiche montre « Aucun fichier lié » et « Lier un fichier » grisé avec sa raison', async () => {
+    const p = await page();
+    await p.locator('.tu-ligne[data-id="9"]').click();
+    await p.waitForSelector('.tu-fiche');
+    assert.match(await p.textContent('.tu-fiche-section:has([data-geste="lier"])'), /Aucun fichier lié/);
+    assert.equal(await p.getAttribute('[data-geste="lier"]', 'aria-disabled'), 'true');
+    assert.match(await p.getAttribute('[data-geste="lier"]', 'title'), /Grist Factory Suite/);
+    await p.context().close();
+  });
+
   await essai('thème sombre et anglais : mêmes écrans, textes traduits', async () => {
     const p = await page({ sombre: true, locale: 'en-GB', ouvrir: false });
     assert.match(await p.textContent('#tu-mep h3'), /Where should your tasks go\?/);

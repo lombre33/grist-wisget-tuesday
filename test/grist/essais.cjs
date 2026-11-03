@@ -152,6 +152,15 @@ const taches = {
     assert.equal(await ouvert.locator('.tu-ligne[data-id]').count(), 4, 'rouvert directement sur le projet enregistré');
   });
 
+  await essai('fichiers liés : dans Grist seul (hors GFS), « Lier un fichier » est grisé avec sa raison, jamais masqué', async () => {
+    const { cadre } = await ouvrirTuesday();
+    await confirmer(cadre);
+    await cadre.locator('.tu-ligne[data-id="2"]').click();
+    await cadre.waitForSelector('.tu-fiche');
+    assert.equal(await cadre.getAttribute('[data-geste="lier"]', 'aria-disabled'), 'true');
+    assert.match(await cadre.getAttribute('[data-geste="lier"]', 'title'), /Grist Factory Suite/);
+  });
+
   await essai('accès non accordé : l\'écran d\'attente dit quoi faire', async () => {
     const { cadre } = await ouvrirTuesday({ acces: 'none' });
     await cadre.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible', timeout: 15000 });

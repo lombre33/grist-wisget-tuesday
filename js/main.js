@@ -31,6 +31,9 @@ async function demarrer() {
   monter(racine, app);
   app.attendreAcces();
   await app.demarrer();
+  // GFS demande d'ouvrir un projet de Tuesday (lié par une autre app, ou choisi dans l'explorateur) : on ouvre le projet désigné, rien d'autre.
+  GfsLink.onOpen(requete => app.liens.ouvrirDemande(requete));
+  if (GfsLink.opening()) await app.liens.ouvrirDemande(GfsLink.opening());
 }
 
 demarrer();

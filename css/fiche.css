@@ -37,3 +37,8 @@
 .tu-bandeau { flex: none; display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--accent-soft); border-bottom: 1px solid var(--accent-soft-border); color: var(--accent-ink); flex-wrap: wrap; }
 .tu-bandeau-texte { flex: 1; min-width: 160px; }
 .tu-bandeau .tu-btn { height: 26px; }
+.tu-liens { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.tu-lien { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.tu-lien-nom { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tu-lien.est-introuvable .tu-lien-nom { color: var(--text-muted); text-decoration: line-through; }
+.tu-fiche-section .tu-btn[aria-disabled="true"] { cursor: not-allowed; }

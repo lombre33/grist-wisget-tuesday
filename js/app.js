@@ -1,5 +1,8 @@
 // L'état de Tuesday et ses gestes : projet ouvert, tâches calculées, écritures optimistes avec retour arrière, historique. Aucun DOM ici : les vues écoutent `abonner` et appellent les méthodes.
+import { GfsLink } from '../kit/js/gfs-link.js';
 import { aujourdhui } from './core/dates.js';
+import { TABLE_LIENS } from './core/liens.js';
+import { LiensFichiers } from './liens-fichiers.js';
 import { construire, arbre as faireArbre } from './core/taches.js';
 import { reconnaitre, verifier, capacites } from './core/mapping.js';
 import { actionMiseAJour, actionAjout, actionSuppression, raisonRefus } from './core/ecritures.js';
@@ -13,7 +16,8 @@ import { apercu, recommandation, etapeDepart, adapterTache, nomTable, ID_APERCU 
 import { lireChoix, ecrireChoix } from './data/stockage.js';
 
 export class App {
-  constructor(port, { document: doc = 'seul', maintenant = () => new Date() } = {}) {
+  constructor(port, { document: doc = 'seul', maintenant = () => new Date(), lien = GfsLink } = {}) {
+    this.liens = new LiensFichiers(this, lien);
     this.port = port; this.document = doc; this.maintenant = maintenant;
     this.abonnes = new Set(); this.historique = new Historique();
     this.modele = { tables: {} }; this.projets = []; this.projet = null; this.source = null; this.mapping = null;
@@ -126,6 +130,7 @@ export class App {
     liees[this.source] = rows;
     this.rows = rows; this.rowsParId = new Map(rows.map(r => [r.id, r]));
     this.refs = etiquettesRefs(this.modele, this.source, liees);
+    await this.liens.lire();
     this.recalculer();
   }
 
@@ -135,7 +140,7 @@ export class App {
   }
 
   tache(id) { return this.arbre.parId.get(id) ?? null; }
-  lireLigne(table, id) { return table === this.source ? this.rowsParId.get(id) : this.port.lire?.(table, id); }
+  lireLigne(table, id) { return table === this.source ? this.rowsParId.get(id) : table === TABLE_LIENS ? this.liens.ligne(id) : this.port.lire?.(table, id); }
 
   async surChangementExterieur() {
     if (this.ecran !== 'projet' || this.occupe || this.estApercu) return;

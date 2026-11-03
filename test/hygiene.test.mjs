@@ -96,3 +96,16 @@ test('le manifeste est un JSON dont le préfixe de tables finit par « _ »', ()
   assert.match(manifeste.tables.prefixe, /_$/);
   assert.ok(manifeste.fichiers.every(f => f.table.startsWith(manifeste.tables.prefixe)));
 });
+
+test('aucun élément `draggable` n\'est un <button> (Firefox avant la 147 ne le glisse pas : consigne 007 de GFS)', () => {
+  let vus = 0;
+  for (const { file, text } of sources) {
+    for (const m of text.matchAll(/draggable:/g)) {
+      vus++;
+      const avant = text.slice(Math.max(0, m.index - 400), m.index);
+      const balise = [...avant.matchAll(/\bh\('(\w+)'/g)].at(-1)?.[1];
+      assert.notEqual(balise, 'button', `${file} : un bouton glissable`);
+    }
+  }
+  assert.ok(vus >= 2, 'le kanban et le calendrier portent draggable');
+});

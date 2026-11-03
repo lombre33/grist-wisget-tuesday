@@ -15,9 +15,10 @@ let glissee = null;
 function puceTache(app, entree, actions) {
   const tache = app.tache(entree.id);
   const c = tache ? couleurTache(app, tache) : null;
-  return h('button', {
-    type: 'button', class: `tu-cal-puce${tache?.termine ? ' est-terminee' : ''}${tache?.enRetard ? ' est-retard' : ''}`, draggable: entree.modifiable ? 'true' : null, vars: c?.fond ? { '--c-fond': c.fond } : {}, title: entree.titre, dataset: { id: entree.id },
-    on: { click: e => { e.stopPropagation(); actions.ouvrirFiche(entree.id); }, dragstart: e => { glissee = entree; e.dataTransfer?.setData('text/plain', String(entree.id)); }, dragend: () => { glissee = null; } },
+  // Pas un <button> : sous Firefox avant la 147, un bouton `draggable` ne démarre pas de glissement (consigne 007 de GFS). Un div à rôle et à tabindex, comme la carte du kanban.
+  return h('div', {
+    role: 'button', tabindex: '0', class: `tu-cal-puce${tache?.termine ? ' est-terminee' : ''}${tache?.enRetard ? ' est-retard' : ''}`, draggable: entree.modifiable ? 'true' : null, vars: c?.fond ? { '--c-fond': c.fond } : {}, title: entree.titre, dataset: { id: entree.id },
+    on: { click: e => { e.stopPropagation(); actions.ouvrirFiche(entree.id); }, keydown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); actions.ouvrirFiche(entree.id); } }, dragstart: e => { glissee = entree; e.dataTransfer?.setData('text/plain', String(entree.id)); }, dragend: () => { glissee = null; } },
   }, entree.titre || t('champ.sansTitre'));
 }
 

@@ -73,10 +73,21 @@ function autresChamps(app, tache) {
   return h('section', { class: 'tu-fiche-section' }, h('h3', null, t('champ.autres')), autres.map(c => champ(c.libelle, editeurBrut(app, tache, c), `autre:${c.id}`)));
 }
 
-// Les liens vers les fichiers des autres apps attendent la prise en charge de la suite : l'entrée se voit, grisée avec sa raison, jamais masquée.
-function fichiersLies() {
-  return h('section', { class: 'tu-fiche-section' }, h('h3', null, t('fiche.fichiers')),
-    h('button', { type: 'button', class: 'tu-btn', 'aria-disabled': 'true', title: t('fiche.lierRaison'), dataset: { geste: 'lier' } }, icone('lien'), t('fiche.lier')));
+// Fichiers liés : chaque lien se voit toujours ; « Ouvrir » et « Lier un fichier » sont grisés avec leur raison quand Tuesday est seul, en lecture seule, ou quand le fichier est introuvable.
+function fichiersLies(app, tache, actions) {
+  const L = app.liens;
+  const bouton = (geste, libelle, raison, clic, lien = null) => h('button', { type: 'button', class: 'tu-btn', 'aria-disabled': raison ? 'true' : null, title: raison ? t(raison) : null, dataset: { geste, ...(lien ? { lien: String(lien.id) } : {}) },
+    on: { click: () => (raison ? app.notifier({ texte: t(raison), type: 'info' }) : clic()) } }, libelle);
+  const liste = L.de(tache.id).map(lien => {
+    const perdu = L.estIntrouvable(lien);
+    return h('li', { class: `tu-lien${perdu ? ' est-introuvable' : ''}`, dataset: { lien: String(lien.id) } },
+      icone('lien', 14), h('span', { class: 'tu-lien-nom', title: `${lien.app} · ${lien.type}` }, lien.nom || lien.fichier),
+      bouton('lien-ouvrir', t('liens.ouvrir'), L.raison('ouvrir', lien), () => actions.ouvrirLien(lien), lien),
+      bouton('lien-retirer', t('liens.retirer'), L.raison('retirer'), () => actions.retirerLien(lien.id), lien));
+  });
+  return h('section', { class: 'tu-fiche-section' }, h('h3', null, t('liens.titre')),
+    liste.length ? h('ul', { class: 'tu-liens' }, liste) : h('p', { class: 'tu-vide' }, t('liens.vide')),
+    bouton('lier', t('liens.lier'), L.raison('lier'), () => actions.lierFichier(tache.id)));
 }
 
 export function vueFiche(app, actions) {
@@ -101,7 +112,7 @@ export function vueFiche(app, actions) {
       bloqueePar.length ? champ(t('champ.bloquee'), h('span', { class: 'tu-lecture' }, bloqueePar.map(x => x.titre || t('champ.sansTitre')).join(', ')), 'bloquee') : null,
       m.description ? h('section', { class: 'tu-fiche-section' }, h('h3', null, t('role.description')), saisie(app, tache.description, v => app.modifier(tache.id, { description: v }, t('msg.description')), { multiligne: true, cle: 'fiche:description', etiquetteAria: t('role.description') })) : null,
       m.parent ? sousTaches(app, tache, actions) : null,
-      fichiersLies(),
+      fichiersLies(app, tache, actions),
       autresChamps(app, tache)),
     app.lectureSeule ? null : h('footer', { class: 'tu-fiche-pied' }, h('button', { type: 'button', class: 'tu-btn est-danger', on: { click: () => actions.supprimer(tache.id) } }, icone('corbeille'), t('fiche.supprimer'))));
 }

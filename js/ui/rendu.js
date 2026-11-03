@@ -15,6 +15,7 @@ import { bandeauGarder, bandeauMiseEnPlace } from './bandeaux.js';
 import { monterMiseEnPlace } from './miseenplace.js';
 import { ouvrirMenu, fermerMenu } from './menu.js';
 import { icone } from './icones.js';
+import { TABLE_LIENS, COLONNES_LIENS } from '../core/liens.js';
 import { FILTRES_VIDES } from '../core/regroupement.js';
 import { COLONNES_PROJETS, TABLE_PROJETS } from '../core/projet.js';
 import { personnesPossibles } from './champs.js';
@@ -77,7 +78,7 @@ export function monter(racine, app) {
     basculerReplie: cle => basculer(cle),
     effacerFiltres: () => app.regler({ filtres: { ...FILTRES_VIDES } }),
     versAujourdhui: () => { const g = racine.querySelector('.tu-ch-grille'); const d = racine.querySelector('.tu-ch-defile'); if (g && d) d.scrollLeft = Math.max(0, Number(g.dataset.auj) - 60); },
-    nouvelleTache, supprimer, garder, menuProjet,
+    nouvelleTache, supprimer, garder, menuProjet, lierFichier, ouvrirLien, retirerLien,
   };
   function basculer(cle) { const r = app.reglages.replies; app.regler({ replies: r.includes(cle) ? r.filter(x => x !== cle) : [...r, cle] }); }
   async function nouvelleTache(contexte = {}) {
@@ -85,6 +86,14 @@ export function monter(racine, app) {
     const id = await app.ajouter(valeurs, t('msg.ajoutee'));
     if (id) { app.selection = id; focusPending = 'fiche:titre'; app.emettre(); }
   }
+  async function lierFichier(tacheId) {
+    const choix = await app.liens.choisir(t('liens.choisir'));
+    if (!choix) return;
+    if (!app.liens.tableExiste && !(await Dialogs.confirm({ title: t('liens.accordTitre'), message: t('liens.accordMessage', { table: TABLE_LIENS, colonnes: COLONNES_LIENS.length }), confirmLabel: t('liens.creer') }))) return;
+    await app.liens.lier(tacheId, choix, t('msg.lie'));
+  }
+  function ouvrirLien(lien) { return app.liens.ouvrir(lien); }
+  function retirerLien(id) { return app.liens.retirer(id, t('msg.delie')); }
   async function supprimer(id) {
     const tache = app.tache(id);
     const ok = await Dialogs.confirm({ title: t('fiche.supprimerTitre', { nom: tache?.titre || t('champ.sansTitre') }), message: t('fiche.supprimerMessage'), confirmLabel: t('fiche.supprimer'), danger: true });
