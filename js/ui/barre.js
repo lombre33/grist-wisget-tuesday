@@ -23,7 +23,7 @@ function onglets(app) {
 }
 
 function boutonProjet(app, actions) {
-  const nom = app.projet?.nom || app.source;
+  const nom = app.estApercu ? t('mep.apercu') : app.projet?.nom || app.source;
   return h('button', { type: 'button', class: 'tu-btn tu-projet', 'aria-haspopup': 'menu', title: t('barre.projet'), on: { click: e => actions.menuProjet(e.currentTarget) } },
     h('span', { class: 'tu-projet-nom' }, nom), icone('bas', 14));
 }

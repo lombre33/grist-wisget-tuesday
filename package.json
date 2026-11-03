@@ -1,6 +1,6 @@
 {
   "name": "tuesday",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Tuesday : gestion de projet pour Grist, dans Grist Factory Suite. Modules ES, aucune bibliothèque, aucune étape de construction.",

@@ -25,7 +25,7 @@ async function demarrer() {
   if (dansGrist) {
     window.grist.ready({ requiredAccess: 'full' });
     port = creerPortGrist(window.grist, { lectureSeule: Boolean(contexte?.lectureSeule) });
-  } else port = creerDemo();
+  } else port = creerDemo({ variante: new URLSearchParams(window.location.search).get('demo') });
   const nom = (await port.nomDocument?.()) ?? contexte?.document ?? port.document;
   const app = new App(port, { document: String(contexte?.document ?? nom ?? 'seul') });
   window.__tuesday = app;

@@ -1,4 +1,4 @@
-# État de la V1 de Tuesday (02/11/2026, version 0.1.0)
+# État de la V1 de Tuesday (03/11/2026, version 0.1.1)
 
 Ce document dit **ce qui existe, ce qui est mesuré, ce qui ne l'est pas, et ce que GFS doit rejouer**. Il remplace la lecture du code pour qui reprend le travail.
 
@@ -6,7 +6,7 @@ Ce document dit **ce qui existe, ce qui est mesuré, ce qui ne l'est pas, et ce 
 
 | Domaine | Contenu |
 |---|---|
-| Premier lancement | Écran « Confirmez les colonnes » toujours affiché d'abord, déjà rempli ; rien n'est écrit avant « Ouvrir » ; « Garder pour l'équipe » crée `Tuesday_Projets` après accord nommant la table ; écran d'attente d'accès (3 s sans réponse) ; écran « aucune table » avec modèle de départ optionnel |
+| Premier lancement | **L'outil d'abord** (03/11) : l'outil est complet dès l'arrivée, sur ses données si une table est reconnue (lecture), sinon sur un aperçu vide ; la mise en place s'ouvre en **pop-up** (accès, table, colonnes, un schéma par étape), se ferme d'un geste et revient à la première écriture, avec la tâche tapée gardée ; créer la table de tâches nomme ce qui sera créé ; « Garder pour l'équipe » crée `Tuesday_Projets` après accord (`docs/onboarding.md`) |
 | Vues | Tableau (sous-tâches repliables, groupes, ajout rapide au clavier), Kanban (glisser-déposer, tri manuel / échéance / priorité), Chronologie (barres, jalons, ligne d'aujourd'hui, déplacer et redimensionner, 4 zooms), Calendrier **provisoire** (grille du mois, puces déplaçables), fiche de tâche à côté ou par-dessus |
 | Gestes | Changer statut, responsable, dates, priorité, étiquettes, parent ; case à cocher ; ajouter ; supprimer avec accord ; Annuler / Rétablir 100 % (Ctrl+Z, Ctrl+Y) ; clavier : N, /, Échap |
 | Recherche et filtres | Recherche, statut, responsable, priorité, étiquettes, « en retard », « mes tâches » ; étiquettes visibles qu'on retire d'un clic ; mémorisés par document et par projet |
@@ -16,8 +16,8 @@ Ce document dit **ce qui existe, ce qui est mesuré, ce qui ne l'est pas, et ce 
 
 ## 2. Ce qui est mesuré, et comment
 
-- **188 essais unitaires** (`node --test "test/*.test.mjs"`) : dates civiles, correspondance de colonnes, écritures, arbre de tâches, filtres, rangs, historique, chronologie, réglages, textes fr/en, hygiène du code (tailles, jetons, CSP, `.nojekyll`, `?v=`).
-- **27 essais dans Chromium** (`node test/navigateur/essais.cjs`) à 700 × 400, clair et sombre, français et anglais, souris et clavier, sans violation de la politique de sécurité. Les captures sortent dans `test/navigateur/captures/`.
+- **208 essais unitaires** (`node --test "test/*.test.mjs"`) : dates civiles, correspondance de colonnes, écritures, arbre de tâches, filtres, rangs, historique, chronologie, réglages, textes fr/en, hygiène du code (tailles, jetons, CSP, `.nojekyll`, `?v=`).
+- **30 essais dans Chromium** (`node test/navigateur/essais.cjs`) à 700 × 400, clair et sombre, français et anglais, souris et clavier, sans violation de la politique de sécurité. Les captures sortent dans `test/navigateur/captures/`.
 - Ces essais tournent **contre notre démonstration en mémoire** (`js/data/demo.js`), pas contre Grist.
 
 ## 3. Ce qui n'est PAS mesuré (à faire dans le labo de GFS, un vrai Grist)

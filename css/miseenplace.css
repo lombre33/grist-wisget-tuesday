@@ -1,0 +1,55 @@
+/* Le pop-up de mise en place : un petit tutoriel (progression, schéma, contenu). Jetons du kit seulement. */
+
+.pp-modal-box.tu-mep-box { --pp-modal-w: 660px; }
+.tu-mep-box .pp-modal-header { padding-bottom: 4px; }
+.tu-mep-etapes { list-style: none; margin: 0 0 10px; padding: 0; display: flex; gap: 14px; color: var(--text-muted); font-size: 12px; font-weight: 600; }
+.tu-mep-etapes li { display: flex; align-items: center; gap: 6px; }
+.tu-mep-num { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--border-strong); display: inline-grid; place-items: center; font-size: 11px; background: var(--surface); }
+.tu-mep-etapes .est-actif { color: var(--accent-ink); }
+.tu-mep-etapes .est-actif .tu-mep-num { background: var(--accent-solid); border-color: var(--accent-solid); color: var(--on-accent); }
+.tu-mep-etapes .est-fait .tu-mep-num { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+.tu-mep-corps { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 16px; align-items: start; padding-bottom: 4px; }
+.tu-mep-texte { display: grid; gap: 10px; min-width: 0; align-content: start; }
+.tu-mep-intro { margin: 0; color: var(--text); }
+.tu-mep-pas { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.tu-mep-aide { margin: 0; font-size: 12px; color: var(--text-muted); }
+.tu-mep-erreur { margin: 0; padding: 8px 10px; border-radius: var(--radius-sm); background: var(--danger-soft); color: var(--danger-ink); font-size: 12px; }
+.tu-mep-attente { margin: 0; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--accent-ink); font-size: 12px; }
+.tu-mep-cartes { display: grid; gap: 8px; }
+.tu-mep-carte { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; display: grid; gap: 6px; background: var(--surface); }
+.tu-mep-carte.est-actif { border-color: var(--accent); background: var(--accent-soft); }
+.tu-mep-carte.est-grise { opacity: .6; }
+.tu-mep-radio { display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; }
+.tu-mep-radio input { accent-color: var(--accent-solid); margin: 0; }
+.tu-mep-case { display: flex; align-items: center; gap: 8px; }
+.tu-mep-case input { accent-color: var(--accent-solid); margin: 0; }
+
+/* schémas */
+.tu-fig { margin: 0; display: grid; gap: 4px; }
+.tu-fig figcaption { font-size: 11px; color: var(--text-muted); text-align: center; }
+.tu-fig-panneau, .tu-fig-grille, .tu-fig-liens { border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-sunken); padding: 8px; display: grid; gap: 8px; }
+.tu-fig-ligne { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tu-fig-ligne.est-droite { justify-content: flex-end; }
+.tu-fig-nom { font-weight: 700; font-size: 12px; }
+.tu-fig-etiquette { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+.tu-fig-champ { display: grid; gap: 4px; }
+.tu-fig-liste { display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 6px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); font-size: 12px; justify-content: space-between; }
+.tu-fig-liste span:not(.tu-fig-repere) { flex: 1; }
+.tu-fig-bouton { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border-radius: var(--radius-sm); background: var(--accent-solid); color: var(--on-accent); font-size: 12px; font-weight: 600; }
+.est-vise { outline: 2px solid var(--accent); outline-offset: 1px; }
+.tu-fig-repere { width: 16px; height: 16px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--accent-solid); color: var(--on-accent); font-size: 10px; font-weight: 700; flex: none; }
+.tu-fig-barre { display: block; height: 8px; border-radius: 4px; background: var(--border-strong); width: 70%; }
+.tu-fig-barre.est-court { width: 36%; }
+.tu-fig-barre.est-long { width: 88%; }
+.tu-fig-rangee { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 8px; align-items: center; min-height: 20px; }
+.tu-fig-rangee.est-tete { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.tu-fig-pastille { width: 36px; height: 12px; border-radius: 6px; background: var(--border-strong); }
+.tu-fig-pastille.est-cours { background: var(--accent); }
+.tu-fig-pastille.est-fait { background: var(--good); }
+.tu-fig-note { margin: 0; font-size: 11px; color: var(--text-muted); }
+.tu-fig-entete { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.tu-fig-paire { display: flex; align-items: center; justify-content: space-between; gap: 6px; color: var(--text-muted); }
+.tu-fig-chip { min-width: 34px; text-align: center; padding: 2px 8px; border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--border-strong); font-size: 12px; font-weight: 600; color: var(--text); }
+.tu-fig-chip.est-role { background: var(--accent-soft); border-color: var(--accent-soft-border); color: var(--accent-ink); }
+@media (max-width: 600px) { .tu-mep-corps { grid-template-columns: 1fr; } .tu-fig { display: none; } }
+.tu-mep-reco { margin-left: auto; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 9px; background: var(--accent-soft); color: var(--accent-ink); border: 1px solid var(--accent-soft-border); }

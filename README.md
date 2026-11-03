@@ -2,7 +2,7 @@
 
 Un widget de gestion de projet pour [Grist](https://www.getgrist.com), fait pour [Grist Factory Suite (GFS)](https://github.com/lombre33/grist-widget-GFS). Inspiré de monday.com pour sa clarté, volontairement bien plus simple : **on le branche sur une table Grist existante** et on voit son travail comme un projet (tableau, kanban, calendrier, chronologie), sans rien recréer.
 
-> État : **V1 codée** (02/11/2026, version 0.1.0) : tableau, kanban, chronologie, calendrier provisoire, fiche, premier lancement. 188 essais unitaires et 27 essais navigateur. **Pas encore mesurée dans un vrai Grist** : voir [`docs/etat-v1.md`](docs/etat-v1.md).
+> État : **V1 codée** (03/11/2026, version 0.1.1) : tableau, kanban, chronologie, calendrier provisoire, fiche, premier lancement. 188 essais unitaires et 27 essais navigateur. **Pas encore mesurée dans un vrai Grist** : voir [`docs/etat-v1.md`](docs/etat-v1.md).
 
 ## Lire
 

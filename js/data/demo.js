@@ -22,13 +22,20 @@ function tablesDemo() {
   };
 }
 
-export function creerDemo({ maintenant = new Date() } = {}) {
+// Un document Grist tout neuf : « Table1 » avec ses colonnes A, B et C, vide. C'est ce qu'on trouve en ajoutant Tuesday à un Grist vide.
+function documentNeuf() {
+  return { tablesMeta: [{ id: 1, tableId: 'Table1', summarySourceTable: 0 }], colonnesMeta: ['A', 'B', 'C'].map((c, i) => col(i + 1, 1, c, 'Any')) };
+}
+
+// `variante: 'vide'` : le document neuf ; sinon le petit projet fictif.
+export function creerDemo({ maintenant = new Date(), variante = null } = {}) {
   const auj = jourCourant(maintenant);
   const jour = n => secondes(ajouterJours(auj, n));
-  const { tablesMeta, colonnesMeta } = tablesDemo();
-  const equipe = ['L. Bernard', 'M. Dupont', 'S. Martin', 'A. Petit'].map((Nom, i) => ({ id: i + 1, Nom }));
+  const neuf = variante === 'vide';
+  const { tablesMeta, colonnesMeta } = neuf ? documentNeuf() : tablesDemo();
+  const equipe = neuf ? [] : ['L. Bernard', 'M. Dupont', 'S. Martin', 'A. Petit'].map((Nom, i) => ({ id: i + 1, Nom }));
   const t = (id, Titre, Statut, resp, d, e, Priorite, Parent = 0, Description = '') => ({ id, Titre, Statut, Responsable: ['L', ...resp], Debut: d === null ? null : jour(d), Echeance: e === null ? null : jour(e), Priorite, Parent, Ordre: id * 1024, Description });
-  const donnees = {
+  const donnees = neuf ? { Table1: [] } : {
     Equipe: equipe,
     Taches: [
       t(1, 'Cadrer le projet', 'Terminé', [1], -12, -8, 'Haute'),
@@ -46,7 +53,7 @@ export function creerDemo({ maintenant = new Date() } = {}) {
     ],
   };
   const projets = [];
-  const etat = { donnees, projets, derniere: { Taches: 12, Equipe: 4, [TABLE_PROJETS]: 0 }, tablesMeta: [...tablesMeta], colonnesMeta: [...colonnesMeta], abonnes: new Set(), creee: false };
+  const etat = { donnees, projets, derniere: neuf ? { Table1: 0, [TABLE_PROJETS]: 0 } : { Taches: 12, Equipe: 4, [TABLE_PROJETS]: 0 }, tablesMeta: [...tablesMeta], colonnesMeta: [...colonnesMeta], abonnes: new Set(), creee: false, section: neuf ? 'Table1' : 'Taches' };
   return construirePort(etat);
 }
 
@@ -82,8 +89,13 @@ function construirePort(etat) {
       return null;
     }
     if (nom === 'AddTable') {
-      etat.creee = true;
       etat.derniere[table] = 0;
+      if (table === TABLE_PROJETS) { etat.creee = true; return { table_id: table }; }
+      const ref = Math.max(0, ...etat.tablesMeta.map(t => t.id)) + 1;
+      let id = Math.max(0, ...etat.colonnesMeta.map(c => c.id)) + 1;
+      etat.tablesMeta.push({ id: ref, tableId: table, summarySourceTable: 0 });
+      for (const c of reste[0]) etat.colonnesMeta.push(col(id++, ref, c.id, c.type, { label: c.label, widgetOptions: c.widgetOptions }));
+      etat.donnees[table] = [];
       return { table_id: table };
     }
     throw new Error(`Action non gérée en démonstration : ${nom}`);
@@ -96,7 +108,7 @@ function construirePort(etat) {
       return m;
     },
     async lignes(table) { return structuredClone(lignesDe(table)); },
-    async tableSection() { return 'Taches'; },
+    async tableSection() { return etat.section; },
     lire(table, id) { return lignesDe(table).find(l => l.id === id); },
     async appliquer(actions) {
       const copie = structuredClone({ donnees: etat.donnees, projets: etat.projets, derniere: etat.derniere });

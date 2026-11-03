@@ -40,32 +40,92 @@ async function essai(nom, fn) {
     p.setDefaultTimeout(6000);
     p.on('console', m => { if (/Content Security Policy|violat/i.test(m.text())) violations.push(m.text()); if (m.type() === 'error' && !/ERR_TUNNEL|ERR_NAME_NOT_RESOLVED|ERR_INTERNET|Failed to load resource/.test(m.text())) violations.push(m.text()); });
     p.on('pageerror', e => violations.push(`erreur de page : ${e.message}`));
-    await p.goto(base);
-    await p.waitForSelector('.tu-demarrage-carte');
-    if (options.ouvrir !== false) { await p.click('[data-geste="ouvrir"]'); await p.waitForSelector('.tu-tableau'); }
+    await p.goto(options.demo ? `${base}?demo=${options.demo}` : base);
+    await p.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible' }); // la mise en place s'ouvre au lancement, par-dessus l'outil
+    if (options.ouvrir !== false) { await p.click('[data-geste="mep-principal"]'); await p.waitForFunction(() => window.__tuesday.pret); await p.waitForSelector('.tu-tableau'); }
     return p;
   }
   const tache = (p, id) => p.evaluate(i => { const t = window.__tuesday.tache(i); return t && { statut: t.statut, titre: t.titre, debut: t.debut, fin: t.fin, ordre: t.ordre, responsables: t.responsables.map(r => r.label) }; }, id);
   const shot = (p, nom) => p.screenshot({ path: path.join(sortie, `${nom}.png`) });
 
-  await essai('premier lancement : confirmation déjà remplie, rien d\'écrit avant « Ouvrir »', async () => {
+  await essai('Grist vide : l\'outil est là, complet et vide ; le pop-up propose de créer une table ; « Plus tard » ne bloque rien', async () => {
+    const p = await page({ demo: 'vide', ouvrir: false });
+    assert.equal(await p.locator('.tu-onglet').count(), 4);
+    assert.equal(await p.locator('.tu-onglet[aria-disabled="true"]').count(), 0); // les quatre vues sont là, rien de grisé
+    assert.equal(await p.isChecked('[data-mep="choix-creer"]'), true); // la recommandation : créer, la table du document est vide
+    assert.equal(await p.locator('.tu-mep-etapes li').count(), 1);
+    await shot(p, 'mise-en-place-vide-clair');
+    await p.click('[data-geste="mep-plus-tard"]');
+    await p.waitForSelector('#tu-mep .tu-mep-box', { state: 'hidden' });
+    await p.waitForSelector('[data-bandeau="mise-en-place"]');
+    await p.click('[data-vue="kanban"]'); await p.waitForSelector('.tu-vue[data-vue="kanban"]');
+    await p.click('[data-vue="chronologie"]'); await p.waitForSelector('.tu-vue[data-vue="chronologie"]');
+    await p.click('[data-vue="tableau"]'); await p.waitForSelector('.tu-ligne-ajout');
+    await shot(p, 'outil-vide-clair');
+    assert.equal(await p.evaluate(() => window.__tuesday.port._etat.tablesMeta.length), 1); // rien n'a été créé
+    await p.context().close();
+  });
+
+  await essai('ajouter une tâche avant la mise en place : le pop-up revient avec la tâche tapée, puis la table est créée et la tâche y est', async () => {
+    const p = await page({ demo: 'vide', ouvrir: false });
+    await p.click('[data-geste="mep-plus-tard"]');
+    await p.fill('[data-ajout]', 'Appeler le client'); await p.press('[data-ajout]', 'Enter');
+    await p.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible' });
+    assert.match(await p.textContent('.tu-mep-attente'), /Appeler le client/);
+    await shot(p, 'mise-en-place-reprise-clair');
+    await p.fill('[data-mep="nom"]', 'Mes tâches');
+    assert.match(await p.textContent('[data-geste="mep-principal"]'), /Mes tâches/); // le bouton nomme ce qui sera créé
+    await p.click('[data-geste="mep-principal"]');
+    await p.waitForFunction(() => window.__tuesday.pret);
+    await p.waitForSelector('.tu-ligne[data-id]');
+    assert.equal(await p.evaluate(() => window.__tuesday.source), 'Mes_tâches');
+    assert.match(await p.textContent('.tu-tableau'), /Appeler le client/);
+    assert.equal(await p.evaluate(() => window.__tuesday.port._etat.donnees['Mes_tâches'].length), 1);
+    await p.context().close();
+  });
+
+  await essai('« + Tâche » et la touche N rouvrent aussi la mise en place, sans rien écrire', async () => {
+    const p = await page({ demo: 'vide', ouvrir: false });
+    await p.click('[data-geste="mep-plus-tard"]');
+    await p.click('[data-geste="nouvelle"]');
+    await p.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible' });
+    await p.click('[data-geste="mep-plus-tard"]');
+    await p.keyboard.press('n');
+    await p.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible' });
+    assert.equal(await p.evaluate(() => window.__tuesday.pret), false);
+    await p.keyboard.press('Escape'); // Échap = Plus tard
+    await p.waitForSelector('#tu-mep .tu-mep-box', { state: 'hidden' });
+    await p.context().close();
+  });
+
+  await essai('table reconnue : l\'outil montre déjà les tâches derrière le pop-up, « Utiliser cette table » en un clic, rien d\'écrit', async () => {
     const p = await page({ ouvrir: false });
-    assert.equal(await p.inputValue('select[data-role="titre"]'), 'Titre');
-    assert.equal(await p.inputValue('select[data-role="statut"]'), 'Statut');
+    assert.ok((await p.locator('.tu-ligne[data-id]').count()) >= 10); // lire est libre
+    assert.equal(await p.isChecked('[data-mep="choix-existante"]'), true);
     assert.equal(await p.evaluate(() => window.__tuesday.projets.length), 0);
-    await shot(p, 'confirmation-clair');
-    await p.click('[data-geste="ouvrir"]');
-    await p.waitForSelector('.tu-tableau');
-    assert.ok((await p.locator('.tu-ligne[data-id]').count()) >= 10);
+    await shot(p, 'mise-en-place-table-clair');
+    await p.click('[data-geste="mep-principal"]');
+    await p.waitForSelector('#tu-mep .tu-mep-box', { state: 'hidden' });
+    assert.equal(await p.evaluate(() => window.__tuesday.pret), true);
     await shot(p, 'tableau-clair');
     await p.context().close();
   });
 
-  await essai('confirmation : Ouvrir grisé tant qu\'il n\'y a pas de titre, avec sa raison', async () => {
+  await essai('colonnes : « Vérifier » ouvre l\'étape, Terminer sans titre reste ouvert avec sa raison', async () => {
     const p = await page({ ouvrir: false });
+    await p.click('[data-mep="verifier"]');
+    await p.waitForSelector('select[data-role="titre"]');
+    assert.equal(await p.inputValue('select[data-role="titre"]'), 'Titre');
+    assert.equal(await p.inputValue('select[data-role="statut"]'), 'Statut');
+    assert.equal(await p.locator('.tu-mep-etapes li').count(), 2);
+    await shot(p, 'mise-en-place-colonnes-clair');
     await p.selectOption('select[data-role="titre"]', '');
-    await p.waitForSelector('[data-geste="ouvrir"][aria-disabled="true"]');
-    assert.match(await p.getAttribute('[data-geste="ouvrir"]', 'title'), /titre/i);
+    await p.click('[data-geste="mep-principal"]');
+    await p.waitForSelector('.tu-role.est-a-voir .tu-role-aide');
+    assert.match(await p.textContent('.tu-role.est-a-voir .tu-role-aide'), /titre/i);
+    assert.equal(await p.evaluate(() => window.__tuesday.pret), false);
+    await p.click('[data-geste="mep-precedent"]');
+    await p.waitForSelector('[data-mep="choix-existante"]');
     await p.context().close();
   });
 
@@ -234,7 +294,7 @@ async function essai(nom, fn) {
     await p.waitForFunction(() => window.__tuesday.taches.some(t => t.titre === 'Réserver la salle' && t.parentId === 9));
     await p.click('.tu-fiche-pied .tu-btn');
     await p.waitForSelector('#pp-dialog-modal:not([hidden])');
-    await p.click('.pp-modal-primary, #pp-dialog-modal button:last-child');
+    await p.click('#pp-dialog-modal .pp-modal-primary');
     await p.waitForFunction(() => window.__tuesday.tache(9) === null);
     await p.keyboard.press('Control+z');
     await p.waitForFunction(() => window.__tuesday.tache(9) !== null);
@@ -259,8 +319,8 @@ async function essai(nom, fn) {
     await p.waitForSelector('.tu-btn-principal[aria-disabled="true"]');
     assert.equal(await p.locator('.tu-ajout-champ').count(), 0);
     await p.locator('.tu-ligne[data-id="8"] [data-champ="statut"]').click({ force: true });
-    await p.waitForSelector('.tu-etat');
-    assert.match(await p.textContent('.tu-etat'), /lecture seule/i);
+    await p.waitForFunction(() => /lecture seule/i.test(document.querySelector('.tu-etat')?.textContent ?? '')); // le message « Tout est prêt » de la mise en place est remplacé
+    assert.equal(await p.locator('#tu-mep .tu-mep-box').isVisible(), false); // lecture seule : jamais de mise en place
     assert.equal((await tache(p, 8)).statut, 'À faire');
     await shot(p, 'lecture-seule-clair');
     await p.context().close();
@@ -296,12 +356,14 @@ async function essai(nom, fn) {
     await p.context().close();
   });
 
-  await essai('attente d\'accès : l\'écran dit quoi faire dans Grist, et recharger est proposé', async () => {
+  await essai('attente d\'accès : le pop-up dit quoi faire dans Grist, l\'outil reste affiché derrière', async () => {
     const p = await page({ ouvrir: false });
-    await p.evaluate(() => { const a = window.__tuesday; a.ecran = 'chargement'; a.attenteAcces = true; a.emettre(); });
-    await p.waitForSelector('[data-geste="recharger"]');
-    assert.match(await p.textContent('.tu-demarrage-carte'), /accès complet/i);
-    await shot(p, 'acces-clair');
+    await p.evaluate(() => { const a = window.__tuesday; a.attenteAcces = true; a.demanderMiseEnPlace({ etape: 'acces' }); });
+    await p.waitForSelector('.tu-mep-pas');
+    assert.match(await p.textContent('.tu-mep-box'), /accès complet/i);
+    assert.equal(await p.locator('.tu-mep-etapes li').count(), 3);
+    await shot(p, 'mise-en-place-acces-clair');
+    assert.equal(await p.locator('.tu-barre').count(), 1);
     await p.context().close();
   });
 
@@ -340,9 +402,10 @@ async function essai(nom, fn) {
 
   await essai('thème sombre et anglais : mêmes écrans, textes traduits', async () => {
     const p = await page({ sombre: true, locale: 'en-GB', ouvrir: false });
-    assert.match(await p.textContent('h1'), /Confirm the columns/);
-    await shot(p, 'confirmation-sombre');
-    await p.click('[data-geste="ouvrir"]');
+    assert.match(await p.textContent('#tu-mep h3'), /Where should your tasks go\?/);
+    await shot(p, 'mise-en-place-sombre');
+    await p.click('[data-geste="mep-principal"]');
+    await p.waitForFunction(() => window.__tuesday.pret);
     await p.waitForSelector('.tu-tableau');
     await shot(p, 'tableau-sombre');
     assert.match(await p.textContent('.tu-btn-principal'), /New task/);

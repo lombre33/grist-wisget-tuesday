@@ -291,8 +291,7 @@ function render() {
   let inner = '';
   const list = visible();
   const sc = S.screen;
-  if (typeof ONB !== 'undefined' && ONB.has(sc)) inner = ONB.render(sc); // écrans du premier lancement : onboarding.js
-  else if (sc === 'demarrage') inner = startScreen();
+  if (sc === 'demarrage') inner = startScreen();
   else if (sc === 'explorateur') inner = explorer();
   else {
     const base = sc === 'fiche' || sc === 'correspondance' ? 'tableau' : sc;

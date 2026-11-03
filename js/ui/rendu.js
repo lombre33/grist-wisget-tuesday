@@ -11,7 +11,8 @@ import { vueKanban } from './kanban.js';
 import { vueChronologie } from './chronologie.js';
 import { vueCalendrier } from './calendrier.js';
 import { vueFiche } from './fiche.js';
-import { ecranTables, ecranColonnes, ecranSansTable, ecranAcces, bandeauGarder } from './demarrage.js';
+import { bandeauGarder, bandeauMiseEnPlace } from './bandeaux.js';
+import { monterMiseEnPlace } from './miseenplace.js';
 import { ouvrirMenu, fermerMenu } from './menu.js';
 import { icone } from './icones.js';
 import { FILTRES_VIDES } from '../core/regroupement.js';
@@ -19,11 +20,11 @@ import { COLONNES_PROJETS, TABLE_PROJETS } from '../core/projet.js';
 import { personnesPossibles } from './champs.js';
 import { GfsLink } from '../../kit/js/gfs-link.js';
 
-export const VERSION = '0.1.0';
+export const VERSION = '0.1.1';
 const t = (cle, vars) => I18n.t(cle, vars);
 const VUES = { tableau: vueTableau, kanban: vueKanban, chronologie: vueChronologie, calendrier: vueCalendrier };
 
-function texteMessage(m) {
+export function texteMessage(m) {
   const base = m.texte ?? t(m.cle, m.vars);
   return m.libelle ? t(m.cle, { libelle: m.libelle }) : base;
 }
@@ -37,16 +38,7 @@ function toast(app) {
     h('button', { type: 'button', class: 'tu-btn tu-btn-icone', 'aria-label': t('fiche.fermer'), on: { click: () => { app.message = null; app.emettre('message'); } } }, icone('croix', 14)));
 }
 
-function barreDemarrage(app) {
-  return h('header', { class: 'tu-barre est-simple' }, h('strong', { class: 'tu-nom-app' }, 'Tuesday'), h('span', { class: 'tu-espace' }), app.port.mode === 'demo' ? h('span', { class: 'tu-demo', title: t('demo.explique') }, t('demo.titre')) : null);
-}
-
 function corps(app, actions) {
-  if (app.ecran === 'tables') return ecranTables(app);
-  if (app.ecran === 'colonnes') return ecranColonnes(app);
-  if (app.ecran === 'sans-table') return ecranSansTable(app);
-  if (app.ecran === 'chargement' && app.attenteAcces) return ecranAcces();
-  if (app.ecran === 'chargement') return h('div', { class: 'tu-demarrage' }, h('p', { class: 'tu-vide' }, t('app.chargement')));
   const vue = VUES[app.reglages.vue] ?? vueTableau;
   return h('main', { class: 'tu-vue', dataset: { vue: app.reglages.vue } }, vue(app, actions));
 }
@@ -89,7 +81,6 @@ export function monter(racine, app) {
   };
   function basculer(cle) { const r = app.reglages.replies; app.regler({ replies: r.includes(cle) ? r.filter(x => x !== cle) : [...r, cle] }); }
   async function nouvelleTache(contexte = {}) {
-    if (app.verrou()) return;
     const valeurs = { titre: t('champ.nouvelle'), ...(app.mapping.statut ? { statut: app.premierStatut() } : {}), ...contexte };
     const id = await app.ajouter(valeurs, t('msg.ajoutee'));
     if (id) { app.selection = id; focusPending = 'fiche:titre'; app.emettre(); }
@@ -122,7 +113,7 @@ export function monter(racine, app) {
     ouvrirMenu(ancre, items, async it => {
       const [type, v] = it.valeur;
       if (type === 'projet') await app.ouvrirProjet(v);
-      else if (type === 'tables') app.allerA('tables');
+      else if (type === 'tables') app.demanderMiseEnPlace({ etape: 'table' });
       else if (type === 'moi') app.regler({ moi: v });
       else if (type === 'langue') { I18n.setLanguage(v); I18n.store(v); }
       else if (type === 'theme') { Theme.set(v); app.emettre(); }
@@ -133,14 +124,13 @@ export function monter(racine, app) {
   function rendre() {
     planifie = false;
     const etat = sauverEtat(racine);
-    const projet = app.ecran === 'projet';
-    const enfants = [projet ? construireBarre(app, actions) : barreDemarrage(app), projet ? etiquettesFiltres(app) : null, projet ? bandeauGarder(app, actions) : null, corps(app, actions), projet ? vueFiche(app, actions) : null, toast(app)];
+    const enfants = [construireBarre(app, actions), etiquettesFiltres(app), bandeauMiseEnPlace(app), bandeauGarder(app, actions), corps(app, actions), vueFiche(app, actions), toast(app)];
     racine.replaceChildren(...enfants.filter(Boolean));
-    racine.dataset.vue = app.ecran === 'projet' ? app.reglages.vue : app.ecran;
-    racine.classList.toggle('a-fiche', Boolean(projet && app.selection !== null && app.tache(app.selection)));
+    racine.dataset.vue = app.reglages.vue;
+    racine.classList.toggle('a-fiche', app.selection !== null && Boolean(app.tache(app.selection)));
     const pending = focusPending; focusPending = null;
     rendreEtat(racine, etat, pending);
-    if (projet && app.reglages.vue === 'chronologie' && app.chronoVu !== app.reglages.zoom) { app.chronoVu = app.reglages.zoom; actions.versAujourdhui(); }
+    if (app.reglages.vue === 'chronologie' && app.chronoVu !== app.reglages.zoom) { app.chronoVu = app.reglages.zoom; actions.versAujourdhui(); }
     else if (app.reglages.vue !== 'chronologie') app.chronoVu = null;
     if (pending === 'fiche:titre') racine.querySelector('[data-focus="fiche:titre"]')?.select?.();
   }
@@ -156,6 +146,7 @@ export function monter(racine, app) {
   document.addEventListener('keydown', e => clavier(e, app, actions, racine));
   app.abonner(quoi => { if (quoi === 'message') { planifier(); armerToast(app); } else planifier(); });
   I18n.onChange(() => planifier());
+  monterMiseEnPlace(app, { texteMessage });
   GfsLink.onBar(bar => poserBarre(racine, bar));
   poserBarre(racine, GfsLink.bar());
   rendre();
@@ -180,7 +171,6 @@ function armerToast(app) {
 function clavier(e, app, actions, racine) {
   const champ = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName ?? '') || document.activeElement?.isContentEditable;
   const mod = e.ctrlKey || e.metaKey;
-  if (app.ecran !== 'projet') return;
   if (mod && !champ && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) { e.preventDefault(); app.annuler(); }
   else if (mod && !champ && (e.key === 'y' || e.key === 'Y' || ((e.key === 'z' || e.key === 'Z') && e.shiftKey))) { e.preventDefault(); app.retablir(); }
   else if (!mod && !champ && e.key === 'n') { e.preventDefault(); actions.nouvelleTache(); }
