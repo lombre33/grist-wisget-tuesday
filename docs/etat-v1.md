@@ -20,14 +20,19 @@ Ce document dit **ce qui existe, ce qui est mesuré, ce qui ne l'est pas, et ce 
 - **30 essais dans Chromium** (`node test/navigateur/essais.cjs`) à 700 × 400, clair et sombre, français et anglais, souris et clavier, sans violation de la politique de sécurité. Les captures sortent dans `test/navigateur/captures/`.
 - Ces essais tournent **contre notre démonstration en mémoire** (`js/data/demo.js`), pas contre Grist.
 
-## 3. Ce qui n'est PAS mesuré (à faire dans le labo de GFS, un vrai Grist)
+## 2 bis. Le vrai Grist de test (`test/grist/`)
 
-1. L'adaptateur `js/data/grist.js` (`onRecords`, `fetchTable`, `applyUserActions`, interrogation toutes les 20 s des autres tables) n'a jamais parlé à un vrai Grist.
-2. `AddTable` avec `widgetOptions` des colonnes de `Tuesday_Projets` et relecture de l'identifiant réel ; droits d'`AddTable` ; Annuler après `AddTable`.
-3. Ce que Grist envoie avant l'accès complet (l'écran d'attente se base sur un délai de 3 s).
-4. Glisser-déposer (kanban, calendrier) et capture du pointeur (chronologie) dans l'iframe du bac à sable de GFS.
-5. Le script de l'API de Grist est chargé depuis `docs.getgrist.com` ; à vérifier sur l'instance de la DINUM.
-6. Couleurs et choix d'un statut lus dans `_grist_Tables_column` : forme exacte du `widgetOptions` sur de vrais documents.
+Décision du porteur (03/11) : l'app ne tourne **jamais hors de Grist**, et ses essais se font dans une instance Grist. `test/grist/lancer-grist.sh` lance l'image officielle (docker, port 8484) ; `node test/grist/essais.cjs` (`npm run test:grist`) y crée un document, y pose Tuesday comme widget personnalisé et le pilote à la souris et au clavier, puis relit les tables par l'API de Grist. Il a déjà trouvé quatre défauts que la démonstration en mémoire cachait (dates rendues en objets Date par `onRecords`, menu derrière la fiche, clic sur une cellule qui ouvrait la fiche, refus d'accès non rattrapé). L'app livrée n'a plus ni démonstration ni `window.__tuesday` : le port en mémoire est `test/support/demo.js`, pour les essais unitaires et la suite rapide du navigateur.
+
+## 3. Ce qui reste à mesurer
+
+Mesuré dans le Grist de test (03/11) : l'adaptateur (`fetchTable`, `applyUserActions`, `onRecords` comme signal), `AddTable` de `Tuesday_Projets` avec relecture de l'identifiant réel, les couleurs des choix, les dates en jours civils, le glisser-déposer du kanban et la capture du pointeur de la chronologie dans le cadre du widget, le refus d'accès.
+
+Pas encore mesuré :
+1. **Dans le cadre de GFS** (bac à sable) : glisser-déposer, pointeur, stockage, barre. À faire au labo de GFS.
+2. L'instance Grist de la **DINUM** : le script de l'API des widgets est demandé à `docs.getgrist.com` (la page de Tuesday doit-elle le prendre sur l'instance ?). L'API pose aussi une feuille de style de thème que la politique de sécurité refuse (sans effet).
+3. Un document en **lecture seule** réelle (droits d'accès) et d'autres types de colonnes (listes de références, DateTime avec fuseau) dans le vrai Grist.
+4. Annuler après `AddTable`.
 
 ## 4. Ce que GFS doit rejouer
 
@@ -41,4 +46,4 @@ Ce document dit **ce qui existe, ce qui est mesuré, ce qui ne l'est pas, et ce 
 - Le calendrier est une grille de mois provisoire, à remplacer par le module de Calendar+ (dépôt sans code pour l'instant).
 - Pas de dépendances (flèches), de charge, de synthèse, de récurrence (V2) ni de liens vers les fichiers de GFS, commentaires, temps (V3).
 - Un seul projet ouvert à la fois ; « Mes tâches » repose sur un « Je suis… » choisi dans le navigateur.
-- `window.__tuesday` est exposé pour les essais du navigateur (à retirer ou garder : carte de décision).
+- Le calendrier attend le module de Calendar+ (hôte prêt, `js/ui/calendrier-hote.js`) ; « Mes tâches » attend l'identité (cahier 5.5).
