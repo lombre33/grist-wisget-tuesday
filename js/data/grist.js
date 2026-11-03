@@ -1,15 +1,14 @@
 // Le port de données vers Grist (API des widgets, accès complet) : un adaptateur MINCE, sans logique. Tout ce qui se calcule est dans core/. Ce que Grist envoie se mesure dans un vrai Grist
-// (labo de GFS), jamais contre un faux Grist écrit ici : aucun essai unitaire ne remplace cette mesure.
+// (labo de test/grist/), jamais contre un faux Grist écrit ici. Mesuré : `onRecords` rend des dates en objets Date (ou en ['d', secondes] avec `keepEncoded`), pas les secondes de `fetchTable` ; il ne sert donc que de signal de changement, toute lecture passe par `fetchTable`.
 import { lignes, modeleDocument } from '../core/colonnes.js';
 
 const SONDE_MS = 20000;
 
 export function creerPortGrist(grist, { lectureSeule = false } = {}) {
   const abonnes = new Set();
-  let derniere = { table: null, rows: null };
   const notifier = table => { for (const fn of [...abonnes]) fn(table); };
 
-  grist.onRecords?.(rows => { derniere = { table: derniere.table, rows }; notifier('*section*'); }, { includeColumns: 'all' });
+  grist.onRecords?.(() => notifier('*section*'), { includeColumns: 'all', keepEncoded: true });
   // Les autres tables ne préviennent pas : une relecture à intervalle tant que la page est visible.
   let minuteur = null;
   const sonder = () => {
@@ -34,7 +33,6 @@ export function creerPortGrist(grist, { lectureSeule = false } = {}) {
       return reponse?.retValues ?? [];
     },
     abonner(fn) { abonnes.add(fn); sonder(); return () => abonnes.delete(fn); },
-    sectionLignes() { return derniere.rows; },
   };
   return port;
 }

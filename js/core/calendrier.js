@@ -20,3 +20,11 @@ export function deplacee(entree, nouveauDebut) {
   const delta = ecartJours(entree.debut, nouveauDebut);
   return { debut: nouveauDebut, fin: ajouterJours(entree.fin, delta) };
 }
+
+// Ce qu'on écrit quand une entrée change de jour : seulement les dates que la tâche a déjà (jamais une date inventée). Rien à écrire si elle n'en a aucune.
+export function roleDeplacement(tache, debut, fin) {
+  const parRole = {};
+  if (tache.debut) parRole.debut = debut;
+  if (tache.fin) parRole.echeance = fin;
+  return Object.keys(parRole).length ? parRole : null;
+}

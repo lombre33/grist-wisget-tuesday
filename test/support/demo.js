@@ -1,8 +1,8 @@
-// Mode démonstration : la page ouverte hors de Grist (ou sans accès) montre un petit projet fictif et se comporte comme avec Grist, en mémoire, sans rien écrire nulle part. C'est NOTRE
-// implémentation du port de données (jamais une mesure de Grist) : ce qui dépend de ce que Grist envoie se mesure dans un vrai Grist.
-import { modeleDocument } from '../core/colonnes.js';
-import { ajouterJours, aujourdhui as jourCourant } from '../core/dates.js';
-import { COLONNES_PROJETS, TABLE_PROJETS } from '../core/projet.js';
+// Port de données de TEST (jamais livré) : un petit projet fictif en mémoire, pour les essais unitaires et la suite rapide du navigateur (test/navigateur/). C'est NOTRE
+// implémentation du port (jamais une mesure de Grist) : ce qui dépend de ce que Grist envoie se mesure dans le vrai Grist de test/grist/. L'app livrée ne tourne que dans Grist.
+import { modeleDocument } from '../../js/core/colonnes.js';
+import { ajouterJours, aujourdhui as jourCourant } from '../../js/core/dates.js';
+import { COLONNES_PROJETS, TABLE_PROJETS } from '../../js/core/projet.js';
 
 const secondes = iso => Date.parse(`${iso}T00:00:00Z`) / 1000;
 const choix = (liste, couleurs) => JSON.stringify({ choices: liste, choiceOptions: Object.fromEntries(Object.entries(couleurs).map(([k, [fond, texte]]) => [k, { fillColor: fond, textColor: texte }])) });

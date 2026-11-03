@@ -16,7 +16,12 @@ function serveur() {
   return new Promise(resolve => {
     const s = http.createServer((req, res) => {
       const url = new URL(req.url, 'http://x');
-      const f = path.join(racine, url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname));
+      if (url.pathname === '/' || url.pathname === '/index.html') {
+        // La page de l'app, avec l'entrée de la suite rapide (port de test en mémoire) à la place de js/main.js.
+        const page = fs.readFileSync(path.join(racine, 'index.html'), 'utf8').replace(/src="js\/main\.js[^"]*"/, 'src="test/navigateur/demo-main.js"');
+        res.writeHead(200, { 'Content-Type': TYPES['.html'] }); res.end(page); return;
+      }
+      const f = path.join(racine, url.pathname === '/livre.html' ? 'index.html' : decodeURIComponent(url.pathname)); // /livre.html : la page telle qu'elle est livrée
       if (!f.startsWith(racine) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); res.end(); return; }
       res.writeHead(200, { 'Content-Type': TYPES[path.extname(f)] || 'application/octet-stream' });
       fs.createReadStream(f).pipe(res);
@@ -143,6 +148,20 @@ async function essai(nom, fn) {
     await p.waitForFunction(() => window.__tuesday.tache(8).statut === 'En cours');
     await p.keyboard.press('Control+z');
     await p.waitForFunction(() => window.__tuesday.tache(8).statut === 'À faire');
+    await p.context().close();
+  });
+
+  await essai('un clic sur une cellule (statut) ouvre son menu sans ouvrir la fiche, et le menu passe devant la fiche ouverte', async () => {
+    const p = await page({ largeur: 1000, hauteur: 640 });
+    await p.locator('.tu-ligne[data-id="8"] [data-champ="statut"]').click();
+    await p.waitForSelector('.tu-menu-item');
+    assert.equal(await p.locator('.tu-fiche').count(), 0, 'la fiche reste fermée');
+    await p.keyboard.press('Escape');
+    await p.locator('.tu-ligne[data-id="9"]').click();
+    await p.waitForSelector('.tu-fiche');
+    await p.locator('.tu-fiche [data-champ="statut"] button, .tu-fiche button[data-champ="statut"]').first().click();
+    await p.locator('.tu-menu-item', { hasText: 'En cours' }).click({ timeout: 3000 });
+    await p.waitForFunction(() => window.__tuesday.tache(9).statut === 'En cours');
     await p.context().close();
   });
 
@@ -398,6 +417,18 @@ async function essai(nom, fn) {
     assert.ok(x >= 42, 'la barre d\'outils de Tuesday est à droite de la zone de GFS');
     await shot(p, 'barre-gfs-gauche');
     await p.context().close();
+  });
+
+  await essai('page livrée ouverte hors de Grist : un écran dit comment l\'ouvrir, aucun point d\'accès global, aucune donnée', async () => {
+    const ctx = await b.newContext({ viewport: { width: 700, height: 400 }, locale: 'fr-FR' });
+    const p = await ctx.newPage();
+    p.setDefaultTimeout(6000);
+    await p.goto(base.replace('index.html', 'livre.html'));
+    await p.waitForSelector('.tu-demarrage-carte');
+    assert.match(await p.textContent('.tu-demarrage-carte'), /s'ouvre dans Grist/);
+    assert.equal(await p.evaluate(() => typeof window.__tuesday), 'undefined');
+    assert.equal(await p.locator('.tu-tableau').count(), 0);
+    await ctx.close();
   });
 
   await essai('thème sombre et anglais : mêmes écrans, textes traduits', async () => {

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { referencesDe, etiquettesRefs } from '../js/data/refs.js';
 import { modele } from './fixtures.mjs';
-import { creerDemo } from '../js/data/demo.js';
+import { creerDemo } from './support/demo.js';
 import { TABLE_PROJETS } from '../js/core/projet.js';
 
 test('références d\'une table : table visée et colonne affichée', () => {

@@ -45,7 +45,7 @@ button { cursor: pointer; }
 @container (max-width: 760px) { .tu-btn-texte, .tu-onglet-texte { display: none; } .tu-recherche { width: 28px; flex-basis: 28px; padding: 0 6px; } .tu-recherche:focus-within, .tu-recherche.est-remplie { width: 150px; flex-basis: 150px; } .tu-recherche:not(:focus-within):not(.est-remplie) .tu-recherche-champ { width: 0; padding: 0; } }
 
 /* ---------- Menus ---------- */
-.tu-menu { position: fixed; min-width: 190px; max-width: 320px; max-height: min(70vh, 380px); overflow: auto; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; box-shadow: var(--shadow-float); padding: 4px; }
+.tu-menu { position: fixed; z-index: var(--z-menu); min-width: 190px; max-width: 320px; max-height: min(70vh, 380px); overflow: auto; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; box-shadow: var(--shadow-float); padding: 4px; }
 .tu-menu.est-large { min-width: 230px; }
 .tu-menu-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 6px; padding: 6px 8px; }
 .tu-menu-item:hover, .tu-menu-item:focus-visible { background: var(--surface-sunken); outline: 0; }

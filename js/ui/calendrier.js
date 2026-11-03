@@ -4,7 +4,8 @@ import { h } from '../../kit/js/dom.js';
 import { I18n } from '../../kit/js/i18n.js';
 import { icone } from './icones.js';
 import { couleurTache } from './couleurs.js';
-import { entrees, grille, deplacee } from '../core/calendrier.js';
+import { entrees, grille, deplacee, roleDeplacement } from '../core/calendrier.js';
+import { vueCalendrierModule } from './calendrier-hote.js';
 import { selection } from '../core/vue.js';
 import { debutMois, ajouterMois, etiquette, ajouterJours } from '../core/dates.js';
 
@@ -27,11 +28,8 @@ async function deposerSur(app, jour) {
   const tache = app.tache(entree.id);
   if (!tache) return;
   const { debut, fin } = deplacee(entree, jour);
-  const parRole = {};
-  if (tache.debut) parRole.debut = debut;
-  if (tache.fin) parRole.echeance = fin;
-  if (!tache.debut && !tache.fin) return;
-  await app.modifier(entree.id, parRole, t('msg.deplacee'));
+  const parRole = roleDeplacement(tache, debut, fin);
+  if (parRole) await app.modifier(entree.id, parRole, t('msg.deplacee'));
 }
 
 function cellule(app, jour, liste, mois, actions) {
@@ -46,6 +44,8 @@ function cellule(app, jour, liste, mois, actions) {
 }
 
 export function vueCalendrier(app, actions) {
+  const duModule = vueCalendrierModule(app, actions);
+  if (duModule) return duModule;
   const mois = app.calMois ?? debutMois(app.aujourdhui);
   const sel = selection(app.taches, app.arbre, app.reglages);
   const liste = entrees(app.taches.filter(x => sel.passants.has(x.id)), { modifiable: !app.lectureSeule });

@@ -33,6 +33,7 @@ export function celluleStatut(app, tache) {
   const texte = tache.statut || t('statut.sans');
   const c = couleurStatut(app, tache.statut);
   const ouvrir = e => {
+    e.stopPropagation();
     if (raison) return app.notifier({ texte: raison, type: 'info' });
     ouvrirMenu(e.currentTarget, app.choix('statut').map(x => ({ label: x.valeur, valeur: x.valeur, actif: x.valeur === tache.statut, pastille: x.fond ? { '--st-fond': x.fond } : null })),
       it => it.valeur !== tache.statut && app.modifier(tache.id, { statut: it.valeur }, t('msg.statut')), { etiquette: t('role.statut') });
@@ -44,6 +45,7 @@ export function celluleStatut(app, tache) {
 export function celluleResponsables(app, tache) {
   const raison = grise(app, 'responsable');
   const ouvrir = e => {
+    e.stopPropagation();
     if (raison) return app.notifier({ texte: raison, type: 'info' });
     const col = app.colonne('responsable');
     const multiple = baseType(col.type) !== 'Ref' && baseType(col.type) !== 'Text';
@@ -65,6 +67,7 @@ export function cellulePriorite(app, tache) {
   const raison = grise(app, 'priorite');
   const rang = Math.max(0, app.choix('priorite').findIndex(c => c.valeur === tache.priorite));
   const ouvrir = e => {
+    e.stopPropagation();
     if (raison) return app.notifier({ texte: raison, type: 'info' });
     ouvrirMenu(e.currentTarget, [...app.choix('priorite').map(c => ({ label: c.valeur, valeur: c.valeur, actif: c.valeur === tache.priorite })), { separateur: true }, { label: t('champ.aucune'), valeur: '' }],
       it => it.valeur !== tache.priorite && app.modifier(tache.id, { priorite: it.valeur }, t('msg.priorite')), { etiquette: t('role.priorite') });

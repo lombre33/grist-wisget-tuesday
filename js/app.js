@@ -27,6 +27,14 @@ export class App {
   }
 
   abonner(fn) { this.abonnes.add(fn); return () => this.abonnes.delete(fn); }
+  // `init` échoue quand Grist refuse la lecture (accès pas encore accordé) ou répond mal (mesuré dans un vrai Grist : « Access not granted ») : on le dit au lieu de rester muet.
+  async demarrer() {
+    try { await this.init(); } catch (e) {
+      if (/access/i.test(String(e?.message))) { this.attenteAcces = true; this.demanderMiseEnPlace({ etape: 'acces' }); } else this.notifier({ texte: String(e?.message ?? e), type: 'erreur' });
+      this.emettre();
+    }
+  }
+
   // Après quelques secondes sans réponse de Grist, la mise en place s'ouvre sur l'accès : il n'est peut-être pas encore accordé.
   attendreAcces(delai = 3000) {
     if (this.port.mode === 'demo') return null;
@@ -112,8 +120,7 @@ export class App {
 
   // ---------- lecture ----------
   async lire() {
-    const section = this.port.sectionLignes?.();
-    const rows = this.source === this.sectionTable && Array.isArray(section) ? section : await this.port.lignes(this.source);
+    const rows = await this.port.lignes(this.source);
     const liees = {};
     for (const c of this.colonnes) if (c.table && c.table !== this.source && !liees[c.table]) liees[c.table] = await this.port.lignes(c.table);
     liees[this.source] = rows;

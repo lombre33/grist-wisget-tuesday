@@ -6,7 +6,8 @@ import { TEXTES } from './textes.js';
 import { App } from './app.js';
 import { monter } from './ui/rendu.js';
 import { creerPortGrist } from './data/grist.js';
-import { creerDemo } from './data/demo.js';
+import { ecranHorsGrist } from './ui/horsgrist.js';
+import { chargerModule } from './ui/calendrier-hote.js';
 
 Theme.init({ storageKey: 'tuesday_theme' });
 I18n.add(TEXTES);
@@ -14,24 +15,22 @@ I18n.init({ storageKey: 'tuesday_lang' });
 I18n.translateDom();
 GfsLink.onLanguage(langue => I18n.setLanguage(langue));
 
-// Dans Grist, la page est un cadre et l'objet `grist` existe ; ailleurs (page publique, essai), c'est la démonstration, clairement annoncée.
+// Tuesday ne tourne que dans Grist (widget personnalisé) : la page est un cadre et l'objet `grist` existe. Ailleurs, un écran dit comment l'ouvrir ; rien d'autre n'est lancé.
 const dansGrist = typeof window.grist === 'object' && window.parent !== window;
 
 async function demarrer() {
   await GfsLink.ready;
   const racine = document.getElementById('tuesday');
   const contexte = GfsLink.context();
-  let port;
-  if (dansGrist) {
-    window.grist.ready({ requiredAccess: 'full' });
-    port = creerPortGrist(window.grist, { lectureSeule: Boolean(contexte?.lectureSeule) });
-  } else port = creerDemo({ variante: new URLSearchParams(window.location.search).get('demo') });
+  if (!dansGrist) { racine.replaceChildren(ecranHorsGrist()); return; }
+  window.grist.ready({ requiredAccess: 'full' });
+  const port = creerPortGrist(window.grist, { lectureSeule: Boolean(contexte?.lectureSeule) });
   const nom = (await port.nomDocument?.()) ?? contexte?.document ?? port.document;
   const app = new App(port, { document: String(contexte?.document ?? nom ?? 'seul') });
-  window.__tuesday = app;
+  app.moduleCalendrier = await chargerModule(); // le calendrier de Calendar+, quand il existe ; sinon la grille provisoire
   monter(racine, app);
   app.attendreAcces();
-  await app.init();
+  await app.demarrer();
 }
 
 demarrer();

@@ -1,9 +1,8 @@
 // Les textes de Tuesday, français et anglais côte à côte (une entrée par clé). Vouvoiement ; « modèle » et jamais « template » ; une phrase courte par état.
 export const TEXTES = {
-  'acces.titre': { fr: 'En attente de l\'accès au document', en: 'Waiting for access to the document' },
-  'acces.sous': { fr: 'Tuesday lit et écrit dans vos tables, il lui faut l\'accès complet au document.', en: 'Tuesday reads and writes in your tables, so it needs full access to the document.' },
-  'acces.etape': { fr: 'Dans Grist, ouvrez les réglages du widget et choisissez « Accès complet au document », puis acceptez.', en: 'In Grist, open the widget settings, choose "Full document access", then accept.' },
-  'acces.reessayer': { fr: 'Recharger', en: 'Reload' },
+  'horsgrist.titre': { fr: 'Tuesday s\'ouvre dans Grist', en: 'Tuesday opens inside Grist' },
+  'horsgrist.sous': { fr: 'Cette page est un widget : elle ne montre rien toute seule.', en: 'This page is a widget: it shows nothing on its own.' },
+  'horsgrist.etape': { fr: 'Dans Grist, ajoutez un widget personnalisé, collez l\'adresse de cette page et choisissez « Accès complet au document ».', en: 'In Grist, add a custom widget, paste this page\'s address and choose "Full document access".' },
   'demo.titre': { fr: 'Démonstration', en: 'Demo' },
   'demo.explique': { fr: 'Ces données sont fictives et rien n\'est enregistré.', en: 'This data is made up and nothing is saved.' },
 

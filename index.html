@@ -7,13 +7,12 @@
 <meta name="description" content="Tuesday : un widget Grist de gestion de projet (tableau, kanban, chronologie, calendrier) qui travaille avec vos tables. / A Grist project-management widget (table, kanban, timeline, calendar) that works with your own tables.">
 <!-- Politique de sécurité du contenu stricte : aucun style en ligne (le CSSOM suffit), aucun script en ligne hors la carte d'importation citée par son empreinte (outils/versionner.mjs la recalcule),
      aucune police, image ni feuille d'un autre site. 'unsafe-eval' reste pour le fichier d'API des widgets que Grist sert (docs.getgrist.com/grist-plugin-api.js), un bundle qui s'évalue par eval(). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' https://docs.getgrist.com/grist-plugin-api.js 'sha256-jnLvdoUlTbOUkZL2CQbv8vFpQ7FXKpLig+5VERywDvA='; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' https://docs.getgrist.com/grist-plugin-api.js 'sha256-DYUCW2vG7WgCXtMhavGjuPup4l0AY5Ku2T7kMxTVfXI='; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'">
 <link rel="stylesheet" href="kit/css/tokens.css?v=0.1.1">
 <link rel="stylesheet" href="kit/css/windows.css?v=0.1.1">
 <link rel="stylesheet" href="css/app.css?v=0.1.1">
 <link rel="stylesheet" href="css/vues.css?v=0.1.1">
 <link rel="stylesheet" href="css/fiche.css?v=0.1.1">
-<link rel="stylesheet" href="css/miseenplace.css?v=0.1.1">
 <script type="importmap">
 {
   "imports": {
@@ -34,7 +33,6 @@
     "./js/core/taches.js": "./js/core/taches.js?v=0.1.1",
     "./js/core/texte.js": "./js/core/texte.js?v=0.1.1",
     "./js/core/vue.js": "./js/core/vue.js?v=0.1.1",
-    "./js/data/demo.js": "./js/data/demo.js?v=0.1.1",
     "./js/data/grist.js": "./js/data/grist.js?v=0.1.1",
     "./js/data/refs.js": "./js/data/refs.js?v=0.1.1",
     "./js/data/stockage.js": "./js/data/stockage.js?v=0.1.1",
@@ -42,6 +40,7 @@
     "./js/textes.js": "./js/textes.js?v=0.1.1",
     "./js/ui/bandeaux.js": "./js/ui/bandeaux.js?v=0.1.1",
     "./js/ui/barre.js": "./js/ui/barre.js?v=0.1.1",
+    "./js/ui/calendrier-hote.js": "./js/ui/calendrier-hote.js?v=0.1.1",
     "./js/ui/calendrier.js": "./js/ui/calendrier.js?v=0.1.1",
     "./js/ui/champs.js": "./js/ui/champs.js?v=0.1.1",
     "./js/ui/chronologie.js": "./js/ui/chronologie.js?v=0.1.1",
@@ -49,6 +48,7 @@
     "./js/ui/fiche.js": "./js/ui/fiche.js?v=0.1.1",
     "./js/ui/figures.js": "./js/ui/figures.js?v=0.1.1",
     "./js/ui/filtres.js": "./js/ui/filtres.js?v=0.1.1",
+    "./js/ui/horsgrist.js": "./js/ui/horsgrist.js?v=0.1.1",
     "./js/ui/icones.js": "./js/ui/icones.js?v=0.1.1",
     "./js/ui/kanban.js": "./js/ui/kanban.js?v=0.1.1",
     "./js/ui/menu.js": "./js/ui/menu.js?v=0.1.1",

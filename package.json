@@ -7,6 +7,7 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "test": "node --test \"test/*.test.mjs\"",
-    "test:navigateur": "node test/navigateur/essais.cjs"
+    "test:navigateur": "node test/navigateur/essais.cjs",
+    "test:grist": "node test/grist/essais.cjs"
   }
 }

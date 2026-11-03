@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { App } from '../js/app.js';
-import { creerDemo } from '../js/data/demo.js';
+import { creerDemo } from './support/demo.js';
 import { TABLE_PROJETS } from '../js/core/projet.js';
 
 const MAINT = () => new Date(2026, 10, 2);
@@ -395,4 +395,22 @@ test('tâches d\'exemple : seulement si la personne les a cochées', async () =>
   await app.init();
   assert.equal(await app.creerModele('Avec', { exemples: true }), true);
   assert.equal(cree.lignes.Titre.length, 3);
+});
+
+test('démarrer : un refus d\'accès de Grist ouvre la mise en place sur l\'accès, une autre erreur est dite, jamais d\'exception non rattrapée', async () => {
+  const refus = { ...creerDemo(), mode: 'grist', modele: async () => { throw new Error('Access not granted. Current access level none'); } };
+  const a = new App(refus, { document: 'doc' });
+  await a.demarrer();
+  assert.equal(a.attenteAcces, true);
+  assert.equal(a.miseEnPlace.ouverte, true); assert.equal(a.miseEnPlace.etape, 'acces');
+
+  const casse = { ...creerDemo(), mode: 'grist', modele: async () => { throw new Error('table introuvable'); } };
+  const b = new App(casse, { document: 'doc' });
+  await b.demarrer();
+  assert.equal(b.attenteAcces, false);
+  assert.equal(b.message.type, 'erreur'); assert.match(b.message.texte, /table introuvable/);
+
+  const bon = new App(creerDemo(), { document: 'doc' });
+  await bon.demarrer();
+  assert.equal(bon.initTermine, true); assert.equal(bon.message, null);
 });
