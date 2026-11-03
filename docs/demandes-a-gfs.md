@@ -56,6 +56,11 @@ V2. Le rendu portable est arrêté : `{ format: "svg" | "png" | "valeur", donnee
 - Point de départ de « Automatiser… » (V2) : n'existe ni chez GFS ni chez Automation+ (pas de `ouvrir`) ; sa forme s'écrira à notre V2 par une consigne à chacun. Entrée grisée avec sa raison en attendant ; on n'écrit jamais dans une table d'Automation+.
 - « Mes tâches » : défaut du cahier (question 6) : la personne se choisit une fois dans la liste des responsables, retenu par `GfsLink.storageSet`. Aucune identité dans le `contexte`. Reconnaissance d'office : à redemander plus tard si besoin.
 
+## 8. Identité et permissions centralisées (demande n° 2, 03/11)
+
+Décision du porteur (03/11) : Tuesday vit **à la fois seul et dans GFS**. Seul, il lit l'email de la personne connectée à Grist par l'API de Grist, dans une table d'administration à lui (créée avec l'accord de la personne). Dans GFS, **GFS centralise l'identité et les permissions pour toutes les apps de la suite** et expose proprement la personne courante (pour « Mes tâches » et pour savoir qui peut modifier quoi). La consigne 003 disait : aucune identité dans le `contexte`, table-sonde que GFS n'offre pas aux apps. Demande : lever ce point. Message envoyé à GFS le 03/11 ; réponse attendue (forme de l'identité, forme des permissions, repli seul).
+
+
 ## À faire de notre côté
 
 1. Cahier : justifier `Tuesday_Liens` (plusieurs liens par tâche) ; mettre les décisions ci-dessus dans les sections 8 et 13.
