@@ -48,6 +48,13 @@ export class App {
     return setTimeout(() => { if (!this.initTermine) { this.attenteAcces = true; this.demanderMiseEnPlace({ etape: 'acces' }); } }, delai);
   }
 
+  // Rend vrai quand plus aucune écriture n'est en cours, faux si elles n'ont pas fini au bout de `delai` (la réponse à `fermer` de GFS ne dit jamais « oui » avant d'avoir fini d'écrire).
+  async attendreEcritures(delai = 8000) {
+    const fin = Date.now() + delai;
+    while (this.occupe > 0 && Date.now() < fin) await new Promise(resolve => setTimeout(resolve, 20));
+    return this.occupe === 0;
+  }
+
   emettre(quoi = 'etat') { for (const fn of [...this.abonnes]) fn(quoi); }
   get lectureSeule() { return Boolean(this.port.lectureSeule); }
   get estApercu() { return this.source === ID_APERCU; }

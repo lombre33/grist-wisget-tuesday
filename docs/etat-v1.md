@@ -1,4 +1,4 @@
-# État de la V1 de Tuesday (03/11/2026, version 0.1.7)
+# État de la V1 de Tuesday (03/11/2026, version 0.1.8)
 
 Ce document dit **ce qui existe, ce qui est mesuré, ce qui ne l'est pas, et ce que GFS doit rejouer**. Il remplace la lecture du code pour qui reprend le travail.
 

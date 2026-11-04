@@ -628,6 +628,53 @@ async function essai(nom, fn) {
     await p.context().close();
   });
 
+  // `fermer` de GFS (consigne 013) : la réponse de Tuesday, appelée comme le ferait le kit quand GFS veut laisser la place à une autre app.
+  const fermer = p => p.evaluate(async () => (await import('/js/ui/fermeture.js')).reponseFermer(window.__tuesday));
+  await essai('fermer : rien n\'attend → oui tout de suite ; une saisie dont on n\'est pas sorti est enregistrée par sa sortie, sans question', async () => {
+    const p = await page();
+    assert.deepEqual(await fermer(p), { ferme: true });
+    await p.locator('.tu-ligne[data-id="1"]').click();
+    await p.waitForSelector('.tu-fiche [data-focus="fiche:titre"]');
+    await p.fill('.tu-fiche [data-focus="fiche:titre"]', 'Titre changé avant de partir');
+    assert.deepEqual(await fermer(p), { ferme: true }, 'la saisie en cours est enregistrée, aucune question');
+    assert.equal((await tache(p, 1)).titre, 'Titre changé avant de partir');
+    assert.equal(await p.locator('#pp-dialog-modal').isVisible(), false, 'aucune question');
+    await p.context().close();
+  });
+  await essai('fermer : un titre tapé sans Entrée → la question ; Annuler garde tout, Abandonner dit oui sans rien ajouter, Ajouter écrit puis dit oui', async () => {
+    const p = await page();
+    const avant = await p.evaluate(() => window.__tuesday.taches.length);
+    await p.fill('.tu-ajout-champ', 'Appeler le client');
+    let reponse = fermer(p);
+    await p.waitForSelector('#pp-dialog-modal:not([hidden])');
+    assert.match(await p.textContent('#pp-dialog-message'), /Appeler le client/);
+    await p.keyboard.press('Escape'); // Annuler
+    assert.deepEqual(await reponse, { ferme: false });
+    assert.equal(await p.inputValue('.tu-ajout-champ'), 'Appeler le client', 'tout reste en place');
+    reponse = fermer(p);
+    await p.waitForSelector('#pp-dialog-modal:not([hidden])');
+    await p.click('#pp-dialog-modal button:has-text("Abandonner")');
+    assert.deepEqual(await reponse, { ferme: true });
+    assert.equal(await p.evaluate(() => window.__tuesday.taches.length), avant, 'rien n\'a été ajouté');
+    reponse = fermer(p);
+    await p.waitForSelector('#pp-dialog-modal:not([hidden])');
+    await p.click('#pp-dialog-modal button:has-text("Ajouter")');
+    assert.deepEqual(await reponse, { ferme: true });
+    assert.equal(await p.evaluate(() => window.__tuesday.taches.length), avant + 1, 'la tâche est écrite avant le oui');
+    assert.ok(await p.evaluate(() => window.__tuesday.taches.some(t => t.titre === 'Appeler le client')));
+    await p.context().close();
+  });
+  await essai('fermer : une tâche tapée avant la mise en place (rien ne peut l\'écrire) → seulement Abandonner ou Annuler', async () => {
+    const p = await page({ ouvrir: false });
+    await p.evaluate(() => { window.__tuesday.tacheEnAttente = { parRole: { titre: 'Brouillon' }, libelle: 'x' }; });
+    const reponse = fermer(p);
+    await p.waitForSelector('#pp-dialog-modal:not([hidden])');
+    assert.equal(await p.locator('#pp-dialog-modal button:has-text("Ajouter")').count(), 0);
+    await p.click('#pp-dialog-modal button:has-text("Abandonner")');
+    assert.deepEqual(await reponse, { ferme: true });
+    await p.context().close();
+  });
+
   await essai('aucune violation de la politique de sécurité, aucune erreur de page', async () => {
     assert.deepEqual(violations, []);
   });

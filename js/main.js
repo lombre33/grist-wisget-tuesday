@@ -9,6 +9,7 @@ import { monter } from './ui/rendu.js';
 import { creerPortGrist } from './data/grist.js';
 import { ecranHorsGrist } from './ui/horsgrist.js';
 import { chargerModule } from './ui/calendrier-hote.js';
+import { brancherFermeture } from './ui/fermeture.js';
 
 Theme.init({ storageKey: 'tuesday_theme' });
 I18n.add(TEXTES);
@@ -31,6 +32,7 @@ async function demarrer() {
   const nom = (await port.nomDocument?.()) ?? contexte?.document ?? port.document;
   const app = new App(port, { document: String(contexte?.document ?? nom ?? 'seul') });
   app.suivreIdentite();
+  brancherFermeture(GfsLink, app); // `fermer` de GFS : enregistrer ce qui attend avant de laisser la place (consigne 013)
   app.moduleCalendrier = await chargerModule(); // le calendrier du kit (Calendar+) ; s'il ne se charge pas, la vue Calendrier le dit
   monter(racine, app);
   app.attendreAcces();
