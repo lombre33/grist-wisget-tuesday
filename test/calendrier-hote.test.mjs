@@ -34,10 +34,13 @@ test('roleDeplacement : seulement les dates que la tâche a déjà, jamais une d
 test('rappels : ouvrir, ajouter avec le jour choisi ; déplacer écrit par l\'hôte et lève si Grist refuse (le module remet l\'événement)', async () => {
   const { app, ecritures } = appFactice([tache(1), tache(2, { debut: null, fin: null })]);
   const appels = [];
-  const actions = { ouvrirFiche: id => appels.push(['ouvrir', id]), nouvelleTache: c => appels.push(['ajouter', c]) };
+  const actions = { ouvrirFiche: id => appels.push(['ouvrir', id]), nouvelleTache: (c, o) => appels.push(['ajouter', c, o]) };
   const r = rappels(app, actions);
-  r.onOuvrir(1); r.onAjouter({ debut: '2026-11-09' });
-  assert.deepEqual(appels, [['ouvrir', 1], ['ajouter', { echeance: '2026-11-09' }]]);
+  r.onOuvrir(1);
+  assert.ok(r.onAjouter({ debut: '2026-11-09' }) instanceof Promise, 'le module attend une promesse');
+  await r.onAjouter({ debut: '2026-11-10T09:30', titre: '  Appeler  ' });
+  await r.onAjouter({ debut: '2026-11-11', titre: '   ' });
+  assert.deepEqual(appels, [['ouvrir', 1], ['ajouter', { echeance: '2026-11-09' }, { fiche: true }], ['ajouter', { echeance: '2026-11-10', titre: 'Appeler' }, { fiche: false }], ['ajouter', { echeance: '2026-11-11' }, { fiche: true }]]);
   await r.onDeplacer({ id: 1, debut: '2026-11-04', fin: '2026-11-06' });
   assert.deepEqual(ecritures[0].parRole, { debut: '2026-11-04', echeance: '2026-11-06' });
   await assert.rejects(r.onDeplacer({ id: 2, debut: '2026-11-04', fin: '2026-11-06' }), /rien à écrire/);

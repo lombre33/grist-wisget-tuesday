@@ -26,7 +26,11 @@ export function rappels(app, actions) {
       if (!parRole) throw new Error('rien à écrire');
       if (!(await app.modifier(id, parRole, t('msg.deplacee')))) throw new Error('refusé'); // le module remet l'événement à sa place
     },
-    onAjouter: ({ debut }) => actions.nouvelleTache({ echeance: debut }),
+    // Une saisie rapide du module donne le titre : la tâche naît sur le jour avec ce titre, sans ouvrir la fiche ; sans titre, la fiche s'ouvre. Toujours une promesse (le module attend l'écriture).
+    onAjouter: async ({ debut, titre } = {}) => {
+      const nom = typeof titre === 'string' ? titre.trim() : '';
+      await actions.nouvelleTache({ echeance: String(debut).slice(0, 10), ...(nom ? { titre: nom } : {}) }, { fiche: !nom });
+    },
     onEtat: etat => { app.calEtat = etat; },
   };
 }

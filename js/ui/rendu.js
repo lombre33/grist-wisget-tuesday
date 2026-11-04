@@ -21,7 +21,7 @@ import { COLONNES_PROJETS, TABLE_PROJETS } from '../core/projet.js';
 import { personnesPossibles } from './champs.js';
 import { GfsLink } from '../../kit/js/gfs-link.js';
 
-export const VERSION = '0.1.2';
+export const VERSION = '0.1.3';
 const t = (cle, vars) => I18n.t(cle, vars);
 const VUES = { tableau: vueTableau, kanban: vueKanban, chronologie: vueChronologie, calendrier: vueCalendrier };
 
@@ -81,10 +81,10 @@ export function monter(racine, app) {
     nouvelleTache, supprimer, garder, menuProjet, lierFichier, ouvrirLien, retirerLien,
   };
   function basculer(cle) { const r = app.reglages.replies; app.regler({ replies: r.includes(cle) ? r.filter(x => x !== cle) : [...r, cle] }); }
-  async function nouvelleTache(contexte = {}) {
+  async function nouvelleTache(contexte = {}, { fiche = true } = {}) {
     const valeurs = { titre: t('champ.nouvelle'), ...(app.mapping.statut ? { statut: app.premierStatut() } : {}), ...contexte };
     const id = await app.ajouter(valeurs, t('msg.ajoutee'));
-    if (id) { app.selection = id; focusPending = 'fiche:titre'; app.emettre(); }
+    if (id && fiche) { app.selection = id; focusPending = 'fiche:titre'; app.emettre(); }
   }
   async function lierFichier(tacheId) {
     const choix = await app.liens.choisir(t('liens.choisir'));
