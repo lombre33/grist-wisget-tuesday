@@ -90,7 +90,7 @@ function vide(app, actions) {
 
 export function vueTableau(app, actions) {
   const cols = colonnesVisibles(app);
-  const groupes = lignesTableau({ taches: app.taches, arbre: app.arbre, reglages: app.reglages, choix: { statut: app.choix('statut'), priorite: app.choix('priorite'), groupe: app.choix('groupe') }, sans: { statut: t('statut.sans'), priorite: t('priorite.sans'), responsable: t('responsable.sans'), groupe: t('groupe.sans') } });
+  const groupes = lignesTableau({ taches: app.taches, arbre: app.arbre, reglages: app.reglagesVue, choix: { statut: app.choix('statut'), priorite: app.choix('priorite'), groupe: app.choix('groupe') }, sans: { statut: t('statut.sans'), priorite: t('priorite.sans'), responsable: t('responsable.sans'), groupe: t('groupe.sans') } });
   const total = groupes.reduce((n, g) => n + g.lignes.length, 0);
   const corps = [];
   const entete1 = entete(cols);

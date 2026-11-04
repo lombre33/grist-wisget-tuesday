@@ -10,18 +10,21 @@ import { Historique } from './core/historique.js';
 import { lire as lireReglages, ecrire as ecrireReglages, cle as cleReglages } from './core/reglages.js';
 import { rangFin } from './core/rang.js';
 import { depuisLigne, versLigne, idProjet, TABLE_PROJETS, COLONNES_PROJETS } from './core/projet.js';
-import { etiquettesRefs } from './data/refs.js';
+import { etiquettesRefs, courrielsRefs } from './data/refs.js';
+import { reconnaitre as reconnaitrePersonne, moiEffectif } from './core/identite.js';
+import { baseType } from './core/colonnes.js';
 import { modeleDepart } from './core/modele-depart.js';
 import { apercu, recommandation, etapeDepart, adapterTache, nomTable, ID_APERCU } from './core/miseenplace.js';
 import { lireChoix, ecrireChoix } from './data/stockage.js';
 
 export class App {
   constructor(port, { document: doc = 'seul', maintenant = () => new Date(), lien = GfsLink } = {}) {
+    this.lien = lien;
     this.liens = new LiensFichiers(this, lien);
     this.port = port; this.document = doc; this.maintenant = maintenant;
     this.abonnes = new Set(); this.historique = new Historique();
     this.modele = { tables: {} }; this.projets = []; this.projet = null; this.source = null; this.mapping = null;
-    this.rows = []; this.rowsParId = new Map(); this.refs = {}; this.taches = []; this.arbre = faireArbre([]);
+    this.rows = []; this.rowsParId = new Map(); this.refs = {}; this.courriels = {}; this.identite = null; this.taches = []; this.arbre = faireArbre([]);
     this.reglages = lireReglages(''); this.selection = null; this.ecran = 'projet'; this.attenteAcces = false; this.sectionTable = null;
     this.message = null; this.occupe = 0;
     // L'outil est complet dès le premier affichage : vide, sur l'aperçu du modèle, tant que la mise en place n'est pas faite (cahier de l'onboarding, 3).
@@ -130,6 +133,7 @@ export class App {
     liees[this.source] = rows;
     this.rows = rows; this.rowsParId = new Map(rows.map(r => [r.id, r]));
     this.refs = etiquettesRefs(this.modele, this.source, liees);
+    this.courriels = courrielsRefs(this.modele, this.source, liees);
     await this.liens.lire();
     this.recalculer();
   }
@@ -138,6 +142,34 @@ export class App {
     this.taches = construire(this.rows, { mapping: this.mapping, colonnes: this.colonnes, refs: this.refs, aujourdhui: this.aujourdhui });
     this.arbre = faireArbre(this.taches);
   }
+
+  // L'adresse que GFS donne (ou null) ; la changer refait les vues qui en dépendent (« Mes tâches »).
+  poserIdentite(identite) {
+    const email = identite?.email ?? null;
+    if (email === (this.identite?.email ?? null)) return;
+    this.identite = email ? { email } : null;
+    this.emettre();
+  }
+
+  // Prend l'adresse que le lien de GFS donne maintenant, puis celle qui arrive plus tard ; rend de quoi s'arrêter. Seule, le lien rend toujours null.
+  suivreIdentite() {
+    this.poserIdentite(this.lien.identity());
+    return this.lien.onIdentity(identite => this.poserIdentite(identite));
+  }
+
+  // Le responsable que l'adresse reconnaît, ou null.
+  get moiReconnu() {
+    const col = this.colonne('responsable');
+    if (!col || !this.identite) return null;
+    const libelles = baseType(col.type) === 'Text' ? this.taches.flatMap(x => x.responsables) : [];
+    return reconnaitrePersonne({ email: this.identite.email, parId: this.courriels[col.id], libelles });
+  }
+
+  // La personne qui est là : l'adresse d'abord, « Je suis… » ensuite.
+  get moi() { return moiEffectif({ reconnue: this.moiReconnu, choisie: this.reglages.moi }); }
+
+  // Les réglages tels que les vues les lisent : `moi` est la personne qui est là.
+  get reglagesVue() { return { ...this.reglages, moi: this.moi }; }
 
   tache(id) { return this.arbre.parId.get(id) ?? null; }
   lireLigne(table, id) { return table === this.source ? this.rowsParId.get(id) : table === TABLE_LIENS ? this.liens.ligne(id) : this.port.lire?.(table, id); }

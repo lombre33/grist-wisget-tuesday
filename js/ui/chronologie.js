@@ -89,7 +89,7 @@ function controles(app, actions) {
 
 export function vueChronologie(app, actions) {
   const ech = echelle(app.taches, app.reglages.zoom, app.aujourdhui);
-  const groupes = lignesTableau({ taches: app.taches, arbre: app.arbre, reglages: app.reglages, choix: { statut: app.choix('statut'), priorite: app.choix('priorite'), groupe: app.choix('groupe') }, sans: { statut: t('statut.sans'), priorite: t('priorite.sans'), responsable: t('responsable.sans'), groupe: t('groupe.sans') } });
+  const groupes = lignesTableau({ taches: app.taches, arbre: app.arbre, reglages: app.reglagesVue, choix: { statut: app.choix('statut'), priorite: app.choix('priorite'), groupe: app.choix('groupe') }, sans: { statut: t('statut.sans'), priorite: t('priorite.sans'), responsable: t('responsable.sans'), groupe: t('groupe.sans') } });
   const corps = [];
   const sansDate = [];
   for (const g of groupes) {

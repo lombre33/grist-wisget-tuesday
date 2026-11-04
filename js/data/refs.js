@@ -1,5 +1,6 @@
 // Le nom affiché d'une Référence : Grist donne un numéro, la personne veut lire un nom. Pour chaque colonne Ref / RefList, la table visée et sa colonne affichée donnent « identifiant → texte ».
 import { baseType, estReference } from '../core/colonnes.js';
+import { colonneCourriel, courriels } from '../core/identite.js';
 
 function colonneAffichee(table, voir) {
   if (voir && table?.colonnes.some(c => c.id === voir)) return voir;
@@ -24,5 +25,12 @@ export function etiquettesRefs(modele, tableId, lignesParTable) {
     }
     sortie[colId] = m;
   }
+  return sortie;
+}
+
+// Les adresses des personnes : pour chaque colonne Ref / RefList, { colId → Map(identifiant → adresse en minuscules) } quand la table visée garde une colonne d'adresses, sinon une carte vide.
+export function courrielsRefs(modele, tableId, lignesParTable) {
+  const sortie = {};
+  for (const { colId, table } of referencesDe(modele, tableId)) sortie[colId] = courriels(lignesParTable[table], colonneCourriel(modele.tables[table]?.colonnes));
   return sortie;
 }

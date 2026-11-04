@@ -107,11 +107,12 @@ export function monter(racine, app) {
   }
   function menuProjet(ancre) {
     const hebergee = GfsLink.hosted;
+    const reconnue = app.moiReconnu !== null;
     const items = [
       ...(app.projets.length ? [{ titre: t('projet.projets') }, ...app.projets.map(p => ({ label: p.nom || p.source, valeur: ['projet', p], actif: p === app.projet || p.id === app.projet?.id }))] : []),
       { label: t('projet.autreTable'), valeur: ['tables'] },
-      { separateur: true }, { titre: t('projet.jeSuis') }, ...personnesPossibles(app).slice(0, 30).map(p => ({ label: p.label, valeur: ['moi', p.id], actif: app.reglages.moi === p.id })),
-      ...(app.reglages.moi !== null ? [{ label: t('projet.personne'), valeur: ['moi', null] }] : []),
+      { separateur: true }, { titre: t('projet.jeSuis') }, ...personnesPossibles(app).slice(0, 30).map(p => ({ label: p.label, valeur: ['moi', p.id], actif: app.moi === p.id, grise: reconnue, raison: reconnue ? t('projet.reconnue') : null })),
+      ...(app.reglages.moi !== null || reconnue ? [{ label: t('projet.personne'), valeur: ['moi', null], grise: reconnue, raison: reconnue ? t('projet.reconnue') : null }] : []),
       { separateur: true }, { titre: t('projet.apparence') },
       { label: 'Français', valeur: ['langue', 'fr'], actif: I18n.language === 'fr', grise: hebergee, raison: hebergee ? t('projet.langueGfs') : null },
       { label: 'English', valeur: ['langue', 'en'], actif: I18n.language === 'en', grise: hebergee, raison: hebergee ? t('projet.langueGfs') : null },

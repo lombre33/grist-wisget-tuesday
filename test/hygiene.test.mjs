@@ -68,6 +68,51 @@ test('aucune couleur ni z-index en dur dans les feuilles', () => {
   }
 });
 
+// L'ambiance de GFS (consigne 010, règle 15 du guide des apps) : les feuilles lisent les jetons. Les couleurs en dur n'en suivraient aucun ; les arrondis gardent leur valeur d'origine en repli ;
+// le fond de la page est --bg sur l'élément qui la couvre, jamais --main-bg (celui de la carte de GFS).
+test('feuilles : aucune couleur en dur, sous aucune forme (hsl, nom de couleur, mot-clé système)', () => {
+  // Exceptions justifiées : le texte d'une pastille, d'une barre ou d'une puce dont le fond vient d'un choix coloré de Grist (une donnée, pastel dans les deux modes) se fonce vers le noir, quel que soit le mode.
+  const permises = [/\.tu-pastille/, /\.tu-barre-tache \{/, /\.tu-cal-puce/];
+  const noms = /(?:^|[\s:(,])(?:white|black|red|green|blue|yellow|orange|purple|pink|gray|grey|silver|navy|teal|maroon|olive|lime|aqua|fuchsia|brown|gold|cyan|magenta)(?=[\s;,)!]|$)/i;
+  for (const { file, text } of feuilles) {
+    const body = text.replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.doesNotMatch(body, /\bhsla?\(/, `${file} : couleur hsl en dur`);
+    assert.doesNotMatch(body, /\b(?:oklch|oklab|lab|lch|hwb)\(/, `${file} : couleur en dur`);
+    for (const ligne of body.split('\n').filter(l => !permises.some(r => r.test(l)))) if (/(?:color|background|border[a-z-]*|fill|stroke|outline[a-z-]*)\s*:/.test(ligne)) assert.doesNotMatch(ligne, noms, `${file} : nom de couleur en dur : ${ligne.trim().slice(0, 80)}`);
+  }
+});
+
+test('feuilles : les arrondis passent par les jetons de forme, avec leur valeur d\'origine en repli ; jamais --main-bg', () => {
+  for (const { file, text } of feuilles) {
+    const body = text.replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.doesNotMatch(body, /--main-bg/, `${file} : --main-bg`);
+    for (const m of body.matchAll(/border-radius:\s*(\d+)px/g)) assert.fail(`${file} : arrondi en dur (${m[0]}) : var(--radius-xs|sm|md|lg|pill, ${m[1]}px)`);
+    for (const m of body.matchAll(/var\(--radius-(?:xs|md|lg|pill|btn|input|panel),\s*([^)]*)\)/g)) assert.ok(m[1].trim() !== '', `${file} : jeton de forme sans repli`);
+    for (const m of body.matchAll(/var\(--(?:radius-(?:xs|md|lg|pill|btn|input|panel)|fill|fill-hover|fill-line|font-head|fs-head|fw-head|ls-head|tt-head|wash|wash-size|shadow-panel|shadow-ctl)\)/g)) assert.fail(`${file} : ${m[0]} sans valeur de repli (le kit ne le définit pas)`);
+  }
+});
+
+test('feuilles : le fond de la page est --bg sur l\'élément qui couvre la page, avec le décor --wash', () => {
+  const app = feuilles.find(f => f.file === 'css/app.css').text;
+  const regle = /\.tu-app \{[^}]*min-height: 100vh;[^}]*\}/.exec(app)?.[0] ?? '';
+  assert.match(regle, /background-color: var\(--bg\)/);
+  assert.match(regle, /background-image: var\(--wash, none\)/);
+  assert.match(regle, /background-size: var\(--wash-size, auto\)/);
+});
+
+test('toutes les feuilles du dépôt sont liées par index.html (une feuille oubliée laisse un pop-up sans style)', () => {
+  const html = readFileSync(join(racine, 'index.html'), 'utf8');
+  for (const { file } of feuilles) assert.ok(html.includes(`href="${file}?v=`), `${file} n'est pas liée par index.html`);
+});
+
+test('le module d\'entrée démarre l\'ambiance de GFS avant d\'afficher, une fois, avec le kit', () => {
+  const main = readFileSync(join(racine, 'js/main.js'), 'utf8');
+  assert.match(main, /import \{ Ambiance \} from '\.\.\/kit\/js\/ambiance\.js'/);
+  assert.equal(main.match(/Ambiance\.start\(\)/g)?.length, 1);
+  assert.ok(main.indexOf('Ambiance.start()') < main.indexOf('monter(racine'), 'l\'ambiance est posée avant le premier affichage');
+  assert.doesNotMatch(main, /createAmbiance/, 'le lien du kit est celui de l\'app : pas de deuxième lien');
+});
+
 test('aucun fichier ne dépasse 600 lignes', () => {
   for (const { file, text } of [...sources, ...feuilles]) assert.ok(text.split('\n').length <= 600, `${file} : ${text.split('\n').length} lignes`);
 });

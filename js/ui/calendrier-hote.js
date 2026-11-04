@@ -32,7 +32,7 @@ export function rappels(app, actions) {
 }
 
 export function lignesModule(app) {
-  const sel = selection(app.taches, app.arbre, app.reglages);
+  const sel = selection(app.taches, app.arbre, app.reglagesVue);
   const liste = entrees(app.taches.filter(x => sel.passants.has(x.id)), { modifiable: !app.lectureSeule });
   return liste.map(e => {
     const tache = app.tache(e.id);

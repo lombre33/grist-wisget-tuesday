@@ -4,6 +4,8 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body { background: var(--bg); color: var(--text); font: 13px/1.4 var(--font-ui); }
+/* Le fond de la page est --bg, sur l'élément qui la couvre ; le décor de l'ambiance (--wash) s'y pose en image. Jamais --main-bg, qui est le fond de la carte de GFS. */
+.tu-app { min-height: 100vh; background-color: var(--bg); background-image: var(--wash, none); background-size: var(--wash-size, auto); }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 [aria-disabled="true"] { cursor: not-allowed; }
@@ -17,18 +19,18 @@ button { cursor: pointer; }
 /* ---------- Barre du haut ---------- */
 .tu-barre { flex: none; min-height: var(--h-barre); display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: nowrap; overflow: hidden; }
 .tu-barre.est-simple { padding-left: 12px; }
-.tu-nom-app { font-size: 14px; }
-.tu-demo { font-size: 12px; color: var(--accent-ink); background: var(--accent-soft); border: 1px solid var(--accent-soft-border); border-radius: 999px; padding: 2px 9px; }
-.tu-btn { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 9px; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--text); white-space: nowrap; flex: none; }
+.tu-nom-app { font-family: var(--font-head, inherit); font-size: var(--fs-head, 14px); font-weight: var(--fw-head, inherit); letter-spacing: var(--ls-head, normal); text-transform: var(--tt-head, none); }
+.tu-demo { font-size: 12px; color: var(--accent-ink); background: var(--accent-soft); border: 1px solid var(--accent-soft-border); border-radius: var(--radius-pill, 999px); padding: 2px 9px; }
+.tu-btn { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 9px; border: 1px solid transparent; border-radius: var(--radius-btn, var(--radius-sm)); background: transparent; color: var(--text); white-space: nowrap; flex: none; }
 .tu-btn:hover { background: var(--surface-sunken); }
 .tu-btn.est-actif { background: var(--accent-soft); color: var(--accent-ink); }
 .tu-btn[aria-disabled="true"] { color: var(--text-muted); opacity: .75; }
 .tu-btn-icone { padding: 0 6px; }
-.tu-btn-principal { background: var(--accent-solid); color: var(--on-accent); border-color: var(--accent-solid); font-weight: 600; }
-.tu-btn-principal:hover { background: var(--accent-solid-hover); }
+.tu-btn-principal { background: var(--fill, var(--accent-solid)); color: var(--on-accent); border-color: var(--fill-line, var(--accent-solid)); font-weight: 600; }
+.tu-btn-principal:hover { background: var(--fill-hover, var(--accent-solid-hover)); }
 .tu-btn-principal[aria-disabled="true"] { background: var(--surface-sunken); color: var(--text-muted); border-color: var(--border); }
 .tu-btn.est-danger { color: var(--danger-ink); }
-.tu-compte { background: var(--accent-solid); color: var(--on-accent); border-radius: 999px; min-width: 18px; height: 18px; display: inline-grid; place-items: center; font-size: 11px; padding: 0 5px; }
+.tu-compte { background: var(--accent-solid); color: var(--on-accent); border-radius: var(--radius-pill, 999px); min-width: 18px; height: 18px; display: inline-grid; place-items: center; font-size: 11px; padding: 0 5px; }
 .tu-projet { font-weight: 600; max-width: 180px; }
 .tu-projet-nom { overflow: hidden; text-overflow: ellipsis; }
 .tu-seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface); flex: none; }
@@ -41,13 +43,13 @@ button { cursor: pointer; }
 .tu-recherche:focus-within { border-color: var(--accent); }
 .tu-recherche-champ { border: 0; outline: 0; background: transparent; width: 100%; min-width: 0; }
 .tu-filtres-actifs { flex: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 10px; background: var(--surface); border-bottom: 1px solid var(--border); }
-.tu-etiquette-filtre { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border: 1px solid var(--accent-soft-border); border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: 12px; }
+.tu-etiquette-filtre { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border: 1px solid var(--accent-soft-border); border-radius: var(--radius-pill, 999px); background: var(--accent-soft); color: var(--accent-ink); font-size: 12px; }
 @container (max-width: 760px) { .tu-btn-texte, .tu-onglet-texte { display: none; } .tu-recherche { width: 28px; flex-basis: 28px; padding: 0 6px; } .tu-recherche:focus-within, .tu-recherche.est-remplie { width: 150px; flex-basis: 150px; } .tu-recherche:not(:focus-within):not(.est-remplie) .tu-recherche-champ { width: 0; padding: 0; } }
 
 /* ---------- Menus ---------- */
-.tu-menu { position: fixed; z-index: var(--z-menu); min-width: 190px; max-width: 320px; max-height: min(70vh, 380px); overflow: auto; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; box-shadow: var(--shadow-float); padding: 4px; }
+.tu-menu { position: fixed; z-index: var(--z-menu); min-width: 190px; max-width: 320px; max-height: min(70vh, 380px); overflow: auto; background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-md, 10px); box-shadow: var(--shadow-float); padding: 4px; }
 .tu-menu.est-large { min-width: 230px; }
-.tu-menu-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 6px; padding: 6px 8px; }
+.tu-menu-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0; background: transparent; border-radius: var(--radius-xs, 6px); padding: 6px 8px; }
 .tu-menu-item:hover, .tu-menu-item:focus-visible { background: var(--surface-sunken); outline: 0; }
 .tu-menu-item.est-actif { color: var(--accent-ink); font-weight: 600; }
 .tu-menu-item.est-danger { color: var(--danger-ink); }
@@ -56,12 +58,12 @@ button { cursor: pointer; }
 .tu-menu-aide { color: var(--text-muted); font-size: 12px; }
 .tu-menu-titre { padding: 6px 8px 2px; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
 .tu-menu-sep { height: 1px; background: var(--border); margin: 4px 2px; }
-.tu-menu-case { width: 14px; height: 14px; border: 1.5px solid var(--border-strong); border-radius: 4px; flex: none; }
+.tu-menu-case { width: 14px; height: 14px; border: 1.5px solid var(--border-strong); border-radius: var(--radius-xs, 4px); flex: none; }
 .tu-menu-case.est-coche { background: var(--accent-solid); border-color: var(--accent-solid); box-shadow: inset 0 0 0 2px var(--surface); }
-.tu-menu-pastille { width: 12px; height: 12px; border-radius: 4px; background: var(--st-fond, var(--surface-sunken)); border: 1px solid var(--border); flex: none; }
+.tu-menu-pastille { width: 12px; height: 12px; border-radius: var(--radius-xs, 4px); background: var(--st-fond, var(--surface-sunken)); border: 1px solid var(--border); flex: none; }
 
 /* ---------- Pièces : pastilles, avatars, priorités ---------- */
-.tu-pastille { display: inline-flex; align-items: center; max-width: 100%; height: 22px; padding: 0 9px; border: 1px solid transparent; border-radius: 999px; background: var(--st-fond, var(--surface-sunken)); color: var(--st-texte, color-mix(in srgb, var(--st-fond, var(--text)) 22%, black)); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.tu-pastille { display: inline-flex; align-items: center; max-width: 100%; height: 22px; padding: 0 9px; border: 1px solid transparent; border-radius: var(--radius-pill, 999px); background: var(--st-fond, var(--surface-sunken)); color: var(--st-texte, color-mix(in srgb, var(--st-fond, var(--text)) 22%, black)); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .tu-pastille.est-neutre { color: var(--text); border-color: var(--border); }
 .tu-pastille.est-inconnu { border-style: dashed; border-color: var(--border-strong); opacity: .8; }
 .tu-pastille-texte { overflow: hidden; text-overflow: ellipsis; }
@@ -75,18 +77,18 @@ button.tu-pastille.est-grisee { opacity: .75; cursor: not-allowed; }
 .tu-prio-point { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); }
 .tu-prio.est-rang-0 .tu-prio-point { background: var(--danger); }
 .tu-prio.est-rang-1 .tu-prio-point { background: var(--accent); }
-.tu-puce { display: inline-block; padding: 0 7px; border-radius: 999px; background: var(--surface-sunken); color: var(--text-muted); font-size: 11px; line-height: 18px; }
-.tu-avance { display: inline-block; width: 64px; height: 6px; border-radius: 999px; background: var(--surface-sunken); overflow: hidden; vertical-align: middle; }
+.tu-puce { display: inline-block; padding: 0 7px; border-radius: var(--radius-pill, 999px); background: var(--surface-sunken); color: var(--text-muted); font-size: 11px; line-height: 18px; }
+.tu-avance { display: inline-block; width: 64px; height: 6px; border-radius: var(--radius-pill, 999px); background: var(--surface-sunken); overflow: hidden; vertical-align: middle; }
 .tu-avance-rempli { display: block; height: 100%; width: var(--p, 0%); background: var(--good); }
-.tu-sous, .tu-bloquee { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; color: var(--text-muted); background: var(--surface-sunken); border-radius: 999px; padding: 0 7px; line-height: 18px; }
+.tu-sous, .tu-bloquee { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; color: var(--text-muted); background: var(--surface-sunken); border-radius: var(--radius-pill, 999px); padding: 0 7px; line-height: 18px; }
 .tu-bloquee { color: var(--danger-ink); background: var(--danger-soft); }
 .tu-cellule-bouton { display: inline-flex; align-items: center; gap: 4px; border: 1px solid transparent; background: transparent; border-radius: var(--radius-sm); padding: 2px 4px; min-height: 24px; max-width: 100%; }
 .tu-cellule-bouton:hover { background: var(--surface-sunken); }
 .tu-cellule-bouton.est-grisee { color: var(--text-muted); }
 .tu-date.est-retard { color: var(--danger-ink); font-weight: 600; }
-.tu-retard-texte { font-size: 11px; background: var(--danger-soft); border-radius: 999px; padding: 0 6px; }
+.tu-retard-texte { font-size: 11px; background: var(--danger-soft); border-radius: var(--radius-pill, 999px); padding: 0 6px; }
 .tu-champ-date { height: 26px; border: 1px solid var(--accent); border-radius: var(--radius-sm); background: var(--surface); padding: 0 4px; }
-.tu-case { width: 18px; height: 18px; border: 1.5px solid var(--border-strong); border-radius: 5px; background: var(--surface); display: inline-grid; place-items: center; padding: 0; color: var(--on-accent); flex: none; }
+.tu-case { width: 18px; height: 18px; border: 1.5px solid var(--border-strong); border-radius: var(--radius-xs, 5px); background: var(--surface); display: inline-grid; place-items: center; padding: 0; color: var(--on-accent); flex: none; }
 .tu-case.est-cochee { background: var(--good); border-color: var(--good); }
 .tu-case.est-grisee { opacity: .5; }
 .tu-lien { border: 0; background: transparent; padding: 0; text-align: left; color: inherit; text-decoration: underline; text-decoration-color: var(--border-strong); }
@@ -128,7 +130,7 @@ button.tu-pastille.est-grisee { opacity: .75; cursor: not-allowed; }
 .tu-vide-ecran { padding: 36px 16px; text-align: center; color: var(--text-muted); display: grid; gap: 10px; justify-items: center; }
 
 /* ---------- Messages ---------- */
-.tu-etat { position: absolute; left: 12px; bottom: calc(14px + var(--bar-b)); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 24px); padding: 6px 8px 6px 14px; background: var(--text); color: var(--bg); border-radius: 10px; box-shadow: var(--shadow-float); z-index: var(--z-tip); }
+.tu-etat { position: absolute; left: 12px; bottom: calc(14px + var(--bar-b)); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 24px); padding: 6px 8px 6px 14px; background: var(--text); color: var(--bg); border-radius: var(--radius-md, 10px); box-shadow: var(--shadow-float); z-index: var(--z-tip); }
 .tu-etat.est-erreur { background: var(--danger-ink); color: var(--bg); }
 .tu-etat .tu-btn { color: inherit; border-color: currentColor; height: 24px; }
 .tu-etat .tu-btn:hover { background: var(--surface-sunken); color: var(--text); }

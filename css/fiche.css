@@ -16,7 +16,7 @@
 .tu-fiche-pied { flex: none; padding: 8px 12px; border-top: 1px solid var(--border); }
 
 .tu-demarrage { flex: 1; min-height: 0; overflow: auto; display: grid; place-items: start center; padding: 18px 14px; }
-.tu-demarrage-carte { width: min(560px, 100%); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; box-shadow: var(--shadow-card); }
+.tu-demarrage-carte { width: min(560px, 100%); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg, 12px); padding: 16px 18px; display: grid; gap: 10px; box-shadow: var(--shadow-card); }
 .tu-demarrage h1 { margin: 0; font-size: 16px; }
 .tu-demarrage-sous { margin: 0; color: var(--text-muted); }
 .tu-demarrage-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }

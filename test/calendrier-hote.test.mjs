@@ -7,7 +7,7 @@ const tache = (id, extra = {}) => ({ id, titre: `T${id}`, statut: 'À faire', de
 function appFactice(taches, extra = {}) {
   const ecritures = [];
   const app = {
-    taches, arbre: new Map(), reglages: { filtres: { recherche: '', statuts: [], responsables: [], priorites: [], etiquettes: [], enRetard: false, miens: false }, tri: null, groupe: null }, lectureSeule: false, aujourdhui: '2026-11-03', moi: null,
+    taches, arbre: new Map(), reglages: { colorier: 'statut' }, reglagesVue: { filtres: { recherche: '', statuts: [], responsables: [], priorites: [], etiquettes: [], enRetard: false, miens: false }, tri: null, groupe: null }, lectureSeule: false, aujourdhui: '2026-11-03', moi: null,
     tache: id => taches.find(t => t.id === id) ?? null, choix: () => [], refus: false,
     modifier: async (id, parRole, libelle) => { ecritures.push({ id, parRole, libelle }); return !app.refus; },
     ...extra,

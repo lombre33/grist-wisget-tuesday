@@ -48,7 +48,7 @@ export function vueCalendrier(app, actions) {
   const duModule = vueCalendrierModule(app, actions);
   if (duModule) return duModule;
   const mois = app.calMois ?? debutMois(app.aujourdhui);
-  const sel = selection(app.taches, app.arbre, app.reglages);
+  const sel = selection(app.taches, app.arbre, app.reglagesVue);
   const liste = entrees(app.taches.filter(x => sel.passants.has(x.id)), { modifiable: !app.lectureSeule });
   const semaines = grille(liste, mois);
   const nav = d => { app.calMois = ajouterMois(mois, d); app.emettre(); };

@@ -149,7 +149,7 @@ const taches = {
     assert.equal(lignes[0].fields.Nom ?? lignes[0].fields.ColNom ?? 'Lancement', 'Lancement');
     const ouvert = await ouvrir(labo, doc);
     await ouvert.waitForSelector('.tu-tableau');
-    assert.equal(await ouvert.locator('.tu-ligne[data-id]').count(), 4, 'rouvert directement sur le projet enregistré');
+    await pollEgal(() => ouvert.locator('.tu-ligne[data-id]').count(), 4); // rouvert directement sur le projet enregistré (les lignes arrivent après le tableau)
   });
 
   await essai('fichiers liés : dans Grist seul (hors GFS), « Lier un fichier » est grisé avec sa raison, jamais masqué', async () => {

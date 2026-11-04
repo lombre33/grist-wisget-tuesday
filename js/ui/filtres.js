@@ -17,7 +17,7 @@ function personnes(app) {
 function items(app) {
   const f = app.reglages.filtres;
   const sortie = [];
-  const moiOk = app.reglages.moi !== null;
+  const moiOk = app.moi !== null;
   sortie.push({ label: t('filtre.mes'), valeur: ['mesTaches'], coche: f.mesTaches, grise: !moiOk, raison: moiOk ? null : t('filtre.mesRaison'), aide: moiOk ? null : t('filtre.jeSuis') });
   sortie.push({ label: t('filtre.retard'), valeur: ['retard'], coche: f.retard });
   if (app.mapping.statut) sortie.push({ separateur: true }, { titre: t('filtre.statuts') }, ...app.choix('statut').map(c => ({ label: c.valeur, valeur: ['statuts', c.valeur], coche: f.statuts.includes(c.valeur) })));

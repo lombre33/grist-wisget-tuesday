@@ -92,7 +92,7 @@ function colonne(app, col, actions) {
 }
 
 export function vueKanban(app, actions) {
-  const cols = colonnesKanban({ taches: app.taches, reglages: app.reglages, choix: { statut: app.choix('statut'), priorite: app.choix('priorite') }, sans: t('statut.sans') });
+  const cols = colonnesKanban({ taches: app.taches, reglages: app.reglagesVue, choix: { statut: app.choix('statut'), priorite: app.choix('priorite') }, sans: t('statut.sans') });
   const plus = h('div', { class: 'tu-colonne tu-colonne-plus' },
     h('button', { type: 'button', class: 'tu-btn', 'aria-disabled': 'true', title: t('raison.statutDansGrist'), on: { click: () => app.notifier({ cle: 'raison.statutDansGrist', type: 'info' }) } }, icone('plus'), t('champ.statut')));
   return h('div', { class: 'tu-kanban', dataset: { defile: 'kanban' }, role: 'group', 'aria-label': t('vue.kanban') }, cols.map(c => colonne(app, c, actions)), plus);

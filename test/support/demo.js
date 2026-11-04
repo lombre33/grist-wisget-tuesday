@@ -17,7 +17,7 @@ function tablesDemo() {
       col(1, 1, 'Titre', 'Text'), col(2, 1, 'Statut', 'Choice', { widgetOptions: statuts }), col(3, 1, 'Responsable', 'RefList:Equipe', { visibleCol: 21 }),
       col(4, 1, 'Debut', 'Date', { label: 'Début' }), col(5, 1, 'Echeance', 'Date', { label: 'Échéance' }), col(6, 1, 'Priorite', 'Choice', { label: 'Priorité', widgetOptions: priorites }),
       col(7, 1, 'Parent', 'Ref:Taches', { label: 'Tâche parente', visibleCol: 1 }), col(8, 1, 'Ordre', 'Numeric'),
-      col(9, 1, 'Description', 'Text'), col(21, 2, 'Nom', 'Text'),
+      col(9, 1, 'Description', 'Text'), col(21, 2, 'Nom', 'Text'), col(22, 2, 'Courriel', 'Text'),
     ],
   };
 }
@@ -33,7 +33,7 @@ export function creerDemo({ maintenant = new Date(), variante = null } = {}) {
   const jour = n => secondes(ajouterJours(auj, n));
   const neuf = variante === 'vide';
   const { tablesMeta, colonnesMeta } = neuf ? documentNeuf() : tablesDemo();
-  const equipe = neuf ? [] : ['L. Bernard', 'M. Dupont', 'S. Martin', 'A. Petit'].map((Nom, i) => ({ id: i + 1, Nom }));
+  const equipe = neuf ? [] : ['L. Bernard', 'M. Dupont', 'S. Martin', 'A. Petit'].map((Nom, i) => ({ id: i + 1, Nom, Courriel: `${Nom.toLowerCase().replace(/[^a-z]+/g, '.')}@exemple.test` }));
   const t = (id, Titre, Statut, resp, d, e, Priorite, Parent = 0, Description = '') => ({ id, Titre, Statut, Responsable: ['L', ...resp], Debut: d === null ? null : jour(d), Echeance: e === null ? null : jour(e), Priorite, Parent, Ordre: id * 1024, Description });
   const donnees = neuf ? { Table1: [] } : {
     Equipe: equipe,

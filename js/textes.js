@@ -75,7 +75,7 @@ export const TEXTES = {
   'raison.relier': { fr: 'Reliez une colonne « {role} ».', en: 'Link a "{role}" column.' }, 'raison.termine': { fr: 'Aucun statut « terminé » n\'existe dans cette colonne.', en: 'There is no "done" status in this column.' },
   'raison.statutDansGrist': { fr: 'Les statuts se nomment dans Grist (menu de la colonne). Ils apparaissent ici aussitôt.', en: 'Statuses are named in Grist (column menu). They appear here right away.' },
 
-  'projet.projets': { fr: 'Projets', en: 'Projects' }, 'projet.autreTable': { fr: 'Ouvrir une autre table…', en: 'Open another table…' }, 'projet.jeSuis': { fr: 'Je suis…', en: 'I am…' }, 'projet.personne': { fr: 'Personne', en: 'Nobody' },
+  'projet.projets': { fr: 'Projets', en: 'Projects' }, 'projet.autreTable': { fr: 'Ouvrir une autre table…', en: 'Open another table…' }, 'projet.jeSuis': { fr: 'Je suis…', en: 'I am…' }, 'projet.personne': { fr: 'Personne', en: 'Nobody' }, 'projet.reconnue': { fr: 'Votre adresse vous reconnaît : ce choix ne sert que sans elle.', en: 'Your address identifies you: this choice is only used without it.' },
   'projet.apparence': { fr: 'Langue et thème', en: 'Language and theme' }, 'projet.langueGfs': { fr: 'La langue se choisit dans Grist Factory Suite.', en: 'The language is chosen in Grist Factory Suite.' },
   'projet.clair': { fr: 'Thème clair', en: 'Light theme' }, 'projet.sombre': { fr: 'Thème sombre', en: 'Dark theme' }, 'projet.systeme': { fr: 'Thème du système', en: 'System theme' },
   'projet.aPropos': { fr: 'À propos', en: 'About' }, 'projet.version': { fr: 'Version {version} · {mode}', en: 'Version {version} · {mode}' },

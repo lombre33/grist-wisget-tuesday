@@ -7,12 +7,13 @@
 <meta name="description" content="Tuesday : un widget Grist de gestion de projet (tableau, kanban, chronologie, calendrier) qui travaille avec vos tables. / A Grist project-management widget (table, kanban, timeline, calendar) that works with your own tables.">
 <!-- Politique de sécurité du contenu stricte : aucun style en ligne (le CSSOM suffit), aucun script en ligne hors la carte d'importation citée par son empreinte (outils/versionner.mjs la recalcule),
      aucune police, image ni feuille d'un autre site. 'unsafe-eval' reste pour le fichier d'API des widgets que Grist sert (docs.getgrist.com/grist-plugin-api.js), un bundle qui s'évalue par eval(). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' https://docs.getgrist.com/grist-plugin-api.js 'sha256-W8OhH7oxnaptQh6zRiP7xvjSyjpP/0DDkCeHmFiYI44='; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' https://docs.getgrist.com/grist-plugin-api.js 'sha256-U8dFimVuzkjbZr4/DOHeiHvbjxsTZIEVwHE2Ri7E9og='; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'">
 <link rel="stylesheet" href="kit/css/tokens.css?v=0.1.1">
 <link rel="stylesheet" href="kit/css/windows.css?v=0.1.1">
 <link rel="stylesheet" href="css/app.css?v=0.1.1">
 <link rel="stylesheet" href="css/vues.css?v=0.1.1">
 <link rel="stylesheet" href="css/fiche.css?v=0.1.1">
+<link rel="stylesheet" href="css/miseenplace.css?v=0.1.1">
 <script type="importmap">
 {
   "imports": {
@@ -23,6 +24,7 @@
     "./js/core/dates.js": "./js/core/dates.js?v=0.1.1",
     "./js/core/ecritures.js": "./js/core/ecritures.js?v=0.1.1",
     "./js/core/historique.js": "./js/core/historique.js?v=0.1.1",
+    "./js/core/identite.js": "./js/core/identite.js?v=0.1.1",
     "./js/core/liens.js": "./js/core/liens.js?v=0.1.1",
     "./js/core/mapping.js": "./js/core/mapping.js?v=0.1.1",
     "./js/core/miseenplace.js": "./js/core/miseenplace.js?v=0.1.1",
@@ -58,6 +60,13 @@
     "./js/ui/pastille.js": "./js/ui/pastille.js?v=0.1.1",
     "./js/ui/rendu.js": "./js/ui/rendu.js?v=0.1.1",
     "./js/ui/tableau.js": "./js/ui/tableau.js?v=0.1.1",
+    "./kit/js/ambiance-message.js": "./kit/js/ambiance-message.js?v=0.1.1",
+    "./kit/js/ambiance-pose.js": "./kit/js/ambiance-pose.js?v=0.1.1",
+    "./kit/js/ambiance.js": "./kit/js/ambiance.js?v=0.1.1",
+    "./kit/js/color-dialog.js": "./kit/js/color-dialog.js?v=0.1.1",
+    "./kit/js/color-math.js": "./kit/js/color-math.js?v=0.1.1",
+    "./kit/js/color-palette.js": "./kit/js/color-palette.js?v=0.1.1",
+    "./kit/js/color-strings.js": "./kit/js/color-strings.js?v=0.1.1",
     "./kit/js/dialogs.js": "./kit/js/dialogs.js?v=0.1.1",
     "./kit/js/dom.js": "./kit/js/dom.js?v=0.1.1",
     "./kit/js/gfs-link.js": "./kit/js/gfs-link.js?v=0.1.1",

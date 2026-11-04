@@ -31,7 +31,7 @@ function serveur() {
 
 const resultats = [];
 async function essai(nom, fn) {
-  try { await fn(); resultats.push([true, nom]); process.stdout.write(`ok   ${nom}\n`); } catch (e) { resultats.push([false, nom]); process.stdout.write(`FAIL ${nom}\n     ${String(e.message).split('\n')[0]}\n`); }
+  try { await fn(); resultats.push([true, nom]); process.stdout.write(`ok   ${nom}\n`); } catch (e) { resultats.push([false, nom]); process.stdout.write(`FAIL ${nom}\n     ${String(e.message).split('\n').slice(0, process.env.TUESDAY_DETAIL ? 12 : 1).join(' | ')}\n`); }
 }
 
 (async () => {
@@ -484,6 +484,65 @@ async function essai(nom, fn) {
     await p.keyboard.press('n');
     await p.waitForSelector('.tu-fiche [data-focus="fiche:titre"]');
     assert.equal(await p.evaluate(() => document.activeElement?.dataset?.focus), 'fiche:titre');
+    await p.context().close();
+  });
+
+  // L'ambiance de GFS (consigne 010) : le message d'exemple du kit (kit/test/ambiance-exemple.json, « Pop ») posé comme le fait `Ambiance.start()` (même pose, lien joué par l'essai) ; la page doit le montrer.
+  const rgb = hex => { const n = parseInt(hex.slice(1), 16); return `rgb(${n >> 16}, ${(n >> 8) & 255}, ${n & 255})`; };
+  const lireAmbiance = p => p.evaluate(() => {
+    const css = (sel, prop) => getComputedStyle(document.querySelector(sel))[prop];
+    return { fond: css('.tu-app', 'backgroundColor'), barre: css('.tu-barre', 'backgroundColor'), bouton: `${css('.tu-btn-principal', 'backgroundColor')} ${css('.tu-btn-principal', 'backgroundImage')}`, rondBouton: css('.tu-btn-principal', 'borderTopLeftRadius'), texte: css('.tu-app', 'color'), image: css('.tu-app', 'backgroundImage') };
+  });
+  async function poserAmbiance(p, message) {
+    await p.evaluate(async cadeau => {
+      const { createAmbiance } = await import('/kit/js/ambiance-pose.js');
+      const { normalizeAmbiance } = await import('/kit/js/ambiance-message.js');
+      const abonnes = new Set();
+      let courant = normalizeAmbiance(cadeau);
+      const lien = { ambiance: () => courant, onAmbiance: fn => { abonnes.add(fn); return () => abonnes.delete(fn); }, ready: Promise.resolve() };
+      window.__ambiance = { demarre: createAmbiance({ link: lien, isDark: () => document.documentElement.getAttribute('data-theme') === 'dark' }).start(), dire: m => { courant = normalizeAmbiance(m); abonnes.forEach(fn => fn(courant)); } };
+      await window.__ambiance.demarre.ready;
+    }, message);
+  }
+  const exemple = JSON.parse(fs.readFileSync(path.join(racine, 'kit/test/ambiance-exemple.json'), 'utf8'));
+  await essai('ambiance de GFS, clair : le fond de la page, la barre, le bouton plein, le texte, l\'arrondi du bouton et le décor suivent les jetons ; sans ambiance, la page reprend les siens', async () => {
+    const p = await page();
+    const avant = await lireAmbiance(p);
+    await poserAmbiance(p, exemple);
+    const apres = await lireAmbiance(p);
+    assert.equal(apres.fond, rgb(exemple.clair['--bg']));
+    assert.equal(apres.barre, rgb(exemple.clair['--surface']));
+    assert.ok(apres.bouton.includes(rgb(exemple.clair['--accent-solid'])), `bouton plein : ${apres.bouton}`); // --fill est un dégradé de --accent-solid à --accent-end chez Pop
+    assert.equal(apres.texte, rgb(exemple.clair['--text']));
+    assert.notEqual(apres.fond, avant.fond);
+    assert.notEqual(apres.bouton, avant.bouton);
+    assert.equal(apres.rondBouton, '999px', 'jeton de forme --radius-btn');
+    assert.match(apres.image, /gradient/, 'le décor --wash est posé en image de fond');
+    await p.evaluate(() => window.__ambiance.dire(null));
+    assert.deepEqual(await lireAmbiance(p), avant, 'GFS dit null : la page reprend ses couleurs et sa forme');
+    await p.context().close();
+  });
+  await essai('ambiance de GFS, sombre : les jetons du mode sombre ; le texte reste lisible (contraste 4,5 au moins) sur le fond et sur la barre', async () => {
+    const p = await page({ sombre: true });
+    await p.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+    await poserAmbiance(p, exemple);
+    const a = await lireAmbiance(p);
+    assert.equal(a.fond, rgb(exemple.sombre['--bg']));
+    assert.equal(a.barre, rgb(exemple.sombre['--surface']));
+    assert.equal(a.texte, rgb(exemple.sombre['--text']));
+    const lum = c => { const [r, g, bl] = c.match(/\d+/g).map(Number).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * bl; };
+    const contraste = (x, y) => (Math.max(lum(x), lum(y)) + 0.05) / (Math.min(lum(x), lum(y)) + 0.05);
+    assert.ok(contraste(a.texte, a.fond) >= 4.5, `texte sur fond : ${contraste(a.texte, a.fond)}`);
+    assert.ok(contraste(a.texte, a.barre) >= 4.5, `texte sur barre : ${contraste(a.texte, a.barre)}`);
+    await p.context().close();
+  });
+  await essai('ambiance de GFS : la grille de calendrier provisoire lit aussi les jetons', async () => {
+    const p = await page();
+    await poserAmbiance(p, exemple);
+    await p.click('[data-vue="calendrier"]');
+    await p.waitForSelector('.tu-cal-jour');
+    const grille = await p.evaluate(() => { const el = document.querySelector('.tu-cal-jour'); return el ? getComputedStyle(el).backgroundColor : null; });
+    assert.ok([rgb(exemple.clair['--surface']), rgb(exemple.clair['--surface-sunken'])].includes(grille), `jour du calendrier : ${grille}`);
     await p.context().close();
   });
 

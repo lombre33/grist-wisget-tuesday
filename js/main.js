@@ -2,6 +2,7 @@
 import { Theme } from '../kit/js/theme.js';
 import { I18n } from '../kit/js/i18n.js';
 import { GfsLink } from '../kit/js/gfs-link.js';
+import { Ambiance } from '../kit/js/ambiance.js';
 import { TEXTES } from './textes.js';
 import { App } from './app.js';
 import { monter } from './ui/rendu.js';
@@ -14,6 +15,8 @@ I18n.add(TEXTES);
 I18n.init({ storageKey: 'tuesday_lang' });
 I18n.translateDom();
 GfsLink.onLanguage(langue => I18n.setLanguage(langue));
+// L'ambiance que la personne a choisie dans GFS pour ses apps (couleurs et forme, par les jetons que lisent nos feuilles) ; seule, rien n'est posé.
+Ambiance.start();
 
 // Tuesday ne tourne que dans Grist (widget personnalisé) : la page est un cadre et l'objet `grist` existe. Ailleurs, un écran dit comment l'ouvrir ; rien d'autre n'est lancé.
 const dansGrist = typeof window.grist === 'object' && window.parent !== window;
@@ -27,6 +30,7 @@ async function demarrer() {
   const port = creerPortGrist(window.grist, { lectureSeule: Boolean(contexte?.lectureSeule) });
   const nom = (await port.nomDocument?.()) ?? contexte?.document ?? port.document;
   const app = new App(port, { document: String(contexte?.document ?? nom ?? 'seul') });
+  app.suivreIdentite();
   app.moduleCalendrier = await chargerModule(); // le calendrier de Calendar+, quand il existe ; sinon la grille provisoire
   monter(racine, app);
   app.attendreAcces();

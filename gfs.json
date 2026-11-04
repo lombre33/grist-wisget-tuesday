@@ -18,6 +18,12 @@
     "acces": "full",
     "lit": ["*"],
     "ecrit": ["*"],
+    "identite": {
+      "pourquoi": {
+        "fr": "Pour « Mes tâches » : montrer les tâches de la personne qui est là.",
+        "en": "For “My tasks”: show the tasks of the person who is here."
+      }
+    },
     "gristInterne": [
       {
         "tables": ["_grist_Tables", "_grist_Tables_column"],
