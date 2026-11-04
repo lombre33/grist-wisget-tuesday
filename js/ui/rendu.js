@@ -21,7 +21,7 @@ import { COLONNES_PROJETS, TABLE_PROJETS } from '../core/projet.js';
 import { personnesPossibles } from './champs.js';
 import { GfsLink } from '../../kit/js/gfs-link.js';
 
-export const VERSION = '0.1.1';
+export const VERSION = '0.1.2';
 const t = (cle, vars) => I18n.t(cle, vars);
 const VUES = { tableau: vueTableau, kanban: vueKanban, chronologie: vueChronologie, calendrier: vueCalendrier };
 

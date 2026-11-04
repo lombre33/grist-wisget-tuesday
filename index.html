@@ -7,75 +7,75 @@
 <meta name="description" content="Tuesday : un widget Grist de gestion de projet (tableau, kanban, chronologie, calendrier) qui travaille avec vos tables. / A Grist project-management widget (table, kanban, timeline, calendar) that works with your own tables.">
 <!-- Politique de sécurité du contenu stricte : aucun style en ligne (le CSSOM suffit), aucun script en ligne hors la carte d'importation citée par son empreinte (outils/versionner.mjs la recalcule),
      aucune police, image ni feuille d'un autre site. 'unsafe-eval' reste pour le fichier d'API des widgets que Grist sert (docs.getgrist.com/grist-plugin-api.js), un bundle qui s'évalue par eval(). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' https://docs.getgrist.com/grist-plugin-api.js 'sha256-U8dFimVuzkjbZr4/DOHeiHvbjxsTZIEVwHE2Ri7E9og='; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'">
-<link rel="stylesheet" href="kit/css/tokens.css?v=0.1.1">
-<link rel="stylesheet" href="kit/css/windows.css?v=0.1.1">
-<link rel="stylesheet" href="css/app.css?v=0.1.1">
-<link rel="stylesheet" href="css/vues.css?v=0.1.1">
-<link rel="stylesheet" href="css/fiche.css?v=0.1.1">
-<link rel="stylesheet" href="css/miseenplace.css?v=0.1.1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' https://docs.getgrist.com/grist-plugin-api.js 'sha256-CcUUliM2sWVc4P4X4tNNmy++9+1tRciYs6p7Sw8khWU='; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'">
+<link rel="stylesheet" href="kit/css/tokens.css?v=0.1.2">
+<link rel="stylesheet" href="kit/css/windows.css?v=0.1.2">
+<link rel="stylesheet" href="css/app.css?v=0.1.2">
+<link rel="stylesheet" href="css/vues.css?v=0.1.2">
+<link rel="stylesheet" href="css/fiche.css?v=0.1.2">
+<link rel="stylesheet" href="css/miseenplace.css?v=0.1.2">
 <script type="importmap">
 {
   "imports": {
-    "./js/app.js": "./js/app.js?v=0.1.1",
-    "./js/core/calendrier.js": "./js/core/calendrier.js?v=0.1.1",
-    "./js/core/chronologie.js": "./js/core/chronologie.js?v=0.1.1",
-    "./js/core/colonnes.js": "./js/core/colonnes.js?v=0.1.1",
-    "./js/core/dates.js": "./js/core/dates.js?v=0.1.1",
-    "./js/core/ecritures.js": "./js/core/ecritures.js?v=0.1.1",
-    "./js/core/historique.js": "./js/core/historique.js?v=0.1.1",
-    "./js/core/identite.js": "./js/core/identite.js?v=0.1.1",
-    "./js/core/liens.js": "./js/core/liens.js?v=0.1.1",
-    "./js/core/mapping.js": "./js/core/mapping.js?v=0.1.1",
-    "./js/core/miseenplace.js": "./js/core/miseenplace.js?v=0.1.1",
-    "./js/core/modele-depart.js": "./js/core/modele-depart.js?v=0.1.1",
-    "./js/core/projet.js": "./js/core/projet.js?v=0.1.1",
-    "./js/core/rang.js": "./js/core/rang.js?v=0.1.1",
-    "./js/core/reglages.js": "./js/core/reglages.js?v=0.1.1",
-    "./js/core/regroupement.js": "./js/core/regroupement.js?v=0.1.1",
-    "./js/core/taches.js": "./js/core/taches.js?v=0.1.1",
-    "./js/core/texte.js": "./js/core/texte.js?v=0.1.1",
-    "./js/core/vue.js": "./js/core/vue.js?v=0.1.1",
-    "./js/data/grist.js": "./js/data/grist.js?v=0.1.1",
-    "./js/data/refs.js": "./js/data/refs.js?v=0.1.1",
-    "./js/data/stockage.js": "./js/data/stockage.js?v=0.1.1",
-    "./js/liens-fichiers.js": "./js/liens-fichiers.js?v=0.1.1",
-    "./js/main.js": "./js/main.js?v=0.1.1",
-    "./js/textes.js": "./js/textes.js?v=0.1.1",
-    "./js/ui/bandeaux.js": "./js/ui/bandeaux.js?v=0.1.1",
-    "./js/ui/barre.js": "./js/ui/barre.js?v=0.1.1",
-    "./js/ui/calendrier-hote.js": "./js/ui/calendrier-hote.js?v=0.1.1",
-    "./js/ui/calendrier.js": "./js/ui/calendrier.js?v=0.1.1",
-    "./js/ui/champs.js": "./js/ui/champs.js?v=0.1.1",
-    "./js/ui/chronologie.js": "./js/ui/chronologie.js?v=0.1.1",
-    "./js/ui/couleurs.js": "./js/ui/couleurs.js?v=0.1.1",
-    "./js/ui/fiche.js": "./js/ui/fiche.js?v=0.1.1",
-    "./js/ui/figures.js": "./js/ui/figures.js?v=0.1.1",
-    "./js/ui/filtres.js": "./js/ui/filtres.js?v=0.1.1",
-    "./js/ui/horsgrist.js": "./js/ui/horsgrist.js?v=0.1.1",
-    "./js/ui/icones.js": "./js/ui/icones.js?v=0.1.1",
-    "./js/ui/kanban.js": "./js/ui/kanban.js?v=0.1.1",
-    "./js/ui/menu.js": "./js/ui/menu.js?v=0.1.1",
-    "./js/ui/miseenplace.js": "./js/ui/miseenplace.js?v=0.1.1",
-    "./js/ui/pastille.js": "./js/ui/pastille.js?v=0.1.1",
-    "./js/ui/rendu.js": "./js/ui/rendu.js?v=0.1.1",
-    "./js/ui/tableau.js": "./js/ui/tableau.js?v=0.1.1",
-    "./kit/js/ambiance-message.js": "./kit/js/ambiance-message.js?v=0.1.1",
-    "./kit/js/ambiance-pose.js": "./kit/js/ambiance-pose.js?v=0.1.1",
-    "./kit/js/ambiance.js": "./kit/js/ambiance.js?v=0.1.1",
-    "./kit/js/color-dialog.js": "./kit/js/color-dialog.js?v=0.1.1",
-    "./kit/js/color-math.js": "./kit/js/color-math.js?v=0.1.1",
-    "./kit/js/color-palette.js": "./kit/js/color-palette.js?v=0.1.1",
-    "./kit/js/color-strings.js": "./kit/js/color-strings.js?v=0.1.1",
-    "./kit/js/dialogs.js": "./kit/js/dialogs.js?v=0.1.1",
-    "./kit/js/dom.js": "./kit/js/dom.js?v=0.1.1",
-    "./kit/js/gfs-link.js": "./kit/js/gfs-link.js?v=0.1.1",
-    "./kit/js/host.js": "./kit/js/host.js?v=0.1.1",
-    "./kit/js/i18n.js": "./kit/js/i18n.js?v=0.1.1",
-    "./kit/js/layers.js": "./kit/js/layers.js?v=0.1.1",
-    "./kit/js/modal-base.js": "./kit/js/modal-base.js?v=0.1.1",
-    "./kit/js/once.js": "./kit/js/once.js?v=0.1.1",
-    "./kit/js/theme.js": "./kit/js/theme.js?v=0.1.1"
+    "./js/app.js": "./js/app.js?v=0.1.2",
+    "./js/core/calendrier.js": "./js/core/calendrier.js?v=0.1.2",
+    "./js/core/chronologie.js": "./js/core/chronologie.js?v=0.1.2",
+    "./js/core/colonnes.js": "./js/core/colonnes.js?v=0.1.2",
+    "./js/core/dates.js": "./js/core/dates.js?v=0.1.2",
+    "./js/core/ecritures.js": "./js/core/ecritures.js?v=0.1.2",
+    "./js/core/historique.js": "./js/core/historique.js?v=0.1.2",
+    "./js/core/identite.js": "./js/core/identite.js?v=0.1.2",
+    "./js/core/liens.js": "./js/core/liens.js?v=0.1.2",
+    "./js/core/mapping.js": "./js/core/mapping.js?v=0.1.2",
+    "./js/core/miseenplace.js": "./js/core/miseenplace.js?v=0.1.2",
+    "./js/core/modele-depart.js": "./js/core/modele-depart.js?v=0.1.2",
+    "./js/core/projet.js": "./js/core/projet.js?v=0.1.2",
+    "./js/core/rang.js": "./js/core/rang.js?v=0.1.2",
+    "./js/core/reglages.js": "./js/core/reglages.js?v=0.1.2",
+    "./js/core/regroupement.js": "./js/core/regroupement.js?v=0.1.2",
+    "./js/core/taches.js": "./js/core/taches.js?v=0.1.2",
+    "./js/core/texte.js": "./js/core/texte.js?v=0.1.2",
+    "./js/core/vue.js": "./js/core/vue.js?v=0.1.2",
+    "./js/data/grist.js": "./js/data/grist.js?v=0.1.2",
+    "./js/data/refs.js": "./js/data/refs.js?v=0.1.2",
+    "./js/data/stockage.js": "./js/data/stockage.js?v=0.1.2",
+    "./js/liens-fichiers.js": "./js/liens-fichiers.js?v=0.1.2",
+    "./js/main.js": "./js/main.js?v=0.1.2",
+    "./js/textes.js": "./js/textes.js?v=0.1.2",
+    "./js/ui/bandeaux.js": "./js/ui/bandeaux.js?v=0.1.2",
+    "./js/ui/barre.js": "./js/ui/barre.js?v=0.1.2",
+    "./js/ui/calendrier-hote.js": "./js/ui/calendrier-hote.js?v=0.1.2",
+    "./js/ui/calendrier.js": "./js/ui/calendrier.js?v=0.1.2",
+    "./js/ui/champs.js": "./js/ui/champs.js?v=0.1.2",
+    "./js/ui/chronologie.js": "./js/ui/chronologie.js?v=0.1.2",
+    "./js/ui/couleurs.js": "./js/ui/couleurs.js?v=0.1.2",
+    "./js/ui/fiche.js": "./js/ui/fiche.js?v=0.1.2",
+    "./js/ui/figures.js": "./js/ui/figures.js?v=0.1.2",
+    "./js/ui/filtres.js": "./js/ui/filtres.js?v=0.1.2",
+    "./js/ui/horsgrist.js": "./js/ui/horsgrist.js?v=0.1.2",
+    "./js/ui/icones.js": "./js/ui/icones.js?v=0.1.2",
+    "./js/ui/kanban.js": "./js/ui/kanban.js?v=0.1.2",
+    "./js/ui/menu.js": "./js/ui/menu.js?v=0.1.2",
+    "./js/ui/miseenplace.js": "./js/ui/miseenplace.js?v=0.1.2",
+    "./js/ui/pastille.js": "./js/ui/pastille.js?v=0.1.2",
+    "./js/ui/rendu.js": "./js/ui/rendu.js?v=0.1.2",
+    "./js/ui/tableau.js": "./js/ui/tableau.js?v=0.1.2",
+    "./kit/js/ambiance-message.js": "./kit/js/ambiance-message.js?v=0.1.2",
+    "./kit/js/ambiance-pose.js": "./kit/js/ambiance-pose.js?v=0.1.2",
+    "./kit/js/ambiance.js": "./kit/js/ambiance.js?v=0.1.2",
+    "./kit/js/color-dialog.js": "./kit/js/color-dialog.js?v=0.1.2",
+    "./kit/js/color-math.js": "./kit/js/color-math.js?v=0.1.2",
+    "./kit/js/color-palette.js": "./kit/js/color-palette.js?v=0.1.2",
+    "./kit/js/color-strings.js": "./kit/js/color-strings.js?v=0.1.2",
+    "./kit/js/dialogs.js": "./kit/js/dialogs.js?v=0.1.2",
+    "./kit/js/dom.js": "./kit/js/dom.js?v=0.1.2",
+    "./kit/js/gfs-link.js": "./kit/js/gfs-link.js?v=0.1.2",
+    "./kit/js/host.js": "./kit/js/host.js?v=0.1.2",
+    "./kit/js/i18n.js": "./kit/js/i18n.js?v=0.1.2",
+    "./kit/js/layers.js": "./kit/js/layers.js?v=0.1.2",
+    "./kit/js/modal-base.js": "./kit/js/modal-base.js?v=0.1.2",
+    "./kit/js/once.js": "./kit/js/once.js?v=0.1.2",
+    "./kit/js/theme.js": "./kit/js/theme.js?v=0.1.2"
   }
 }
 </script>
@@ -84,6 +84,6 @@
 <body>
 <div id="tuesday" class="tu-app"></div>
 <noscript>Tuesday demande JavaScript. / Tuesday needs JavaScript.</noscript>
-<script type="module" src="js/main.js?v=0.1.1"></script>
+<script type="module" src="js/main.js?v=0.1.2"></script>
 </body>
 </html>

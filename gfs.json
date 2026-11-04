@@ -2,7 +2,7 @@
   "contrat": 0,
   "id": "tuesday",
   "nom": { "fr": "Tuesday", "en": "Tuesday" },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entree": "index.html",
   "tables": { "prefixe": "Tuesday_" },
   "fichiers": [{
