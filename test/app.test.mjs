@@ -298,9 +298,12 @@ test('terminer sans titre relié : la mise en place reste ouverte et dit quoi fa
 });
 
 test('terminer sans tâche en attente : un message dit que tout est prêt', async () => {
-  const app = await ouverte();
-  await app.terminerMiseEnPlace();
-  assert.equal(app.message.cle, 'mep.pret');
+  globalThis.localStorage = fauxStockage();
+  try {
+    const app = await ouverte();
+    await app.terminerMiseEnPlace();
+    assert.equal(app.message.cle, 'mep.pret');
+  } finally { delete globalThis.localStorage; }
 });
 
 test('choisir une autre table dans la mise en place refait la reconnaissance et passe à « table existante »', async () => {
@@ -413,4 +416,70 @@ test('démarrer : un refus d\'accès de Grist ouvre la mise en place sur l\'acc�
   const bon = new App(creerDemo(), { document: 'doc' });
   await bon.demarrer();
   assert.equal(bon.initTermine, true); assert.equal(bon.message, null);
+});
+
+// La mise en place ne revient pas une fois la table confirmée (retour d'Antoine, 04/11 : elle se rouvrait à chaque ouverture).
+function fauxStockage() {
+  const m = new Map();
+  return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k) };
+}
+async function ouvertePour(document, port) {
+  const app = new App(port, { document, maintenant: MAINT });
+  await app.init();
+  return app;
+}
+
+test('une table confirmée une fois : la mise en place ne revient pas à l\'ouverture suivante', async () => {
+  globalThis.localStorage = fauxStockage();
+  try {
+    const premiere = await ouvertePour('doc-a', creerDemo({ maintenant: MAINT() }));
+    assert.equal(premiere.miseEnPlace.ouverte, true);
+    assert.equal(await premiere.terminerMiseEnPlace(), true);
+    assert.equal(premiere.message.cle, 'mep.pret', 'le navigateur garde le choix : aucun avertissement');
+    const suivante = await ouvertePour('doc-a', creerDemo({ maintenant: MAINT() }));
+    assert.equal(suivante.pret, true);
+    assert.equal(suivante.miseEnPlace.ouverte, false);
+  } finally { delete globalThis.localStorage; }
+});
+
+test('la vue ne dit pas sa table : la dernière table confirmée du document est rouverte, la mise en place ne revient pas', async () => {
+  globalThis.localStorage = fauxStockage();
+  try {
+    const premiere = await ouvertePour('doc-b', creerDemo({ maintenant: MAINT() }));
+    await premiere.terminerMiseEnPlace();
+    const port = creerDemo({ maintenant: MAINT() });
+    port.tableSection = async () => null;
+    const suivante = await ouvertePour('doc-b', port);
+    assert.equal(suivante.pret, true, 'sans table de vue, la dernière confirmée sert');
+    assert.equal(suivante.source, 'Taches');
+    assert.equal(suivante.miseEnPlace.ouverte, false);
+    const autre = await ouvertePour('doc-c', Object.assign(creerDemo({ maintenant: MAINT() }), { tableSection: async () => null }));
+    assert.equal(autre.pret, false, 'un autre document n\'hérite de rien');
+    assert.equal(autre.miseEnPlace.ouverte, true);
+  } finally { delete globalThis.localStorage; }
+});
+
+test('une table confirmée qui n\'existe plus n\'est pas rouverte : la mise en place revient', async () => {
+  globalThis.localStorage = fauxStockage();
+  try {
+    const premiere = await ouvertePour('doc-d', creerDemo({ maintenant: MAINT() }));
+    await premiere.terminerMiseEnPlace();
+    const suivante = await ouvertePour('doc-d', creerDemo({ maintenant: MAINT(), variante: 'vide' }));
+    assert.equal(suivante.pret, false);
+    assert.equal(suivante.miseEnPlace.ouverte, true);
+  } finally { delete globalThis.localStorage; }
+});
+
+test('un navigateur qui ne garde rien : la personne le sait (le message reste après la mise en place), un projet gardé pour l\'équipe n\'en parle pas', async () => {
+  delete globalThis.localStorage;
+  const app = await ouvertePour('doc-e', creerDemo({ maintenant: MAINT() }));
+  await app.terminerMiseEnPlace();
+  assert.equal(app.stockageRefuse, true);
+  assert.equal(app.message.cle, 'msg.stockageRefuse');
+  const garde = await ouvertePour('doc-f', creerDemo({ maintenant: MAINT() }));
+  await garde.terminerMiseEnPlace();
+  await garde.enregistrerProjet('Lancement');
+  garde.message = null;
+  await garde.ouvrirProjet(garde.projet);
+  assert.equal(garde.message, null, 'un projet gardé dans le document n\'a pas besoin du navigateur');
 });

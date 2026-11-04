@@ -66,10 +66,10 @@ export class App {
     this.modele = await this.port.modele();
     this.sectionTable = await this.port.tableSection();
     this.projets = await this.lireProjets();
-    const memo = this.sectionTable ? this.mappingMemorise(this.sectionTable) : null;
+    const memo = this.tableMemorisee();
     const enregistre = this.projets.find(p => p.source === this.sectionTable) ?? this.projets[0];
     if (enregistre && this.modele.tables[enregistre.source]) await this.ouvrirProjet(enregistre);
-    else if (memo && this.modele.tables[this.sectionTable]) await this.ouvrir(this.sectionTable, memo, null);
+    else if (memo) await this.ouvrir(memo.table, memo.mapping, null);
     else await this.ouvrirEssai();
     this.initTermine = true; this.attenteAcces = false;
     if (!this.pret) this.demanderMiseEnPlace(this.miseEnPlace.ouverte && this.miseEnPlace.etape === 'acces' ? { etape: 'table' } : {});
@@ -108,6 +108,28 @@ export class App {
     try { const v = JSON.parse(lireChoix(this.cleMemo(table)) ?? 'null'); return v && v.titre ? v : null; } catch (e) { return null; }
   }
 
+  // La table que la personne a déjà confirmée, pour que la mise en place ne revienne pas : celle de la vue si elle en a une, sinon la dernière confirmée pour ce document (la vue ne dit pas toujours
+  // sa table : la mise en place revenait alors à chaque ouverture). Rien n'est rouvert si la table n'existe plus.
+  tableMemorisee() {
+    const dernier = (() => { try { const v = JSON.parse(lireChoix(this.cleDerniere()) ?? 'null'); return v && typeof v.table === 'string' ? v.table : null; } catch (e) { return null; } })();
+    for (const table of [this.sectionTable, dernier]) {
+      const mapping = table && this.modele.tables[table] ? this.mappingMemorise(table) : null;
+      if (mapping) return { table, mapping };
+    }
+    return null;
+  }
+
+  cleDerniere() { return `tuesday.${this.document}.derniere`.slice(0, 64); }
+
+  // Garde le choix confirmé ; si le navigateur ne le garde pas (stockage refusé dans le cadre), la personne le sait au lieu de revoir la fenêtre sans comprendre.
+  memoriser(table, mapping, { avertir = true } = {}) {
+    const json = JSON.stringify(mapping);
+    const gardeTable = ecrireChoix(this.cleMemo(table), json) && lireChoix(this.cleMemo(table)) === json;
+    const gardeDerniere = ecrireChoix(this.cleDerniere(), JSON.stringify({ table })) && lireChoix(this.cleDerniere()) !== null;
+    this.stockageRefuse = avertir && !(gardeTable && gardeDerniere);
+    if (this.stockageRefuse) this.notifier({ cle: 'msg.stockageRefuse', type: 'info' });
+  }
+
   async ouvrirProjet(projet) { await this.ouvrir(projet.source, projet.mapping, projet); }
 
   // `confirme: false` : l'essai, en lecture seulement (rien n'est mémorisé, les écritures demandent la mise en place).
@@ -116,7 +138,7 @@ export class App {
     const v = verifier(mapping, colonnes, tableId);
     if (!v.ok) { this.demanderMiseEnPlace({ etape: 'colonnes', choix: 'existante', table: tableId, mapping: { ...reconnaitre(colonnes, tableId).mapping, ...mapping }, erreurs: v.erreurs }); return; }
     this.source = tableId; this.mapping = mapping; this.projet = projet; this.historique = new Historique(); this.selection = null; this.confirme = confirme;
-    if (confirme) ecrireChoix(this.cleMemo(tableId), JSON.stringify(mapping));
+    if (confirme) this.memoriser(tableId, mapping, { avertir: !projet });
     this.reglages = lireReglages(lireChoix(this.cleReglages()) ?? projet?.reglages ?? '');
     await this.lire();
     this.ecran = 'projet';
@@ -396,6 +418,7 @@ export class App {
     const attente = this.tacheEnAttente;
     this.tacheEnAttente = null;
     if (attente) await this.ajouter(adapterTache(attente.parRole, this.mapping, this.choix('statut')), attente.libelle);
+    else if (this.stockageRefuse) this.notifier({ cle: 'msg.stockageRefuse', type: 'info' });
     else this.notifier({ cle: 'mep.pret', type: 'ok' });
     return true;
   }

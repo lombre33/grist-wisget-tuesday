@@ -47,6 +47,7 @@ export const TEXTES = {
   'liens.accordTitre': { fr: 'Créer la table des liens ?', en: 'Create the links table?' },
   'liens.accordMessage': { fr: 'Pour garder ce lien, Tuesday crée dans votre document la table « {table} » ({colonnes} colonnes lisibles : tâche, app, fichier, type, nom, date). Rien d\'autre n\'est touché.', en: 'To keep this link, Tuesday creates the table "{table}" in your document ({colonnes} readable columns: task, app, file, type, name, date). Nothing else is touched.' },
   'liens.creer': { fr: 'Créer et lier', en: 'Create and link' },
+  'msg.stockageRefuse': { fr: 'Votre navigateur ne garde pas ce choix : la mise en place reviendra à la prochaine ouverture. Autorisez le stockage du site dans les réglages du navigateur, ou gardez le projet pour l\'équipe.', en: 'Your browser does not keep this choice: the setup will come back next time. Allow the site\'s storage in the browser settings, or keep the project for the team.' },
   'msg.lie': { fr: 'Fichier lié', en: 'File linked' }, 'msg.delie': { fr: 'Lien retiré', en: 'Link removed' },
   'projet.automatiser': { fr: 'Automatiser…', en: 'Automate…' },
   'projet.automatiserRaison': { fr: 'Prévu dans une prochaine version, avec Automation+.', en: 'Planned for a later version, with Automation+.' },

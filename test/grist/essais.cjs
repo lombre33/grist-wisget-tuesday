@@ -61,6 +61,19 @@ const taches = {
     await shot(cadre, 'tableau');
   });
 
+  await essai('réouverture : une table confirmée une fois, la mise en place ne revient pas et rien n\'est créé ; l\'avertissement du stockage refusé n\'apparaît pas quand le navigateur garde le choix', async () => {
+    const { doc, cadre } = await ouvrirTuesday();
+    await confirmer(cadre);
+    const rouvert = await ouvrir(labo, doc);
+    await rouvert.waitForSelector('.tu-tableau');
+    await rouvert.waitForSelector('.tu-ligne[data-id]');
+    await page.waitForTimeout(1500);
+    assert.equal(await rouvert.locator('#tu-mep .tu-mep-box').isVisible(), false, 'la mise en place ne se rouvre pas');
+    assert.equal(await rouvert.locator('.tu-ligne[data-id]').count(), 4);
+    assert.equal(await rouvert.locator('.tu-etat.est-info').count(), 0, 'pas d\'avertissement de stockage');
+    assert.ok(!(await doc.api.tables(doc.id)).includes('Tuesday_Projets'), 'aucune table créée');
+  });
+
   await essai('statut : le changement est écrit dans Grist, Ctrl+Z le défait, Ctrl+Y le refait', async () => {
     const { doc, cadre } = await ouvrirTuesday();
     await confirmer(cadre);
