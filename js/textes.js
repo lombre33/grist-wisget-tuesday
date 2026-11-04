@@ -55,7 +55,7 @@ export const TEXTES = {
   'fiche.supprimerTitre': { fr: 'Supprimer « {nom} » ?', en: 'Delete "{nom}"?' }, 'fiche.supprimerMessage': { fr: 'La ligne est retirée de la table. Vous pourrez l\'annuler.', en: 'The row is removed from the table. You can undo this.' },
 
   'chrono.aujourdhui': { fr: 'Aujourd\'hui', en: 'Today' }, 'chrono.sansDate': { fr: 'Sans date', en: 'No date' }, 'chrono.zoom': { fr: 'Échelle', en: 'Scale' },
-  'cal.precedent': { fr: 'Mois précédent', en: 'Previous month' }, 'cal.suivant': { fr: 'Mois suivant', en: 'Next month' }, 'cal.ajouterLe': { fr: 'Ajouter une tâche le {jour}', en: 'Add a task on {jour}' }, 'cal.autres': { fr: '+ {n} autres', en: '+ {n} more' },
+  'cal.indisponible': { fr: 'Le calendrier n\'a pas pu se charger. Rechargez la page ; les autres vues restent disponibles.', en: 'The calendar could not be loaded. Reload the page; the other views are still available.' },
 
   'vide.taches': { fr: 'Aucune tâche pour l\'instant.', en: 'No tasks yet.' }, 'vide.filtres': { fr: 'Aucune tâche ne correspond.', en: 'No task matches.' },
 

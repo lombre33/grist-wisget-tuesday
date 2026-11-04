@@ -152,5 +152,5 @@ test('aucun élément `draggable` n\'est un <button> (Firefox avant la 147 ne le
       assert.notEqual(balise, 'button', `${file} : un bouton glissable`);
     }
   }
-  assert.ok(vus >= 2, 'le kanban et le calendrier portent draggable');
+  assert.ok(vus >= 1, 'le kanban porte draggable (le calendrier est dans le kit, qui garde ses propres essais)');
 });

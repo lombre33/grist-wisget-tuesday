@@ -146,6 +146,20 @@ const taches = {
     assert.equal((r.Echeance - D('2026-11-13')) / JOUR, (r.Debut - D('2026-11-09')) / JOUR, 'début et échéance bougent du même nombre de jours');
   });
 
+  await essai('calendrier du kit : le module se monte sous la politique de l\'app, glisser un événement écrit des jours civils (minuit UTC) en gardant la durée', async () => {
+    const { doc, cadre } = await ouvrirTuesday();
+    await confirmer(cadre);
+    await cadre.click('[data-vue="calendrier"]');
+    await cadre.waitForSelector('.tu-cal .cal-evt[data-id="4"]');
+    assert.notEqual(await cadre.evaluate(() => getComputedStyle(document.querySelector('.cal-evt')).backgroundColor), 'rgba(0, 0, 0, 0)', 'la feuille du kit est chargée');
+    const avant = (await doc.api.table(doc.id, 'Taches')).find(r => r.id === 4).fields;
+    await cadre.locator('.cal-evt[data-id="4"]').first().dragTo(cadre.locator('.cal-num[data-jour="2026-11-26"]'));
+    await pollEgal(async () => (await doc.api.table(doc.id, 'Taches')).find(r => r.id === 4).fields.Echeance !== avant.Echeance, true);
+    const r = (await doc.api.table(doc.id, 'Taches')).find(x => x.id === 4).fields;
+    assert.equal(r.Debut % JOUR, 0); assert.equal(r.Echeance % JOUR, 0);
+    assert.equal(r.Echeance - r.Debut, avant.Echeance - avant.Debut, 'la durée est gardée');
+  });
+
   await essai('kanban : le glisser-déposer HTML5 marche dans le cadre de Grist et écrit le statut', async () => {
     const { doc, cadre } = await ouvrirTuesday();
     await confirmer(cadre);

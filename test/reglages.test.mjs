@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { cle, lire, ecrire, PAR_DEFAUT } from '../js/core/reglages.js';
 import { depuisLigne, versLigne, idProjet, COLONNES_PROJETS, colonneDuRole } from '../js/core/projet.js';
-import { entrees, duJour, grille, deplacee } from '../js/core/calendrier.js';
+import { entrees } from '../js/core/calendrier.js';
 import { ROLES } from '../js/core/mapping.js';
 
 test('clé de stockage : propre à chaque document et projet, valide pour GFS', () => {
@@ -62,26 +62,13 @@ test('projet : ligne sans source = pas un projet ; chaque rôle a sa colonne', (
 
 const tache = (id, debut, fin) => ({ id, titre: `T${id}`, debutEff: debut, finEff: fin, statut: 'A', responsables: [{ label: 'X' }] });
 
-test('calendrier : entrées au contrat, seules les tâches datées', () => {
+test('calendrier : entrées au contrat, les tâches sans date y sont (plateau « Sans date »)', () => {
   const e = entrees([tache(1, '2026-11-03', '2026-11-05'), tache(2, null, null)], { couleurDe: () => '#fff' });
-  assert.equal(e.length, 1);
+  assert.equal(e.length, 2);
   assert.deepEqual(Object.keys(e[0]).sort(), ['avecHeure', 'couleur', 'debut', 'fin', 'id', 'modifiable', 'responsables', 'statut', 'titre']);
   assert.equal(e[0].avecHeure, false);
   assert.deepEqual(e[0].responsables, ['X']);
   assert.equal(entrees([tache(1, '2026-11-03', '2026-11-05')], { modifiable: false })[0].modifiable, false);
-});
-
-test('calendrier : une entrée de plusieurs jours est dans chacun, fin incluse', () => {
-  const e = entrees([tache(1, '2026-11-03', '2026-11-05')]);
-  assert.equal(duJour(e, '2026-11-02').length, 0);
-  assert.equal(duJour(e, '2026-11-03').length, 1);
-  assert.equal(duJour(e, '2026-11-05').length, 1);
-  assert.equal(duJour(e, '2026-11-06').length, 0);
-  const g = grille(e, '2026-11-15');
-  assert.equal(g.flat().filter(c => c.entrees.length).length, 3);
-});
-
-test('calendrier : déplacer garde la durée, y compris au passage d\'année', () => {
-  assert.deepEqual(deplacee({ debut: '2026-12-30', fin: '2027-01-02' }, '2027-02-01'), { debut: '2027-02-01', fin: '2027-02-04' });
-  assert.deepEqual(deplacee({ debut: '2026-11-03', fin: '2026-11-03' }, '2026-11-01'), { debut: '2026-11-01', fin: '2026-11-01' });
+  assert.deepEqual([e[1].debut, e[1].fin], [null, null], 'ni date inventée ni chaîne vide : le module range la ligne dans « Sans date »');
+  assert.deepEqual([e[0].debut, e[0].fin], ['2026-11-03', '2026-11-05']);
 });

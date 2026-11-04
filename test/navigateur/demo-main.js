@@ -7,6 +7,7 @@ import { TEXTES } from '../../js/textes.js';
 import { App } from '../../js/app.js';
 import { monter } from '../../js/ui/rendu.js';
 import { creerDemo } from '../support/demo.js';
+import { chargerModule } from '../../js/ui/calendrier-hote.js';
 
 Theme.init({ storageKey: 'tuesday_theme' });
 I18n.add(TEXTES);
@@ -15,6 +16,7 @@ I18n.translateDom();
 await GfsLink.ready;
 const port = creerDemo({ variante: new URLSearchParams(window.location.search).get('demo') });
 const app = new App(port, { document: 'demonstration' });
+app.moduleCalendrier = await chargerModule(); // le calendrier du kit, comme main.js
 window.__tuesday = app;
 monter(document.getElementById('tuesday'), app);
 await app.demarrer();

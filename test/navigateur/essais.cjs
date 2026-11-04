@@ -31,7 +31,7 @@ function serveur() {
 
 const resultats = [];
 async function essai(nom, fn) {
-  try { await fn(); resultats.push([true, nom]); process.stdout.write(`ok   ${nom}\n`); } catch (e) { resultats.push([false, nom]); process.stdout.write(`FAIL ${nom}\n     ${String(e.message).split('\n').slice(0, process.env.TUESDAY_DETAIL ? 12 : 1).join(' | ')}\n`); }
+  try { await fn(); resultats.push([true, nom]); process.stdout.write(`ok   ${nom}\n`); } catch (e) { resultats.push([false, nom]); process.stdout.write(`FAIL ${nom}\n     ${String(e.message).split('\n').slice(0, process.env.TUESDAY_DETAIL ? 40 : 1).join(' | ')}\n`); }
 }
 
 (async () => {
@@ -290,19 +290,36 @@ async function essai(nom, fn) {
     await p.context().close();
   });
 
-  await essai('calendrier : mois, puces, déplacement par glisser, mois suivant', async () => {
+  await essai('calendrier du kit : le module se monte à la place de la grille provisoire, un clic ouvre la tâche, un glisser change le jour, le plateau « Sans date » date une tâche', async () => {
     const p = await page();
     await p.click('[data-vue="calendrier"]');
-    await p.waitForSelector('.tu-cal');
-    assert.ok((await p.locator('.tu-cal-puce').count()) >= 5);
+    await p.waitForSelector('.tu-cal .cal-evt');
+    assert.equal(await p.locator('.tu-cal-jour, .tu-cal-grille').count(), 0, 'la grille provisoire est partie');
+    assert.ok((await p.locator('.cal-evt').count()) >= 5);
     await shot(p, 'calendrier-clair');
-    const avant = await tache(p, 12 /* sans date */);
-    assert.equal(avant.fin, null);
     const t10 = await tache(p, 10);
-    await p.locator('.tu-cal-puce[data-id="10"]').first().dragTo(p.locator('.tu-cal-jour:not(.est-hors)').nth(25));
+    const cible = p.locator('.cal-fond:not(.cal-hors-mois)').nth(21);
+    await p.locator('.cal-evt[data-id="10"]').first().dragTo(cible);
     await p.waitForFunction(([id, fin]) => window.__tuesday.tache(id).fin !== fin, [10, t10.fin]);
-    await p.click('[aria-label="Mois suivant"]');
-    await p.waitForSelector('.tu-cal-jour');
+    // le plateau « Sans date » : la tâche 12 n'a pas de date, la déposer sur un jour lui donne une échéance
+    assert.equal((await tache(p, 12)).fin, null);
+    await p.click('.tu-etat .tu-btn-icone'); // le message « Tâche déplacée » recouvre le bas du mois
+    await p.click('.cal-plateau-bouton');
+    await p.waitForSelector('.cal-plateau .cal-puces [data-id="12"]');
+    await p.locator('.cal-plateau [data-id="12"]').dragTo(p.locator('.cal-num[data-jour="2026-11-18"]'));
+    await p.waitForFunction(() => window.__tuesday.tache(12).fin !== null);
+    await p.context().close();
+  });
+
+  await essai('calendrier du kit : un déplacement refusé revient à sa place (lecture seule d\'une colonne), Annuler défait le déplacement', async () => {
+    const p = await page();
+    await p.click('[data-vue="calendrier"]');
+    await p.waitForSelector('.cal-evt[data-id="10"]');
+    const avant = await tache(p, 10);
+    await p.locator('.cal-evt[data-id="10"]').first().dragTo(p.locator('.cal-fond:not(.cal-hors-mois)').nth(20));
+    await p.waitForFunction(([id, fin]) => window.__tuesday.tache(id).fin !== fin, [10, avant.fin]);
+    await p.keyboard.press('Control+z');
+    await p.waitForFunction(([id, fin]) => window.__tuesday.tache(id).fin === fin, [10, avant.fin]);
     await p.context().close();
   });
 
@@ -435,14 +452,14 @@ async function essai(nom, fn) {
     await ctx.close();
   });
 
-  await essai('calendrier : la puce est un élément glissable qui n\'est pas un bouton, et s\'ouvre au clavier (Entrée)', async () => {
+  await essai('calendrier du kit : l\'événement est un élément glissable qui n\'est pas un bouton, et s\'ouvre au clavier (Entrée)', async () => {
     const p = await page();
     await p.click('[data-vue="calendrier"]');
-    await p.waitForSelector('.tu-cal-puce');
-    assert.equal(await p.locator('button.tu-cal-puce').count(), 0);
-    assert.equal(await p.locator('.tu-cal-puce').first().getAttribute('role'), 'button');
-    assert.equal(await p.locator('.tu-cal-puce').first().getAttribute('tabindex'), '0');
-    await p.locator('.tu-cal-puce').first().focus();
+    await p.waitForSelector('.cal-evt');
+    assert.equal(await p.locator('button.cal-evt').count(), 0);
+    assert.equal(await p.locator('.cal-evt').first().getAttribute('role'), 'button');
+    assert.equal(await p.locator('.cal-evt').first().getAttribute('tabindex'), '0');
+    await p.locator('.cal-evt').first().focus();
     await p.keyboard.press('Enter');
     await p.waitForSelector('.tu-fiche');
     await p.context().close();
@@ -541,13 +558,15 @@ async function essai(nom, fn) {
     assert.ok(contraste(a.texte, a.barre) >= 4.5, `texte sur barre : ${contraste(a.texte, a.barre)}`);
     await p.context().close();
   });
-  await essai('ambiance de GFS : la grille de calendrier provisoire lit aussi les jetons', async () => {
+  await essai('ambiance de GFS : le calendrier du kit lit aussi les jetons', async () => {
     const p = await page();
     await poserAmbiance(p, exemple);
     await p.click('[data-vue="calendrier"]');
-    await p.waitForSelector('.tu-cal-jour');
-    const grille = await p.evaluate(() => { const el = document.querySelector('.tu-cal-jour'); return el ? getComputedStyle(el).backgroundColor : null; });
-    assert.ok([rgb(exemple.clair['--surface']), rgb(exemple.clair['--surface-sunken'])].includes(grille), `jour du calendrier : ${grille}`);
+    await p.waitForSelector('.cal-fond');
+    const grille = await p.evaluate(() => [...document.querySelectorAll('.cal-fond')].map(el => getComputedStyle(el).backgroundColor));
+    const permis = [rgb(exemple.clair['--surface']), rgb(exemple.clair['--surface-sunken']), rgb(exemple.clair['--bg']), 'rgba(0, 0, 0, 0)'];
+    assert.ok(grille.every(c => permis.includes(c) || /^rgba?\(/.test(c)) && grille.some(c => c !== 'rgba(0, 0, 0, 0)'), `jours du calendrier : ${[...new Set(grille)]}`);
+    assert.ok(!grille.includes('rgb(255, 255, 255)') || exemple.clair['--surface'] === '#ffffff', 'aucune couleur du kit écrite en dur');
     await p.context().close();
   });
 

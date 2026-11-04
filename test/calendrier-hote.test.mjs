@@ -55,7 +55,8 @@ test('rappels : ouvrir, ajouter avec le jour choisi ; déplacer écrit par l\'h�
 test('lignes et options : jours civils, fin incluse, modifiable faux en lecture seule, horloge injectée', () => {
   const { app } = appFactice([tache(1), tache(2, { debutEff: null, finEff: null })], { lectureSeule: true });
   const lignes = lignesModule(app);
-  assert.equal(lignes.length, 1, 'une tâche sans date n\'est pas un événement');
+  assert.equal(lignes.length, 2, 'une tâche sans date est une ligne sans dates : le module la range dans « Sans date »');
+  assert.deepEqual([lignes[1].id, lignes[1].debut, lignes[1].fin], [2, null, null]);
   assert.deepEqual([lignes[0].id, lignes[0].debut, lignes[0].fin, lignes[0].modifiable, lignes[0].avecHeure], [1, '2026-11-03', '2026-11-05', false, false]);
   const o = optionsModule(app);
   assert.equal(o.lectureSeule, true); assert.equal(o.debutSemaine, 1); assert.equal(o.maintenant(), '2026-11-03');
@@ -74,4 +75,14 @@ test('vueCalendrierModule : sans module → null ; avec module → son élément
   cassee.moduleCalendrier = { creerCalendrier: () => ({ element: {}, definir: () => { throw new Error('boum'); } }) };
   assert.equal(vueCalendrierModule(cassee, {}), null);
   assert.equal(cassee.moduleCalendrier, null);
+});
+
+test('une tâche sans date déposée sur un jour (plateau « Sans date ») reçoit l\'échéance, sinon le début, sinon rien : jamais une colonne non reliée', () => {
+  const sans = { debut: null, fin: null };
+  assert.deepEqual(roleDeplacement(sans, '2026-11-04', '2026-11-04', { echeance: 'Echeance', debut: 'Debut' }), { echeance: '2026-11-04' });
+  assert.deepEqual(roleDeplacement(sans, '2026-11-04', '2026-11-06', { echeance: 'Echeance' }), { echeance: '2026-11-06' });
+  assert.deepEqual(roleDeplacement(sans, '2026-11-04', '2026-11-04', { debut: 'Debut' }), { debut: '2026-11-04' });
+  assert.equal(roleDeplacement(sans, '2026-11-04', '2026-11-04', { titre: 'Titre' }), null);
+  assert.equal(roleDeplacement(sans, '2026-11-04', '2026-11-04'), null, 'sans correspondance connue, rien d\'inventé');
+  assert.deepEqual(roleDeplacement({ debut: 1, fin: null }, '2026-11-04', '2026-11-04', { echeance: 'Echeance' }), { debut: '2026-11-04' }, 'une tâche déjà datée garde ses rôles');
 });

@@ -31,7 +31,7 @@ async function demarrer() {
   const nom = (await port.nomDocument?.()) ?? contexte?.document ?? port.document;
   const app = new App(port, { document: String(contexte?.document ?? nom ?? 'seul') });
   app.suivreIdentite();
-  app.moduleCalendrier = await chargerModule(); // le calendrier de Calendar+, quand il existe ; sinon la grille provisoire
+  app.moduleCalendrier = await chargerModule(); // le calendrier du kit (Calendar+) ; s'il ne se charge pas, la vue Calendrier le dit
   monter(racine, app);
   app.attendreAcces();
   await app.demarrer();

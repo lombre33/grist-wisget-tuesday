@@ -1,5 +1,5 @@
 // L'hôte du module Calendrier (Calendar+). Tuesday ne contient pas le calendrier : il monte le module quand il existe et lui parle par le contrat de `docs/integration-suite.md`, 1
-// (lignes en jours civils, rappels `onOuvrir`, `onDeplacer` qui rend une promesse, `onAjouter`, `onEtat`). Tant que le module n'existe pas, la grille provisoire de `calendrier.js` reste.
+// (lignes en jours civils, rappels `onOuvrir`, `onDeplacer` qui rend une promesse, `onAjouter`, `onEtat`). Le module est celui du kit (kit/js/calendrier/, consigne 011) ; absent ou en erreur, la vue le dit (`calendrier.js`).
 // Le module ne parle jamais à Grist : l'hôte écrit, et garde Annuler / Rétablir. Le chemin est celui de la voie A (module du kit) ; la voie B ne le changerait pas dans l'app.
 import { I18n } from '../../kit/js/i18n.js';
 import { entrees, roleDeplacement } from '../core/calendrier.js';
@@ -9,7 +9,7 @@ import { couleurTache } from './couleurs.js';
 export const CHEMIN_MODULE = '../../kit/js/calendrier/index.js';
 const t = (cle, vars) => I18n.t(cle, vars);
 
-// Le module est facultatif : son absence ou une erreur à son chargement ne casse rien (retour à la grille provisoire). Il doit offrir `creerCalendrier(rappels)`.
+// Le module est facultatif : son absence ou une erreur à son chargement ne casse rien (la vue Calendrier le dit, le reste marche). Il doit offrir `creerCalendrier(rappels)`.
 export async function chargerModule(importer = chemin => import(chemin)) {
   try {
     const m = await importer(CHEMIN_MODULE);
@@ -22,7 +22,7 @@ export function rappels(app, actions) {
     onOuvrir: id => actions.ouvrirFiche(id),
     onDeplacer: async ({ id, debut, fin }) => {
       const tache = app.tache(id);
-      const parRole = tache ? roleDeplacement(tache, debut, fin) : null;
+      const parRole = tache ? roleDeplacement(tache, debut, fin, app.mapping) : null;
       if (!parRole) throw new Error('rien à écrire');
       if (!(await app.modifier(id, parRole, t('msg.deplacee')))) throw new Error('refusé'); // le module remet l'événement à sa place
     },
@@ -49,7 +49,7 @@ export function optionsModule(app) {
   return { debutSemaine: 1, langue: I18n.language, lectureSeule: app.lectureSeule, jourCourant: app.calEtat?.jourCourant ?? app.aujourdhui, vue: app.calEtat?.vue ?? 'mois', maintenant: () => app.aujourdhui };
 }
 
-// Rend l'élément du module, ou null (module absent ou en erreur : la grille provisoire prend la place).
+// Rend l'élément du module, ou null (module absent ou en erreur : la vue dit que le calendrier n'a pas pu se charger).
 export function vueCalendrierModule(app, actions) {
   const module = app.moduleCalendrier;
   if (!module) return null;

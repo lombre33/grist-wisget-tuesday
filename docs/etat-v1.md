@@ -1,4 +1,4 @@
-# État de la V1 de Tuesday (03/11/2026, version 0.1.6)
+# État de la V1 de Tuesday (03/11/2026, version 0.1.7)
 
 Ce document dit **ce qui existe, ce qui est mesuré, ce qui ne l'est pas, et ce que GFS doit rejouer**. Il remplace la lecture du code pour qui reprend le travail.
 
@@ -7,7 +7,7 @@ Ce document dit **ce qui existe, ce qui est mesuré, ce qui ne l'est pas, et ce 
 | Domaine | Contenu |
 |---|---|
 | Premier lancement | **L'outil d'abord** (03/11) : l'outil est complet dès l'arrivée, sur ses données si une table est reconnue (lecture), sinon sur un aperçu vide ; la mise en place s'ouvre en **pop-up** (accès, table, colonnes, un schéma par étape), se ferme d'un geste et revient à la première écriture, avec la tâche tapée gardée ; créer la table de tâches nomme ce qui sera créé ; « Garder pour l'équipe » crée `Tuesday_Projets` après accord (`docs/onboarding.md`) |
-| Vues | Tableau (sous-tâches repliables, groupes, ajout rapide au clavier), Kanban (glisser-déposer, tri manuel / échéance / priorité), Chronologie (barres, jalons, ligne d'aujourd'hui, déplacer et redimensionner, 4 zooms), Calendrier **provisoire** (grille du mois, puces déplaçables), fiche de tâche à côté ou par-dessus |
+| Vues | Tableau (sous-tâches repliables, groupes, ajout rapide au clavier), Kanban (glisser-déposer, tri manuel / échéance / priorité), Chronologie (barres, jalons, ligne d'aujourd'hui, déplacer et redimensionner, 4 zooms), Calendrier (le module du kit : mois, semaine, jour, plateau « Sans date »), fiche de tâche à côté ou par-dessus |
 | Gestes | Changer statut, responsable, dates, priorité, étiquettes, parent ; case à cocher ; ajouter ; supprimer avec accord ; Annuler / Rétablir 100 % (Ctrl+Z, Ctrl+Y) ; clavier : N, /, Échap |
 | Recherche et filtres | Recherche, statut, responsable, priorité, étiquettes, « en retard », « mes tâches » ; étiquettes visibles qu'on retire d'un clic ; mémorisés par document et par projet |
 | Lecture seule | Tout se voit, chaque geste d'écriture est grisé avec sa raison |
@@ -43,7 +43,7 @@ Pas encore mesuré :
 
 ## 5. Limites connues de la V1
 
-- Le calendrier est une grille de mois provisoire, à remplacer par le module de Calendar+ (dépôt sans code pour l'instant).
+- Le calendrier est le module de Calendar+ rangé dans le kit (0.8.0, consigne 011) : mois, semaine, jour, plateau « Sans date » ; les heures et la saisie rapide demandent encore des colonnes DateTime.
 - Pas de dépendances (flèches), de charge, de synthèse, de récurrence (V2) ni de liens vers les fichiers de GFS, commentaires, temps (V3).
 - Un seul projet ouvert à la fois ; « Mes tâches » repose sur un « Je suis… » choisi dans le navigateur.
 - Le calendrier attend le module de Calendar+ (hôte prêt, `js/ui/calendrier-hote.js`) ; « Mes tâches » attend l'identité (cahier 5.5).
