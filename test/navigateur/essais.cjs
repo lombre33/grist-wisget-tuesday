@@ -47,9 +47,11 @@ async function essai(nom, fn) {
     p.on('pageerror', e => violations.push(`erreur de page : ${e.message}`));
     await p.goto(options.demo ? `${base}?demo=${options.demo}` : base);
     await p.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible' }); // la mise en place s'ouvre au lancement, par-dessus l'outil
-    if (options.ouvrir !== false) { await p.click('[data-geste="mep-principal"]'); await p.waitForFunction(() => window.__tuesday.pret); await p.waitForSelector('.tu-tableau'); }
+    if (options.ouvrir !== false) { await p.click('[data-geste="mep-principal"]'); await passerMemoire(p); await p.waitForFunction(() => window.__tuesday.pret); await p.waitForSelector('.tu-tableau'); }
     return p;
   }
+  // Après une mise en place réussie, Tuesday propose de se souvenir de la table dans le document (une table de plus : accord demandé) ; ici on dit « Plus tard » (Échap).
+  const passerMemoire = async p => { try { await p.waitForSelector('#pp-dialog-modal:not([hidden])', { timeout: 2000 }); await p.keyboard.press('Escape'); await p.waitForSelector('#pp-dialog-modal', { state: 'hidden' }); } catch (e) { /* pas de proposition : projet déjà gardé */ } };
   const tache = (p, id) => p.evaluate(i => { const t = window.__tuesday.tache(i); return t && { statut: t.statut, titre: t.titre, debut: t.debut, fin: t.fin, ordre: t.ordre, responsables: t.responsables.map(r => r.label) }; }, id);
   const shot = (p, nom) => p.screenshot({ path: path.join(sortie, `${nom}.png`) });
 
@@ -81,6 +83,7 @@ async function essai(nom, fn) {
     await p.fill('[data-mep="nom"]', 'Mes tâches');
     assert.match(await p.textContent('[data-geste="mep-principal"]'), /Mes tâches/); // le bouton nomme ce qui sera créé
     await p.click('[data-geste="mep-principal"]');
+    await passerMemoire(p);
     await p.waitForFunction(() => window.__tuesday.pret);
     await p.waitForSelector('.tu-ligne[data-id]');
     assert.equal(await p.evaluate(() => window.__tuesday.source), 'Mes_tâches');
@@ -110,6 +113,7 @@ async function essai(nom, fn) {
     assert.equal(await p.evaluate(() => window.__tuesday.projets.length), 0);
     await shot(p, 'mise-en-place-table-clair');
     await p.click('[data-geste="mep-principal"]');
+    await passerMemoire(p);
     await p.waitForSelector('#tu-mep .tu-mep-box', { state: 'hidden' });
     assert.equal(await p.evaluate(() => window.__tuesday.pret), true);
     await shot(p, 'tableau-clair');
@@ -459,6 +463,7 @@ async function essai(nom, fn) {
     assert.match(await p.textContent('#tu-mep h3'), /Where should your tasks go\?/);
     await shot(p, 'mise-en-place-sombre');
     await p.click('[data-geste="mep-principal"]');
+    await passerMemoire(p);
     await p.waitForFunction(() => window.__tuesday.pret);
     await p.waitForSelector('.tu-tableau');
     await shot(p, 'tableau-sombre');
@@ -580,6 +585,27 @@ async function essai(nom, fn) {
     assert.equal(await p.getAttribute('[data-geste="reglages"]', 'aria-label'), 'Settings');
     await p.click('[data-geste="reglages"]');
     assert.ok((await p.locator('.tu-menu-item').allTextContents()).some(x => x.includes('Credits')));
+    await p.context().close();
+  });
+
+  await essai('mise en place réussie : Tuesday propose de se souvenir de la table dans le document (accord demandé), « Plus tard » ne crée rien, « Se souvenir » crée Tuesday_Projets et garde le projet', async () => {
+    const refus = await page({ ouvrir: false });
+    await refus.click('[data-geste="mep-principal"]');
+    await refus.waitForSelector('#pp-dialog-modal:not([hidden])');
+    const texte = await refus.textContent('#pp-dialog-message');
+    assert.match(texte, /cache/); assert.match(texte, /Tuesday_Projets/); assert.match(texte, /Vos données ne sont pas modifiées/);
+    await refus.keyboard.press('Escape');
+    await refus.waitForFunction(() => window.__tuesday.pret);
+    assert.equal(await refus.evaluate(() => Boolean(window.__tuesday.modele.tables.Tuesday_Projets)), false, 'rien n\'est créé sans accord');
+    assert.equal(await refus.evaluate(() => window.__tuesday.projet), null);
+    await refus.context().close();
+    const p = await page({ ouvrir: false });
+    await p.click('[data-geste="mep-principal"]');
+    await p.waitForSelector('#pp-dialog-modal:not([hidden])');
+    await p.click('#pp-dialog-modal .pp-modal-primary');
+    await p.waitForFunction(() => window.__tuesday.projet !== null);
+    assert.equal(await p.evaluate(() => Boolean(window.__tuesday.modele.tables.Tuesday_Projets)), true);
+    assert.equal(await p.evaluate(() => window.__tuesday.projet.source), 'Taches');
     await p.context().close();
   });
 

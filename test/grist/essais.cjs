@@ -43,7 +43,15 @@ const taches = {
     return { doc, cadre };
   };
   // La mise en place s'ouvre au lancement par-dessus l'outil (onboarding v2) : on la valide, la table reconnue est celle du document.
-  const confirmer = async cadre => { await cadre.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible' }); await cadre.click('[data-geste="mep-principal"]'); await cadre.waitForSelector('#tu-mep .tu-mep-box', { state: 'hidden' }); await cadre.waitForSelector('.tu-tableau'); };
+  // Après la mise en place, Tuesday propose de se souvenir de la table dans le document (une table de plus : accord demandé) : « Plus tard » (Échap) par défaut, « Se souvenir » avec { souvenir: true }.
+  const confirmer = async (cadre, { souvenir = false } = {}) => {
+    await cadre.waitForSelector('#tu-mep .tu-mep-box', { state: 'visible' });
+    await cadre.click('[data-geste="mep-principal"]');
+    await cadre.waitForSelector('#pp-dialog-modal:not([hidden])');
+    if (souvenir) await cadre.click('#pp-dialog-modal .pp-modal-primary'); else await cadre.press('body', 'Escape');
+    await cadre.waitForSelector('#tu-mep .tu-mep-box', { state: 'hidden' });
+    await cadre.waitForSelector('.tu-tableau');
+  };
 
   await essai('premier lancement dans Grist : l\'outil lit la table reconnue derrière la mise en place, valider n\'écrit rien, aucune table créée', async () => {
     const { doc, cadre } = await ouvrirTuesday();
@@ -61,19 +69,20 @@ const taches = {
     await shot(cadre, 'tableau');
   });
 
-  await essai('réouverture : une table confirmée une fois, la mise en place ne revient pas et rien n\'est créé ; l\'avertissement du stockage refusé n\'apparaît pas quand le navigateur garde le choix', async () => {
+  await essai('réouverture : la table confirmée se retrouve même navigateur vidé (mémoire dans le document, accord demandé) ; sans accord, rien n\'est créé', async () => {
+    const sans = await ouvrirTuesday();
+    await confirmer(sans.cadre);
+    assert.ok(!(await sans.doc.api.tables(sans.doc.id)).includes('Tuesday_Projets'), 'sans accord, aucune table créée');
     const { doc, cadre } = await ouvrirTuesday();
-    await confirmer(cadre);
+    await confirmer(cadre, { souvenir: true });
+    await pollEgal(async () => (await doc.api.tables(doc.id)).includes('Tuesday_Projets'), true);
+    await cadre.evaluate(() => localStorage.clear()); // le navigateur oublie tout
     const rouvert = await ouvrir(labo, doc);
     await rouvert.waitForSelector('.tu-tableau');
-    await rouvert.waitForSelector('.tu-ligne[data-id]');
+    await pollEgal(() => rouvert.locator('.tu-ligne[data-id]').count(), 4);
     await page.waitForTimeout(1500);
-    assert.equal(await rouvert.locator('#tu-mep .tu-mep-box').isVisible(), false, 'la mise en place ne se rouvre pas');
-    assert.equal(await rouvert.locator('.tu-ligne[data-id]').count(), 4);
-    assert.equal(await rouvert.locator('.tu-etat.est-info').count(), 0, 'pas d\'avertissement de stockage');
-    assert.ok(!(await doc.api.tables(doc.id)).includes('Tuesday_Projets'), 'aucune table créée');
+    assert.equal(await rouvert.locator('#tu-mep .tu-mep-box').isVisible(), false, 'la mise en place ne revient pas, cache vidé');
   });
-
   await essai('statut : le changement est écrit dans Grist, Ctrl+Z le défait, Ctrl+Y le refait', async () => {
     const { doc, cadre } = await ouvrirTuesday();
     await confirmer(cadre);

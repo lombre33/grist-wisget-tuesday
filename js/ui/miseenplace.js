@@ -3,6 +3,8 @@
 import { h } from '../../kit/js/dom.js';
 import { I18n } from '../../kit/js/i18n.js';
 import { ModalBase } from '../../kit/js/modal-base.js';
+import { Dialogs } from '../../kit/js/dialogs.js';
+import { TABLE_PROJETS, COLONNES_PROJETS } from '../core/projet.js';
 import { icone } from './icones.js';
 import { figure } from './figures.js';
 import { ROLES, accepte } from '../core/mapping.js';
@@ -92,6 +94,15 @@ function etapeAcces() {
 }
 
 // ---------- boutons et déroulement ----------
+// Le navigateur oublie (cache vidé, autre navigateur) : seul le document peut se souvenir de la table confirmée. Une table de plus n'est créée qu'avec l'accord de la personne ; refusée, la
+// table reste mémorisée par le navigateur seulement, et la mise en place reviendra quand il oubliera.
+async function proposerMemoire(app) {
+  if (!app.pret || app.projet || app.lectureSeule) return;
+  const cree = app.modele.tables[TABLE_PROJETS] ? t('garder.ajout') : t('garder.creation', { table: TABLE_PROJETS, colonnes: COLONNES_PROJETS.length });
+  const accord = await Dialogs.confirm({ title: t('memoire.titre'), message: `${t('memoire.texte')}\n\n${cree}`, confirmLabel: t('memoire.bouton'), cancelLabel: t('garder.plusTard') });
+  if (accord) await app.enregistrerProjet(app.source);
+}
+
 let enCours = false;
 let echecAffiche = false;
 async function agir(app) {
@@ -104,6 +115,7 @@ async function agir(app) {
   try {
     const fait = await app.terminerMiseEnPlace();
     echecAffiche = !fait && app.message?.type === 'erreur' && app.message.id !== avant;
+    if (fait) await proposerMemoire(app);
   } finally { enCours = false; synchroniserBouton(app); }
   if (app.miseEnPlace.ouverte) app.emettre('mep'); // redessine : les erreurs de colonnes, ou le texte de l'échec
 }
