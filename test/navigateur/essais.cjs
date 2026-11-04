@@ -392,7 +392,7 @@ async function essai(nom, fn) {
     await p.waitForSelector('.tu-fiche');
     assert.equal(await p.getAttribute('[data-geste="lier"]', 'aria-disabled'), 'true');
     assert.ok((await p.getAttribute('[data-geste="lier"]', 'title')).length > 10);
-    await p.click('.tu-barre .tu-projet');
+    await p.click('[data-geste="reglages"]');
     const auto = p.locator('.tu-menu-item', { hasText: 'Automatiser' });
     assert.equal(await auto.getAttribute('aria-disabled'), 'true');
     assert.ok((await auto.getAttribute('title')).length > 10);
@@ -543,6 +543,43 @@ async function essai(nom, fn) {
     await p.waitForSelector('.tu-cal-jour');
     const grille = await p.evaluate(() => { const el = document.querySelector('.tu-cal-jour'); return el ? getComputedStyle(el).backgroundColor : null; });
     assert.ok([rgb(exemple.clair['--surface']), rgb(exemple.clair['--surface-sunken'])].includes(grille), `jour du calendrier : ${grille}`);
+    await p.context().close();
+  });
+
+  await essai('en-tête Grist Factory : la roue des Réglages puis le logo tout à droite de la barre, rien ne déborde à 700 × 400 ; la roue ouvre qui je suis, la langue, le thème, Automatiser grisé et Crédits', async () => {
+    for (const largeur of [700, 560]) {
+      const p = await page({ largeur });
+      const m = await p.evaluate(() => {
+        const r = sel => document.querySelector(sel).getBoundingClientRect();
+        const barre = r('.tu-barre'); const roue = r('.tu-roue'); const logo = r('.tu-logo'); const image = document.querySelector('.tu-logo');
+        return { barreDroite: barre.right, roueDroite: roue.right, logoGauche: logo.left, logoDroite: logo.right, logoLarg: logo.width, ok: image.complete && image.naturalWidth > 0, defile: document.documentElement.scrollWidth > window.innerWidth, opacite: getComputedStyle(image).opacity, rond: getComputedStyle(image).borderTopLeftRadius, bouton: image.closest('button') !== null, nouvelle: r('[data-geste="nouvelle"]').right };
+      });
+      assert.ok(m.ok, 'le logo est chargé'); assert.equal(m.logoLarg, 20); assert.equal(m.opacite, '0.85'); assert.equal(m.rond, '50%'); assert.equal(m.bouton, false, 'le logo n\'est pas un bouton');
+      assert.ok(m.logoGauche >= m.roueDroite && m.logoGauche >= m.nouvelle, 'ordre : nouvelle tâche, roue, logo');
+      assert.ok(m.logoDroite <= m.barreDroite + 0.5, `le logo reste dans la barre à ${largeur} px`);
+      assert.equal(m.defile, false, `aucun défilement horizontal à ${largeur} px`);
+      await p.context().close();
+    }
+    const p = await page();
+    await p.click('[data-geste="reglages"]');
+    const textes = await p.locator('.tu-menu-item, .tu-menu-titre').allTextContents();
+    for (const attendu of ['Je suis', 'Français', 'English', 'Automatiser', 'Crédits']) assert.ok(textes.some(x => x.includes(attendu)), attendu);
+    assert.equal(await p.locator('.tu-menu-item').filter({ hasText: 'Automatiser' }).getAttribute('aria-disabled'), 'true');
+    await p.locator('.tu-menu-item').filter({ hasText: 'Crédits' }).click();
+    const credits = await p.textContent('#pp-dialog-message');
+    assert.match(credits, /Grist Factory/); assert.match(credits, /grist-factory\.fr/); assert.match(credits, /GPL v3\.0/); assert.match(credits, /Version : 0\./);
+    await p.keyboard.press('Escape');
+    await p.click('.tu-barre .tu-projet');
+    const menuProjet = await p.locator('.tu-menu-item, .tu-menu-titre').allTextContents();
+    assert.ok(menuProjet.some(x => x.includes('autre table')), 'le menu du projet garde les projets et « Ouvrir une autre table »');
+    assert.ok(!menuProjet.some(x => x.includes('Je suis')), 'les réglages ont quitté le menu du projet');
+    await p.context().close();
+  });
+  await essai('en-tête Grist Factory, anglais et sombre : « Settings » et « Credits », roue et logo visibles', async () => {
+    const p = await page({ locale: 'en-US', sombre: true });
+    assert.equal(await p.getAttribute('[data-geste="reglages"]', 'aria-label'), 'Settings');
+    await p.click('[data-geste="reglages"]');
+    assert.ok((await p.locator('.tu-menu-item').allTextContents()).some(x => x.includes('Credits')));
     await p.context().close();
   });
 

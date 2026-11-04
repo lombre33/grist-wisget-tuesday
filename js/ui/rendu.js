@@ -2,7 +2,6 @@
 // pendant un clic attend la fin du clic (sinon la cible disparaîtrait entre l'appui et le relâchement).
 import { h } from '../../kit/js/dom.js';
 import { I18n } from '../../kit/js/i18n.js';
-import { Theme } from '../../kit/js/theme.js';
 import { Dialogs } from '../../kit/js/dialogs.js';
 import { construireBarre } from './barre.js';
 import { etiquettesFiltres } from './filtres.js';
@@ -18,10 +17,10 @@ import { icone } from './icones.js';
 import { TABLE_LIENS, COLONNES_LIENS } from '../core/liens.js';
 import { FILTRES_VIDES } from '../core/regroupement.js';
 import { COLONNES_PROJETS, TABLE_PROJETS } from '../core/projet.js';
-import { personnesPossibles } from './champs.js';
+import { menuReglages } from './menu-reglages.js';
 import { GfsLink } from '../../kit/js/gfs-link.js';
 
-export const VERSION = '0.1.3';
+export const VERSION = '0.1.4';
 const t = (cle, vars) => I18n.t(cle, vars);
 const VUES = { tableau: vueTableau, kanban: vueKanban, chronologie: vueChronologie, calendrier: vueCalendrier };
 
@@ -78,7 +77,7 @@ export function monter(racine, app) {
     basculerReplie: cle => basculer(cle),
     effacerFiltres: () => app.regler({ filtres: { ...FILTRES_VIDES } }),
     versAujourdhui: () => { const g = racine.querySelector('.tu-ch-grille'); const d = racine.querySelector('.tu-ch-defile'); if (g && d) d.scrollLeft = Math.max(0, Number(g.dataset.auj) - 60); },
-    nouvelleTache, supprimer, garder, menuProjet, lierFichier, ouvrirLien, retirerLien,
+    nouvelleTache, supprimer, garder, menuProjet, menuReglages: ancre => menuReglagesVers(ancre), lierFichier, ouvrirLien, retirerLien,
   };
   function basculer(cle) { const r = app.reglages.replies; app.regler({ replies: r.includes(cle) ? r.filter(x => x !== cle) : [...r, cle] }); }
   async function nouvelleTache(contexte = {}, { fiche = true } = {}) {
@@ -106,30 +105,17 @@ export function monter(racine, app) {
     if (await Dialogs.confirm({ title: t('demarrage.accordTitre'), message: cree, confirmLabel: t('garder.bouton') })) await app.enregistrerProjet(nom.trim());
   }
   function menuProjet(ancre) {
-    const hebergee = GfsLink.hosted;
-    const reconnue = app.moiReconnu !== null;
     const items = [
       ...(app.projets.length ? [{ titre: t('projet.projets') }, ...app.projets.map(p => ({ label: p.nom || p.source, valeur: ['projet', p], actif: p === app.projet || p.id === app.projet?.id }))] : []),
       { label: t('projet.autreTable'), valeur: ['tables'] },
-      { separateur: true }, { titre: t('projet.jeSuis') }, ...personnesPossibles(app).slice(0, 30).map(p => ({ label: p.label, valeur: ['moi', p.id], actif: app.moi === p.id, grise: reconnue, raison: reconnue ? t('projet.reconnue') : null })),
-      ...(app.reglages.moi !== null || reconnue ? [{ label: t('projet.personne'), valeur: ['moi', null], grise: reconnue, raison: reconnue ? t('projet.reconnue') : null }] : []),
-      { separateur: true }, { titre: t('projet.apparence') },
-      { label: 'Français', valeur: ['langue', 'fr'], actif: I18n.language === 'fr', grise: hebergee, raison: hebergee ? t('projet.langueGfs') : null },
-      { label: 'English', valeur: ['langue', 'en'], actif: I18n.language === 'en', grise: hebergee, raison: hebergee ? t('projet.langueGfs') : null },
-      { label: t('projet.clair'), valeur: ['theme', 'light'], actif: Theme.choice === 'light' }, { label: t('projet.sombre'), valeur: ['theme', 'dark'], actif: Theme.choice === 'dark' }, { label: t('projet.systeme'), valeur: ['theme', 'system'], actif: Theme.choice === 'system' },
-      { separateur: true }, { label: t('projet.automatiser'), valeur: ['automatiser'], grise: true, raison: t('projet.automatiserRaison') },
-      { label: t('projet.aPropos'), valeur: ['apropos'] },
     ];
     ouvrirMenu(ancre, items, async it => {
       const [type, v] = it.valeur;
       if (type === 'projet') await app.ouvrirProjet(v);
       else if (type === 'tables') app.demanderMiseEnPlace({ etape: 'table' });
-      else if (type === 'moi') app.regler({ moi: v });
-      else if (type === 'langue') { I18n.setLanguage(v); I18n.store(v); }
-      else if (type === 'theme') { Theme.set(v); app.emettre(); }
-      else if (type === 'apropos') await Dialogs.notice({ title: 'Tuesday', message: t('projet.version', { version: VERSION, mode: app.port.mode === 'demo' ? t('demo.titre') : 'Grist' }) });
     }, { large: true, etiquette: t('barre.projet') });
   }
+  const menuReglagesVers = ancre => menuReglages(ancre, app, VERSION);
 
   function rendre() {
     planifie = false;

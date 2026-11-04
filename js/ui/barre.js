@@ -1,4 +1,4 @@
-// La barre du haut : projet, vues, recherche, filtres, affichage, annuler / rétablir, nouvelle tâche. Au plus sept contrôles visibles ; ce qui manque est grisé avec sa raison, jamais masqué.
+// La barre du haut : projet, vues, recherche, filtres, affichage, annuler / rétablir, nouvelle tâche, puis la roue des Réglages et le logo. Au plus sept contrôles de travail visibles ; ce qui manque est grisé avec sa raison, jamais masqué.
 import { h } from '../../kit/js/dom.js';
 import { I18n } from '../../kit/js/i18n.js';
 import { icone } from './icones.js';
@@ -64,13 +64,24 @@ function recherche(app) {
   return h('label', { class: `tu-recherche${app.reglages.filtres.recherche ? ' est-remplie' : ''}` }, icone('recherche'), champ);
 }
 
+const LOGO = new URL('../../img/grist-factory-logo.jpg?v=1', import.meta.url).href;
+
+// En haut à droite, la roue des Réglages puis le logo de Grist Factory, discret (charte : rond de 20 px, opacité .85) ; le logo n'est pas un bouton.
+function roueEtLogo(actions) {
+  return [
+    h('button', { type: 'button', class: 'tu-btn tu-btn-icone tu-roue', 'aria-haspopup': 'menu', 'aria-label': t('reglages.titre'), title: t('reglages.titre'), dataset: { geste: 'reglages' }, on: { click: e => actions.menuReglages(e.currentTarget) } }, icone('roue')),
+    h('img', { class: 'tu-logo', src: LOGO, alt: t('reglages.logo'), width: 20, height: 20 }),
+  ];
+}
+
 export function construireBarre(app, actions) {
   const ecriture = app.lectureSeule;
   return h('header', { class: 'tu-barre' },
     boutonProjet(app, actions), onglets(app), h('span', { class: 'tu-espace' }),
     recherche(app), boutonFiltres(app), boutonAffichage(app), annulerRetablir(app),
     h('button', { type: 'button', class: 'tu-btn tu-btn-principal', 'aria-disabled': ecriture ? 'true' : null, title: ecriture ? t('refus.lectureSeule') : t('barre.nouvelle'), dataset: { geste: 'nouvelle' }, on: { click: () => actions.nouvelleTache() } },
-      icone('plus'), h('span', { class: 'tu-btn-texte' }, t('barre.nouvelle'))));
+      icone('plus'), h('span', { class: 'tu-btn-texte' }, t('barre.nouvelle'))),
+    ...roueEtLogo(actions));
 }
 
 export const barreFiltresActifs = app => filtresActifs(app.reglages.filtres);

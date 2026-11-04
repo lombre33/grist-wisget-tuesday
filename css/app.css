@@ -32,6 +32,7 @@ button { cursor: pointer; }
 .tu-btn.est-danger { color: var(--danger-ink); }
 .tu-compte { background: var(--accent-solid); color: var(--on-accent); border-radius: var(--radius-pill, 999px); min-width: 18px; height: 18px; display: inline-grid; place-items: center; font-size: 11px; padding: 0 5px; }
 .tu-projet { font-weight: 600; max-width: 180px; }
+.tu-logo { flex: none; width: 20px; height: 20px; border-radius: 50%; opacity: .85; margin-left: 2px; }
 .tu-projet-nom { overflow: hidden; text-overflow: ellipsis; }
 .tu-seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface); flex: none; }
 .tu-seg > button { border: 0; background: transparent; height: 26px; display: inline-flex; align-items: center; gap: 6px; padding: 0 9px; }
@@ -44,6 +45,7 @@ button { cursor: pointer; }
 .tu-recherche-champ { border: 0; outline: 0; background: transparent; width: 100%; min-width: 0; }
 .tu-filtres-actifs { flex: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 10px; background: var(--surface); border-bottom: 1px solid var(--border); }
 .tu-etiquette-filtre { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border: 1px solid var(--accent-soft-border); border-radius: var(--radius-pill, 999px); background: var(--accent-soft); color: var(--accent-ink); font-size: 12px; }
+@container (max-width: 600px) { .tu-projet { max-width: 70px; } .tu-barre { gap: 4px; padding: 4px 8px; } }
 @container (max-width: 760px) { .tu-btn-texte, .tu-onglet-texte { display: none; } .tu-recherche { width: 28px; flex-basis: 28px; padding: 0 6px; } .tu-recherche:focus-within, .tu-recherche.est-remplie { width: 150px; flex-basis: 150px; } .tu-recherche:not(:focus-within):not(.est-remplie) .tu-recherche-champ { width: 0; padding: 0; } }
 
 /* ---------- Menus ---------- */
