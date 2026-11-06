@@ -290,6 +290,8 @@ async function essai(nom, fn) {
     await p.context().close();
   });
 
+  // Un jour du mois affiché (novembre 2026) à au moins quatre jours de l'événement de la tâche : le déposer ailleurs que sur lui-même.
+  const jourLoin = t => ['2026-11-22', '2026-11-12'].find(j => Math.abs(Date.parse(j) - Date.parse(String(t.fin || t.debut).slice(0, 10))) >= 4 * 86400000);
   await essai('calendrier du kit : le module se monte à la place de la grille provisoire, un clic ouvre la tâche, un glisser change le jour, le plateau « Sans date » date une tâche', async () => {
     const p = await page();
     await p.click('[data-vue="calendrier"]');
@@ -298,7 +300,8 @@ async function essai(nom, fn) {
     assert.ok((await p.locator('.cal-evt').count()) >= 5);
     await shot(p, 'calendrier-clair');
     const t10 = await tache(p, 10);
-    const cible = p.locator('.cal-fond:not(.cal-hors-mois)').nth(21);
+    
+    const cible = p.locator(`.cal-num[data-jour="${jourLoin(t10)}"]`); // les dates de la démonstration suivent l'horloge : la cible est choisie loin de l'événement, sur le numéro du jour que les longues barres ne recouvrent pas
     await p.locator('.cal-evt[data-id="10"]').first().dragTo(cible);
     await p.waitForFunction(([id, fin]) => window.__tuesday.tache(id).fin !== fin, [10, t10.fin]);
     // le plateau « Sans date » : la tâche 12 n'a pas de date, la déposer sur un jour lui donne une échéance
@@ -316,7 +319,7 @@ async function essai(nom, fn) {
     await p.click('[data-vue="calendrier"]');
     await p.waitForSelector('.cal-evt[data-id="10"]');
     const avant = await tache(p, 10);
-    await p.locator('.cal-evt[data-id="10"]').first().dragTo(p.locator('.cal-fond:not(.cal-hors-mois)').nth(20));
+    await p.locator('.cal-evt[data-id="10"]').first().dragTo(p.locator(`.cal-num[data-jour="${jourLoin(avant)}"]`));
     await p.waitForFunction(([id, fin]) => window.__tuesday.tache(id).fin !== fin, [10, avant.fin]);
     await p.keyboard.press('Control+z');
     await p.waitForFunction(([id, fin]) => window.__tuesday.tache(id).fin === fin, [10, avant.fin]);

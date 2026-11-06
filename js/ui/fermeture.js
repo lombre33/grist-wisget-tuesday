@@ -28,8 +28,9 @@ export function reponseFermer(app, racine = document) {
   });
 }
 
-// Branche la réponse sur le lien de GFS : `onClose(fn)` rappelle `fn(raison)` à chaque `fermer` et envoie sa réponse `{ ferme }`. Rend de quoi se désabonner, ou null quand le lien ne sait pas
-// encore recevoir `fermer` (kit d'avant) : GFS prend alors l'app pour « elle part sans rien dire » (consigne 013, point 1).
+// Branche la réponse sur le lien de GFS (kit 0.9.0, consignes 013 et 014) : `onClose(fn)` rappelle `fn({ raison })` à chaque `fermer` ; le kit attend exactement `true` pour laisser partir l'app
+// (il écrit lui-même l'enveloppe `{ ferme }`), tout autre retour garde la personne ici. Rend de quoi se désabonner, ou null quand le lien ne sait pas recevoir `fermer` (kit d'avant) : GFS
+// prend alors l'app pour « elle part sans rien dire ».
 export function brancherFermeture(lien, app, racine = document) {
-  return typeof lien.onClose === 'function' ? lien.onClose(() => reponseFermer(app, racine)) : null;
+  return typeof lien.onClose === 'function' ? lien.onClose(async () => (await reponseFermer(app, racine)).ferme === true) : null;
 }

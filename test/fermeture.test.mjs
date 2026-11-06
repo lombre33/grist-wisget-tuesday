@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { repondreFermer } from '../js/core/fermeture.js';
 import { App } from '../js/app.js';
+import { brancherFermeture } from '../js/ui/fermeture.js';
 import { creerDemo } from './support/demo.js';
 
 function deps(surcharge = {}) {
@@ -61,4 +62,21 @@ test('App.attendreEcritures : vrai quand rien n\'écrit, vrai dès que l\'écrit
 test('le module d\'entrée branche la réponse à `fermer` sur le lien de GFS', () => {
   const main = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
   assert.match(main, /brancherFermeture\(GfsLink, app\)/);
+});
+
+test('branchée sur GfsLink.onClose : rend exactement true quand rien n\'attend, false quand la personne garde (le kit écrit seul { ferme })', async () => {
+  const app = new App(creerDemo({ maintenant: new Date(2026, 10, 2) }), { document: 'f', maintenant: () => new Date(2026, 10, 2) });
+  let abonne = null;
+  const lien = { onClose: fn => { abonne = fn; return () => { abonne = null; }; } };
+  const corps = {};
+  const racine = { querySelectorAll: () => [], activeElement: corps, body: corps };
+  const quitter = brancherFermeture(lien, app, racine);
+  assert.equal(typeof abonne, 'function');
+  assert.strictEqual(await abonne({ raison: 'fenetre' }), true);
+  app.occupe = 1; // une écriture qui ne finit pas : jamais true
+  app.attendreEcritures = () => Promise.resolve(false);
+  assert.strictEqual(await abonne({ raison: 'fenetre' }), false);
+  quitter();
+  assert.equal(abonne, null);
+  assert.equal(brancherFermeture({}, app, racine), null, 'un kit d\'avant : rien à brancher');
 });
