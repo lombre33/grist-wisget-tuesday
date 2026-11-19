@@ -1,6 +1,6 @@
 # GFS-ETAT : Tuesday
 
-Mis à jour le 2026-11-07 (consignes 013, 014 et 016), au commit `6de3259` (le dernier commit de code que cette page décrit).
+Mis à jour le 2026-11-19 (consignes 017, 018 et 019), au commit `2bcc386` (le dernier commit de code que cette page décrit).
 
 ## Consignes
 - 001 · faite · `d958504` · guide lu ; aucun écart avec la 1.1 (tables préfixées `Tuesday_`, aucune table sans accord, identifiant relu après `AddTable`, aucun import d'une autre app, aucune lecture de `document.referrer`, `addEventListener` seul côté kit, stockage dans `try/catch` puis par GFS). Réserve : la règle 4 préfère une ligne réservée ; `Tuesday_Liens` sera une table de plus, justifiée en 5.5 du cahier (consigne 002)
@@ -17,8 +17,12 @@ Mis à jour le 2026-11-07 (consignes 013, 014 et 016), au commit `6de3259` (le d
 - 013 · faite · `6de3259` · la réponse à `fermer` est branchée sur `GfsLink.onClose` du kit 0.9.0 (`brancherFermeture`, `js/ui/fermeture.js`) ; elle rend exactement `true` quand rien n'attend ou que tout est enregistré (écriture en cours attendue, jamais `true` avant), `false` quand la personne répond Annuler ou qu'une écriture échoue ; ce que Tuesday a « en attente » : une saisie dont on n'est pas sorti (sa sortie l'enregistre, sans question) ; une écriture en cours ; un titre tapé dans un champ d'ajout sans Entrée (question Ajouter / Abandonner / Annuler) ; une tâche tapée avant la mise en place (Abandonner / Annuler seulement)
 - 014 · lue · faite · `6de3259` · `kit/` à `eaa2ae2` (kit 0.9.0, commit à part `5332ba4`) ; `brancherFermeture(GfsLink, app)` appelle `GfsLink.onClose` et lui rend un booléen (le kit écrit l'enveloppe `{ ferme }`) ; essai unitaire qui échoue sur l'ancien code (la réponse rendait un objet, jamais `true`) ; 252 essais unitaires et 44 dans le navigateur ; pas relancé dans un vrai Grist (le branchement ne touche pas Grist) ; Tuesday 0.1.9
 - 016 · lue · rien à changer aujourd'hui : Tuesday ne déclare aucune table de fichiers, sa ligne « Partager… » reste grisée avec sa raison ; le jour où elle en déclarera une, elle n'écrira aucun auteur, tolérera la colonne `GFS_Auteur` (ni lue ni écrite), n'ajoutera ni `Visibilite`, ni `Personnes`, ni `Espace`, et dira le refus d'écriture ou de suppression d'un fichier qu'on ne fait que lire (message d'état, sans plantage ni nouvel essai) ; la 015 n'a pas été lue (remplacée)
+- 017 · faite · `2bcc386` · la politique de la page part de `default-src 'none'` et n'ouvre que `'self'`, `data:` pour les images, le script d'API de Grist par son adresse entière avec `'unsafe-eval'` et l'empreinte de la carte d'importation (rien d'ouvert en `https:`, aucune bibliothèque) ; sections « Adresses que l'app appelle », « Bibliothèques que l'app charge elle-même » et « Sécurité » ajoutées plus bas ; Dependabot (sous-module du kit) et `SECURITY.md` en place ; essais : `test/securite.test.mjs` (11)
+- 018 · faite · `2bcc386` · `import '../kit/js/violations-start.js';` est la première ligne de `js/main.js` ; **pas encore mesuré** dans GFS avec un `fetch` bloqué (l'hôte seul doit arriver à GFS) ; à faire quand Tuesday entre au catalogue
+- 019 · faite · `2bcc386` · `kit/` à `ed0a575` (kit 0.27.0, commit à part `b916105`, dix-huit versions d'un coup, CHANGELOG 0.10.0 à 0.27.0 lu) ; phrase `localStorage` et ses vraies clés dans le `README.md` ; 263 essais unitaires verts après l'avance (il a fallu régénérer la carte d'importation : 161 modules) ; Tuesday 0.1.10
 
 ## Changements qui touchent GFS
+- 2026-11-19 · `2bcc386` · `kit/` à `ed0a575` (kit 0.27.0) ; relais S8 démarré ; politique de sécurité inchangée ; `.github/dependabot.yml` et `SECURITY.md` ajoutés ; version 0.1.10
 - 2026-11-06 · `6de3259` · `kit/` à `eaa2ae2` ; `fermer` répondu par Tuesday via `GfsLink.onClose` ; version 0.1.9
 - 2026-11-04 · `cbd3d7c` · `kit/` à `336baf4` ; calendrier du kit à la place de la grille ; réponse à `fermer` prête ; version 0.1.8
 - 2026-11-04 · `0b8bca7` · `permissions.identite` déclarée ; `kit/` à `8afa569` ; version 0.1.2 ; `Ambiance.start()`
@@ -33,3 +37,22 @@ Mis à jour le 2026-11-07 (consignes 013, 014 et 016), au commit `6de3259` (le d
 - Liens entre apps : branchés (005) ; à mesurer dans GFS dès l'entrée de Tuesday au catalogue
 - Entrée de Tuesday au catalogue de GFS : à demander quand l'app sera prête (005, point 5)
 - Identité : réglée par la 008 (04/11), l'adresse vient de GFS à qui la déclare ; seul, la lecture par l'API de Grist reste à mesurer puis à coder
+
+## Adresses que l'app appelle
+- https://docs.getgrist.com/grist-plugin-api.js · script · le script d'API des widgets de Grist, qui parle à Grist par le cadre · envoie des données de la personne : non
+- aucune autre : `connect-src`, `img-src` (avec `data:`), `font-src`, `media-src`, `frame-src` et `worker-src` n'ouvrent que `'self'` ou restent fermés par `default-src 'none'`
+
+## Bibliothèques que l'app charge elle-même
+- grist-plugin-api · script d'API de Grist · — · https://docs.getgrist.com/grist-plugin-api.js · démarrage · `docs.getgrist.com` fait partie de Grist ; pas d'empreinte (le script change avec Grist)
+- aucune autre bibliothèque : le kit est un sous-module de ce dépôt, servi par notre site
+
+## Sécurité
+- S1 · tenue · balise `<meta http-equiv="Content-Security-Policy">` dans `index.html`, générée par `outils/versionner.mjs` ; essai dans `test/securite.test.mjs`
+- S2 · tenue · `default-src 'none'`, `object-src`, `base-uri`, `form-action` et `frame-src` à `'none'`
+- S3 · tenue · aucune adresse ouverte en `connect-src` ni ailleurs hors `'self'` et `data:` ; Tuesday n'appelle pas le serveur de Grist avec un jeton
+- S4 · tenue · `script-src` : `'self'`, `'unsafe-eval'` (règle 11, script d'API de Grist), son adresse entière et l'empreinte de la carte d'importation ; aucun `'unsafe-inline'`
+- S5 · tenue · une seule bibliothèque de l'extérieur, le script d'API de Grist (sans empreinte possible) ; aucune autre
+- S6 · tenue · aucune donnée du document n'est envoyée ailleurs, ni mesure d'audience, ni journal d'erreurs ; aucun secret dans le dépôt
+- S7 · en cours, prévue le 20/11 · `.github/dependabot.yml` suit le sous-module du kit chaque semaine ; à confirmer dans les réglages du dépôt que Dependabot est actif
+- S8 · tenue · kit 0.27.0 (19/11/2026), import en tête de `js/main.js` ; reste à le mesurer dans GFS
+- S9 · en cours, prévue le 20/11 · `SECURITY.md` est à la racine ; le porteur doit activer « Private vulnerability reporting » dans les réglages du dépôt
