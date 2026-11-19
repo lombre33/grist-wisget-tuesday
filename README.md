@@ -2,7 +2,7 @@
 
 Un widget de gestion de projet pour [Grist](https://www.getgrist.com), fait pour [Grist Factory Suite (GFS)](https://github.com/lombre33/grist-widget-GFS). Inspiré de monday.com pour sa clarté, volontairement bien plus simple : **on le branche sur une table Grist existante** et on voit son travail comme un projet (tableau, kanban, calendrier, chronologie), sans rien recréer.
 
-> État : **V1 codée** (03/11/2026, version 0.1.9) : tableau, kanban, chronologie, calendrier du kit (Calendar+), fiche, premier lancement. 214 essais unitaires, 32 essais navigateur et 10 essais dans un vrai Grist. **Pas encore mesurée dans un vrai Grist** : voir [`docs/etat-v1.md`](docs/etat-v1.md).
+> État : **V1 codée** (03/11/2026, version 0.1.10) : tableau, kanban, chronologie, calendrier du kit (Calendar+), fiche, premier lancement. 214 essais unitaires, 32 essais navigateur et 10 essais dans un vrai Grist. **Pas encore mesurée dans un vrai Grist** : voir [`docs/etat-v1.md`](docs/etat-v1.md).
 
 ## Lire
 
@@ -35,8 +35,16 @@ node outils/versionner.mjs         # après tout changement de JS ou de CSS (imp
 
 Pages statiques sur GitHub Pages (`.nojekyll` à la racine), sans étape de construction. Utilisé surtout sur l'instance Grist de la DINUM.
 
+## Stockage du navigateur
+
+Tuesday garde des choix d'affichage dans `localStorage` (jamais le contenu d'un document, ni de tâche) : `tuesday_theme` et `tuesday_lang` (thème et langue), `tuesday.<document>.src.<table>` (la correspondance de colonnes de la dernière table choisie), `tuesday.<document>.derniere` (la dernière table ouverte) et `tuesday.<document>.<projet>` (les réglages de la vue). Dans GFS, ces choix partent chez GFS, qui héberge l'app. Tuesday n'écrit ni `sessionStorage`, ni IndexedDB, ni cookie. Tout accès est dans un `try/catch` : l'app marche sans.
+
+## Sécurité
+
+Voir [`SECURITY.md`](SECURITY.md). La page n'appelle que son propre site et le script d'API de Grist ; sa politique de sécurité ferme le reste (règles S1 à S9 de GFS : `GFS-ETAT.md`).
+
 ## Dépôt
 
-`kit/` est un sous-module : le kit commun de GFS (`lombre33/grist-factory-kit`, commit `c0c8660`, v0.2.0). Après un clone : `git submodule update --init`.
+`kit/` est un sous-module : le kit commun de GFS (`lombre33/grist-factory-kit`, commit `ed0a575`, v0.27.0). Après un clone : `git submodule update --init`.
 
 Licence : GNU GPL 3.0 (voir `LICENSE`).

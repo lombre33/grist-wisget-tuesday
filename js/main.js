@@ -1,4 +1,6 @@
 // Point d'entrée : thème et langue d'abord (sinon la page s'affiche en clair, en français, puis bascule), puis le lien avec GFS, puis le port de données (Grist, ou la démonstration hors de Grist).
+// Le relais des appels que la politique de sécurité de la page bloque (règle S8, kit 0.25.0) : en tête, avant que les autres modules s'évaluent, pour qu'aucune violation d'avant ne passe inaperçue.
+import '../kit/js/violations-start.js';
 import { Theme } from '../kit/js/theme.js';
 import { I18n } from '../kit/js/i18n.js';
 import { GfsLink } from '../kit/js/gfs-link.js';
