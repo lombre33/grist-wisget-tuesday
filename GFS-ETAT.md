@@ -53,6 +53,6 @@ Mis à jour le 2026-11-19 (consignes 017, 018 et 019), au commit `2bcc386` (le d
 - S4 · tenue · `script-src` : `'self'`, `'unsafe-eval'` (règle 11, script d'API de Grist), son adresse entière et l'empreinte de la carte d'importation ; aucun `'unsafe-inline'`
 - S5 · tenue · une seule bibliothèque de l'extérieur, le script d'API de Grist (sans empreinte possible) ; aucune autre
 - S6 · tenue · aucune donnée du document n'est envoyée ailleurs, ni mesure d'audience, ni journal d'erreurs ; aucun secret dans le dépôt
-- S7 · en cours, prévue le 20/11 · `.github/dependabot.yml` suit le sous-module du kit chaque semaine ; à confirmer dans les réglages du dépôt que Dependabot est actif
+- S7 · en cours, prévue le 26/11 · `.github/dependabot.yml` suit le sous-module du kit chaque semaine ; le porteur l'active sur le dépôt live (`grist-factory`)
 - S8 · tenue · kit 0.27.0 (19/11/2026), import en tête de `js/main.js` ; reste à le mesurer dans GFS
-- S9 · en cours, prévue le 20/11 · `SECURITY.md` est à la racine ; le porteur doit activer « Private vulnerability reporting » dans les réglages du dépôt
+- S9 · en cours, prévue le 26/11 · `SECURITY.md` est à la racine ; le porteur active « Private vulnerability reporting » sur le dépôt live (`grist-factory`)
