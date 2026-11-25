@@ -1,6 +1,6 @@
 # GFS-ETAT : Tuesday
 
-Mis à jour le 2026-11-19 (consignes 017, 018 et 019), au commit `2bcc386` (le dernier commit de code que cette page décrit).
+Mis à jour le 2026-11-25 (consigne 020 lue ; la liste de noms est donnée), au commit `2bcc386` (le dernier commit de code que cette page décrit).
 
 ## Consignes
 - 001 · faite · `d958504` · guide lu ; aucun écart avec la 1.1 (tables préfixées `Tuesday_`, aucune table sans accord, identifiant relu après `AddTable`, aucun import d'une autre app, aucune lecture de `document.referrer`, `addEventListener` seul côté kit, stockage dans `try/catch` puis par GFS). Réserve : la règle 4 préfère une ligne réservée ; `Tuesday_Liens` sera une table de plus, justifiée en 5.5 du cahier (consigne 002)
@@ -20,6 +20,7 @@ Mis à jour le 2026-11-19 (consignes 017, 018 et 019), au commit `2bcc386` (le d
 - 017 · faite · `2bcc386` · la politique de la page part de `default-src 'none'` et n'ouvre que `'self'`, `data:` pour les images, le script d'API de Grist par son adresse entière avec `'unsafe-eval'` et l'empreinte de la carte d'importation (rien d'ouvert en `https:`, aucune bibliothèque) ; sections « Adresses que l'app appelle », « Bibliothèques que l'app charge elle-même » et « Sécurité » ajoutées plus bas ; Dependabot (sous-module du kit) et `SECURITY.md` en place ; essais : `test/securite.test.mjs` (11)
 - 018 · faite · `2bcc386` · `import '../kit/js/violations-start.js';` est la première ligne de `js/main.js` ; **pas encore mesuré** dans GFS avec un `fetch` bloqué (l'hôte seul doit arriver à GFS) ; à faire quand Tuesday entre au catalogue
 - 019 · faite · `2bcc386` · `kit/` à `ed0a575` (kit 0.27.0, commit à part `b916105`, dix-huit versions d'un coup, CHANGELOG 0.10.0 à 0.27.0 lu) ; phrase `localStorage` et ses vraies clés dans le `README.md` ; 263 essais unitaires verts après l'avance (il a fallu régénérer la carte d'importation : 161 modules) ; Tuesday 0.1.10
+- 020 · lue · liste de noms donnée dans « Demandes à GFS » ; **le code n'est pas encore basculé** : il attend la réponse du porteur à la question du point 4 (un document qui n'est pas le nôtre porte-t-il `Tuesday_Projets` ou `Tuesday_Liens` ?) ; aucun document de gens connu du projet, la V1 est une démonstration
 
 ## Changements qui touchent GFS
 - 2026-11-19 · `2bcc386` · `kit/` à `ed0a575` (kit 0.27.0) ; relais S8 démarré ; politique de sécurité inchangée ; `.github/dependabot.yml` et `SECURITY.md` ajoutés ; version 0.1.10
@@ -33,6 +34,12 @@ Mis à jour le 2026-11-19 (consignes 017, 018 et 019), au commit `2bcc386` (le d
 - Réglées par la 007 (03/11) : le script d'API de Grist vient de `docs.getgrist.com` dans les deux modes ; le glisser-déposer marche dans le cadre de GFS (Chromium ; Firefox, tactile et clavier non mesurés)
 
 ## Demandes à GFS
+- Noms anglais (020, point 3a) · tout ce que le code crée, lit ou écrit, **nom d'aujourd'hui → nom anglais** ; préfixe `Tuesday_` inchangé, une seule version de chaque nom dans un même document :
+  - table `Tuesday_Projets` → `Tuesday_Projects` : `Nom` → `Name`, `TypeProjet` → `ProjectType`, `Dossier` → `Folder`, `DateModif` → `ModifiedAt`, `Source` (déjà anglais), `Reglages` → `Settings`, `Schema` (déjà anglais) ; une colonne de texte par rôle : `ColTitre` → `ColTitle`, `ColStatut` → `ColStatus`, `ColResponsable` → `ColAssignee`, `ColPredecesseurs` → `ColPredecessors`, `ColDebut` → `ColStart`, `ColEcheance` → `ColDue`, `ColPriorite` → `ColPriority`, `ColEtiquettes` → `ColLabels`, `ColParente` → `ColParent`, `ColGroupe` → `ColGroup`, `ColAvancement` → `ColProgress`, `ColOrdre` → `ColOrder`, `ColDescription` → `ColDescription` (déjà anglais) ; `gfs.json` : `fichiers[0].table` et `colonnes` (`nom` → `Name`, `type` → `ProjectType`, `dossier` → `Folder`, `date` → `ModifiedAt`)
+  - table `Tuesday_Liens` → `Tuesday_Links` : `Ligne` → `Row`, `Fichier` → `File`, `Nom` → `Name`, `Cree` → `CreatedAt` ; `Table`, `App`, `Type` déjà anglais
+  - valeurs gardées : `TypeProjet` vaut `projet` (donnée de `gfs.json`, `typeParDefaut`), les types de lien `document`, `grille`, `presentation` (valeurs, pas des noms)
+  - clés de réglages de la vue : aucune (`reglages` vide dans `gfs.json`) ; clés de stockage `tuesday.<document>.…`, `tuesday_theme`, `tuesday_lang` : hors tables, inchangées
+  - réponse à la question du point 4 : à notre connaissance non (aucun document de gens connu du projet) ; **à confirmer par le porteur avant la bascule du code**
 - Calendrier : voie A choisie le 03/11 (006) ; la grille de mois de Tuesday est provisoire jusqu'au module du kit
 - Liens entre apps : branchés (005) ; à mesurer dans GFS dès l'entrée de Tuesday au catalogue
 - Entrée de Tuesday au catalogue de GFS : à demander quand l'app sera prête (005, point 5)
